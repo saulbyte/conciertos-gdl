@@ -14,7 +14,7 @@ export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventById>>>;
 export async function getEvents(filters: EventFilters = {}) {
   const where = buildEventWhere(filters);
 
-  return prisma.event.findMany({
+  const events = await prisma.event.findMany({
     where,
     orderBy: {
       eventDate: "asc",
@@ -26,13 +26,30 @@ export async function getEvents(filters: EventFilters = {}) {
           artist: true,
         },
       },
+      _count: {
+        select: { likes: true },
+      },
     },
     take: 300,
   });
+
+  const popularEventIds = new Set(
+    [...events]
+      .filter((event) => event._count.likes >= 5)
+      .sort((left, right) => right._count.likes - left._count.likes)
+      .slice(0, 3)
+      .map((event) => event.id),
+  );
+
+  return events.map(({ _count, ...event }) => ({
+    ...event,
+    likeCount: _count.likes,
+    isPopular: popularEventIds.has(event.id),
+  }));
 }
 
 export async function getEventById(id: string) {
-  return prisma.event.findUnique({
+  const event = await prisma.event.findUnique({
     where: { id },
     include: {
       venue: true,
@@ -41,8 +58,22 @@ export async function getEventById(id: string) {
           artist: true,
         },
       },
+      _count: {
+        select: { likes: true },
+      },
     },
   });
+
+  if (!event) {
+    return null;
+  }
+
+  const { _count, ...eventDetail } = event;
+
+  return {
+    ...eventDetail,
+    likeCount: _count.likes,
+  };
 }
 
 export async function getVenueOptions() {

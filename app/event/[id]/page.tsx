@@ -8,6 +8,7 @@ import {
   Music2,
 } from "lucide-react";
 import { EventArtwork } from "@/components/EventArtwork";
+import { EventLikeButton } from "@/components/EventLikeButton";
 import { getEventById } from "@/lib/events";
 import { formatEventDate, formatSourceName } from "@/lib/format";
 
@@ -83,17 +84,24 @@ export default async function EventPage({ params }: EventPageProps) {
               ) : null}
             </div>
 
-            {event.sourceUrl ? (
-              <a
-                href={event.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-7 inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-violet-600 px-5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 sm:w-auto"
-              >
-                Ir al sitio oficial
-                <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              </a>
-            ) : null}
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              {event.sourceUrl ? (
+                <a
+                  href={event.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-violet-600 px-5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 sm:w-auto"
+                >
+                  Ir al sitio oficial
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                </a>
+              ) : null}
+              <EventLikeButton
+                eventId={event.id}
+                initialCount={event.likeCount}
+                variant="detail"
+              />
+            </div>
             <p className="mt-3 text-xs text-slate-500">
               La disponibilidad y venta dependen del sitio de origen.
             </p>

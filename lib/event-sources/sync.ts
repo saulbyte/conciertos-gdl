@@ -122,28 +122,57 @@ async function findCrossSourceDuplicate(
   event: ExternalEvent,
 ) {
   const dayStart = new Date(event.eventDate);
-  dayStart.setUTCHours(0, 0, 0, 0);
+  dayStart.setUTCDate(dayStart.getUTCDate() - 1);
   const dayEnd = new Date(dayStart);
-  dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+  dayEnd.setUTCDate(dayEnd.getUTCDate() + 3);
 
-  return prisma.event.findFirst({
+  const candidates = await prisma.event.findMany({
     where: {
       source: { not: source },
-      title: {
-        equals: event.title,
-        mode: "insensitive",
-      },
       eventDate: {
         gte: dayStart,
         lt: dayEnd,
       },
-      venue: {
-        name: {
-          equals: event.venue.name,
-          mode: "insensitive",
-        },
-      },
     },
-    select: { id: true },
+    select: {
+      id: true,
+      title: true,
+      eventDate: true,
+      venue: { select: { name: true } },
+    },
   });
+
+  const title = normalizeName(event.title);
+  const venue = normalizeVenueName(event.venue.name);
+  const localDate = getMexicoCityDateKey(event.eventDate);
+
+  return candidates.find(
+    (candidate) =>
+      normalizeName(candidate.title) === title &&
+      normalizeVenueName(candidate.venue.name) === venue &&
+      getMexicoCityDateKey(candidate.eventDate) === localDate,
+  );
+}
+
+function normalizeVenueName(value: string) {
+  return normalizeName(value).replace(/\s+(?:gdl|guadalajara)$/u, "");
+}
+
+function normalizeName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " y ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function getMexicoCityDateKey(date: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(date);
 }

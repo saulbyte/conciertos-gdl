@@ -10,6 +10,7 @@ enum EventSource {
   TICKETMASTER
   VISIT_JALISCO
   SUPERBOLETOS
+  C3_STAGE
 }
 
 model Venue {
@@ -44,11 +45,24 @@ model Event {
   updatedAt   DateTime      @updatedAt
   venue       Venue         @relation(fields: [venueId], references: [id])
   artists     EventArtist[]
+  likes       EventLike[]
 
   @@unique([source, externalId])
   @@index([eventDate])
   @@index([venueId])
   @@index([source])
+}
+
+model EventLike {
+  id          String   @id @default(cuid())
+  eventId     String
+  visitorHash String
+  createdAt   DateTime @default(now())
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, visitorHash])
+  @@index([eventId])
+  @@index([createdAt])
 }
 
 model EventArtist {

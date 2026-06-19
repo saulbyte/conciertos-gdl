@@ -9,6 +9,7 @@ reaccionar ante errores. Actualmente la sincronizacion es manual.
 Las fuentes integradas son:
 
 - Ticketmaster
+- C3 Stage
 - Visit Jalisco
 - Superboletos
 
@@ -19,7 +20,7 @@ La aplicacion utiliza cuatro piezas principales:
 - Git y el directorio local contienen el codigo fuente.
 - Vercel construye y publica la aplicacion Next.js.
 - Neon aloja la base de datos PostgreSQL.
-- Ticketmaster, Visit Jalisco y Superboletos proporcionan eventos.
+- Ticketmaster, C3 Stage, Visit Jalisco y Superboletos proporcionan eventos.
 
 Actualizar eventos y publicar codigo son operaciones diferentes:
 
@@ -75,8 +76,9 @@ npm run sync:events
 El proceso consulta las fuentes en este orden:
 
 1. Ticketmaster
-2. Visit Jalisco
-3. Superboletos
+2. C3 Stage
+3. Visit Jalisco
+4. Superboletos
 
 Es normal que tarde varios minutos. Ticketmaster suele ser la fuente mas lenta.
 No cierres la terminal hasta recuperar el prompt de PowerShell.
@@ -122,6 +124,7 @@ Usa estos comandos para diagnosticar una fuente o actualizarla por separado:
 
 ```powershell
 npm run sync:ticketmaster
+npm run sync:c3-stage
 npm run sync:visit-jalisco
 npm run sync:superboletos
 ```
@@ -175,8 +178,9 @@ Para cada evento valido:
 5. Crea el evento nuevo o actualiza el existente.
 
 La cobertura actual se limita a conciertos de Guadalajara y su zona
-metropolitana. Ticketmaster usa un radio geografico; Visit Jalisco y
-Superboletos aplican filtros de ciudad y contenido musical.
+metropolitana. Ticketmaster usa un radio geografico; C3 Stage consulta
+directamente la cartelera oficial del recinto; Visit Jalisco y Superboletos
+aplican filtros de ciudad y contenido musical.
 
 ## Limitaciones actuales
 
@@ -210,7 +214,7 @@ No reemplaces la URL sin confirmar primero a que base apunta.
 - `403` puede indicar un bloqueo temporal o un cambio del proveedor.
 - No repitas el comando continuamente; espera unos minutos y prueba una vez mas.
 
-### Visit Jalisco o Superboletos devuelve cero
+### C3 Stage, Visit Jalisco o Superboletos devuelve cero
 
 Abre la pagina oficial para confirmar que su cartelera este disponible. Si hay
 eventos visibles pero el script obtiene cero, probablemente cambio la estructura
@@ -488,6 +492,7 @@ Anota cada ejecucion en un registro sencillo:
 Fecha y hora:
 Responsable:
 Ticketmaster: fetched / created / updated / duplicates
+C3 Stage: fetched / created / updated / duplicates
 Visit Jalisco: fetched / created / updated / duplicates
 Superboletos: fetched / created / updated / duplicates
 Eventos comprobados en la pagina:

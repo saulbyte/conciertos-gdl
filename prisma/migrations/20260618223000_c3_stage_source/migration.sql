@@ -1,0 +1,1 @@
+ALTER TYPE "EventSource" ADD VALUE 'C3_STAGE';

@@ -15,7 +15,8 @@
     "sync:events": "tsx scripts/sync-events.ts",
     "sync:ticketmaster": "tsx scripts/sync-ticketmaster.ts",
     "sync:visit-jalisco": "tsx scripts/sync-visit-jalisco.ts",
-    "sync:superboletos": "tsx scripts/sync-superboletos.ts"
+    "sync:superboletos": "tsx scripts/sync-superboletos.ts",
+    "sync:c3-stage": "tsx scripts/sync-c3-stage.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
