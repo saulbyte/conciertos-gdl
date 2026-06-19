@@ -23,6 +23,18 @@
 # misc
 .DS_Store
 *.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.dump
+*.backup
+.npmrc
+.netrc
+credentials*.json
+secrets*.json
+service-account*.json
 
 # debug
 npm-debug.log*
@@ -30,11 +42,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# environment files and local secrets
 .env*
+!.env.example
+!.env.*.example
 
 # vercel
-.vercel
+/.vercel/
 
 # typescript
 *.tsbuildinfo

@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EventSource {
+  TICKETMASTER
+  VISIT_JALISCO
+  SUPERBOLETOS
+}
+
+model Venue {
+  id        String   @id @default(cuid())
+  name      String
+  city      String
+  createdAt DateTime @default(now())
+  events    Event[]
+
+  @@unique([name, city])
+  @@index([city])
+}
+
+model Artist {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  createdAt DateTime      @default(now())
+  events    EventArtist[]
+}
+
+model Event {
+  id          String        @id @default(cuid())
+  externalId  String
+  title       String
+  description String?
+  eventDate   DateTime
+  imageUrl    String?
+  source      EventSource
+  sourceUrl   String?
+  venueId     String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  venue       Venue         @relation(fields: [venueId], references: [id])
+  artists     EventArtist[]
+
+  @@unique([source, externalId])
+  @@index([eventDate])
+  @@index([venueId])
+  @@index([source])
+}
+
+model EventArtist {
+  eventId  String
+  artistId String
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, artistId])
+  @@index([artistId])
+}
