@@ -7,6 +7,7 @@ export async function GET(request: Request) {
     venue: searchParams.get("venue") ?? undefined,
     from: searchParams.get("from") ?? undefined,
     to: searchParams.get("to") ?? undefined,
+    admission: searchParams.get("admission") === "free" ? "free" : undefined,
   });
 
   return Response.json({ events });

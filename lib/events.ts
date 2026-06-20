@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { AdmissionType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export type EventFilters = {
@@ -6,6 +6,7 @@ export type EventFilters = {
   venue?: string;
   from?: string;
   to?: string;
+  admission?: "free";
 };
 
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>[number];
@@ -88,6 +89,15 @@ export async function getVenueOptions() {
   });
 }
 
+export async function getFreeEventCount() {
+  return prisma.event.count({
+    where: {
+      admissionType: AdmissionType.FREE,
+      eventDate: { gte: startOfToday() },
+    },
+  });
+}
+
 function buildEventWhere(filters: EventFilters): Prisma.EventWhereInput {
   const where: Prisma.EventWhereInput = {
     eventDate: {
@@ -120,6 +130,10 @@ function buildEventWhere(filters: EventFilters): Prisma.EventWhereInput {
 
   if (filters.venue) {
     where.venueId = filters.venue;
+  }
+
+  if (filters.admission === "free") {
+    where.admissionType = AdmissionType.FREE;
   }
 
   if (filters.from || filters.to) {

@@ -13,6 +13,12 @@ enum EventSource {
   C3_STAGE
 }
 
+enum AdmissionType {
+  FREE
+  PAID
+  UNKNOWN
+}
+
 model Venue {
   id        String   @id @default(cuid())
   name      String
@@ -32,25 +38,27 @@ model Artist {
 }
 
 model Event {
-  id          String        @id @default(cuid())
-  externalId  String
-  title       String
-  description String?
-  eventDate   DateTime
-  imageUrl    String?
-  source      EventSource
-  sourceUrl   String?
-  venueId     String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  venue       Venue         @relation(fields: [venueId], references: [id])
-  artists     EventArtist[]
-  likes       EventLike[]
+  id            String        @id @default(cuid())
+  externalId    String
+  title         String
+  description   String?
+  eventDate     DateTime
+  imageUrl      String?
+  source        EventSource
+  sourceUrl     String?
+  admissionType AdmissionType @default(UNKNOWN)
+  venueId       String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  venue         Venue         @relation(fields: [venueId], references: [id])
+  artists       EventArtist[]
+  likes         EventLike[]
 
   @@unique([source, externalId])
   @@index([eventDate])
   @@index([venueId])
   @@index([source])
+  @@index([admissionType])
 }
 
 model EventLike {

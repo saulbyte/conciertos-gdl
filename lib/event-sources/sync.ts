@@ -4,6 +4,7 @@ import type {
   EventSourceSyncResult,
   ExternalEvent,
 } from "@/lib/event-sources/types";
+import { classifyAdmission } from "@/lib/event-sources/admission";
 
 export async function syncEventSource(
   prisma: PrismaClient,
@@ -33,6 +34,15 @@ export async function syncEventSource(
       );
 
       if (duplicate) {
+        if (
+          classifyAdmission(event.title, event.description) === "FREE"
+        ) {
+          await prisma.event.update({
+            where: { id: duplicate.id },
+            data: { admissionType: "FREE" },
+          });
+        }
+
         duplicates += 1;
         continue;
       }
@@ -61,6 +71,7 @@ async function persistEvent(
   source: EventSource,
   event: ExternalEvent,
 ) {
+  const admissionType = classifyAdmission(event.title, event.description);
   const venue = await prisma.venue.upsert({
     where: {
       name_city: event.venue,
@@ -96,6 +107,7 @@ async function persistEvent(
       imageUrl: event.imageUrl,
       source,
       sourceUrl: event.sourceUrl,
+      admissionType,
       venueId: venue.id,
       artists: {
         create: artistConnections,
@@ -107,6 +119,7 @@ async function persistEvent(
       eventDate: event.eventDate,
       imageUrl: event.imageUrl,
       sourceUrl: event.sourceUrl,
+      admissionType,
       venueId: venue.id,
       artists: {
         deleteMany: {},

@@ -6,6 +6,7 @@ import {
   ExternalLink,
   MapPin,
   Music2,
+  TicketCheck,
 } from "lucide-react";
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
@@ -49,9 +50,17 @@ export default async function EventPage({ params }: EventPageProps) {
           </div>
 
           <div className="py-1">
-            <p className="inline-flex rounded-md bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-800">
-              {formatSourceName(event.source)}
-            </p>
+            <div className="flex flex-wrap gap-2">
+              <p className="inline-flex rounded-md bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-800">
+                {formatSourceName(event.source)}
+              </p>
+              {event.admissionType === "FREE" ? (
+                <p className="inline-flex items-center gap-1.5 rounded-md bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-800">
+                  <TicketCheck className="h-4 w-4" aria-hidden="true" />
+                  Entrada gratis
+                </p>
+              ) : null}
+            </div>
             <h1 className="mt-5 text-3xl font-bold leading-[1.12] text-slate-950 sm:text-4xl lg:text-5xl">
               {event.title}
             </h1>
@@ -103,7 +112,9 @@ export default async function EventPage({ params }: EventPageProps) {
               />
             </div>
             <p className="mt-3 text-xs text-slate-500">
-              La disponibilidad y venta dependen del sitio de origen.
+              {event.admissionType === "FREE"
+                ? "Confirma requisitos de acceso y disponibilidad en el sitio de origen."
+                : "La disponibilidad y venta dependen del sitio de origen."}
             </p>
           </div>
         </div>

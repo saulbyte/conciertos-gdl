@@ -13,20 +13,23 @@ type SearchFiltersProps = {
     venue?: string;
     from?: string;
     to?: string;
+    admission?: string;
   };
 };
 
 export function SearchFilters({ venues, values }: SearchFiltersProps) {
   const hasFilters = Boolean(
-    values.q || values.venue || values.from || values.to,
+    values.q || values.venue || values.from || values.to || values.admission,
   );
 
   return (
     <form
-      id="filtros"
       action="/"
-      className="scroll-mt-24 overflow-hidden rounded-lg border border-white/20 bg-white shadow-2xl shadow-black/25"
+      className="hidden scroll-mt-24 overflow-hidden rounded-lg border border-white/20 bg-white shadow-2xl shadow-black/25 md:block"
     >
+      {values.admission === "free" ? (
+        <input type="hidden" name="admission" value="free" />
+      ) : null}
       <div className="flex min-h-14 items-stretch">
         <label className="flex min-w-0 flex-1 items-center gap-3 px-4 sm:px-5">
           <Search className="h-5 w-5 shrink-0 text-slate-400" aria-hidden="true" />

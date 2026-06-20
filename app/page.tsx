@@ -3,14 +3,16 @@ import { Suspense } from "react";
 import { CalendarCheck2, Link2, ShieldCheck } from "lucide-react";
 import { EventCard } from "@/components/EventCard";
 import { EventListSkeleton } from "@/components/EventListSkeleton";
+import { MobileDiscoveryFilters } from "@/components/MobileDiscoveryFilters";
 import { SearchFilters } from "@/components/SearchFilters";
-import { getEvents, getVenueOptions } from "@/lib/events";
+import { getEvents, getFreeEventCount, getVenueOptions } from "@/lib/events";
 
 type SearchParams = {
   q?: string;
   venue?: string;
   from?: string;
   to?: string;
+  admission?: string;
 };
 
 type HomeProps = {
@@ -19,7 +21,10 @@ type HomeProps = {
 
 export default async function Home({ searchParams }: HomeProps) {
   const filters = await searchParams;
-  const venues = await getVenueOptions();
+  const [venues, freeEventCount] = await Promise.all([
+    getVenueOptions(),
+    getFreeEventCount(),
+  ]);
 
   return (
     <main>
@@ -49,8 +54,13 @@ export default async function Home({ searchParams }: HomeProps) {
             </p>
           </div>
 
-          <div className="mt-8 max-w-4xl">
+          <div id="filtros" className="mt-8 max-w-4xl scroll-mt-24">
             <SearchFilters venues={venues} values={filters} />
+            <MobileDiscoveryFilters
+              venues={venues}
+              values={filters}
+              freeEventCount={freeEventCount}
+            />
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-slate-300">
@@ -101,10 +111,15 @@ async function EventResults({ filters }: { filters: SearchParams }) {
     venue: filters.venue,
     from: filters.from,
     to: filters.to,
+    admission: filters.admission === "free" ? "free" : undefined,
   });
 
   const hasFilters = Boolean(
-    filters.q || filters.venue || filters.from || filters.to,
+    filters.q ||
+      filters.venue ||
+      filters.from ||
+      filters.to ||
+      filters.admission === "free",
   );
 
   return (
@@ -115,7 +130,11 @@ async function EventResults({ filters }: { filters: SearchParams }) {
             Cartelera
           </p>
           <h2 className="mt-1 text-2xl font-bold text-slate-950 sm:text-3xl">
-            {hasFilters ? "Resultados" : "Proximos eventos"}
+            {filters.admission === "free"
+              ? "Conciertos gratis"
+              : hasFilters
+                ? "Resultados"
+                : "Proximos eventos"}
           </h2>
         </div>
         <p className="text-sm font-medium text-slate-500">

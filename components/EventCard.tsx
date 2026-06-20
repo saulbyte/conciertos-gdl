@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Clock3, MapPin } from "lucide-react";
+import { ArrowUpRight, Clock3, MapPin, TicketCheck } from "lucide-react";
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
@@ -35,6 +35,12 @@ export function EventCard({ event }: EventCardProps) {
             <span className="rounded-md bg-white/95 px-2.5 py-1 text-[11px] font-bold text-slate-700 shadow-sm backdrop-blur">
               {formatSourceName(event.source)}
             </span>
+            {event.admissionType === "FREE" ? (
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white shadow-sm">
+                <TicketCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                Entrada gratis
+              </span>
+            ) : null}
             {event.isPopular ? (
               <span className="rounded-md bg-rose-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-sm">
                 Popular
