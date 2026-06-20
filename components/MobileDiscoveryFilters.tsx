@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 type VenueOption = {
   id: string;
@@ -137,8 +138,9 @@ export function MobileDiscoveryFilters({
         </button>
       </div>
 
-      {isOpen ? (
-        <div className="fixed inset-0 z-[70] md:hidden">
+      {isOpen
+        ? createPortal(
+            <div className="fixed inset-0 z-[70] md:hidden">
           <button
             type="button"
             className="absolute inset-0 h-full w-full bg-slate-950/65 backdrop-blur-sm"
@@ -248,8 +250,10 @@ export function MobileDiscoveryFilters({
               </div>
             </form>
           </section>
-        </div>
-      ) : null}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
