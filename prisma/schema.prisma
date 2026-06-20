@@ -11,6 +11,7 @@ enum EventSource {
   VISIT_JALISCO
   SUPERBOLETOS
   C3_STAGE
+  FORO_INDEPENDENCIA
 }
 
 enum AdmissionType {

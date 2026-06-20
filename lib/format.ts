@@ -55,6 +55,7 @@ export function formatSourceName(source: string) {
     VISIT_JALISCO: "Visit Jalisco",
     SUPERBOLETOS: "Superboletos",
     C3_STAGE: "C3 Stage",
+    FORO_INDEPENDENCIA: "Foro Independencia",
   };
 
   return labels[source] ?? source;

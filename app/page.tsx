@@ -79,6 +79,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <span className="text-white">Fuentes verificadas:</span>
             <span>Ticketmaster</span>
             <span>C3 Stage</span>
+            <span>Foro Independencia</span>
             <span>Visit Jalisco</span>
             <span>Superboletos</span>
           </div>
