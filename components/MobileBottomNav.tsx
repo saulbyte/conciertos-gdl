@@ -35,6 +35,7 @@ function getServerHashSnapshot() {
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const isDiscovery = pathname === "/descubrir";
   const hash = useSyncExternalStore(
     subscribeToHash,
     getHashSnapshot,
@@ -44,7 +45,11 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Navegacion principal movil"
-      className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-[60] grid grid-cols-3 border-t border-slate-200 bg-white/96 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur md:hidden"
+      className={`mobile-bottom-nav fixed inset-x-0 bottom-0 z-[60] grid grid-cols-3 border-t px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden ${
+        isDiscovery
+          ? "border-white/10 bg-slate-950/96 shadow-[0_-8px_24px_rgba(2,6,23,0.3)]"
+          : "border-slate-200 bg-white/96 shadow-[0_-8px_24px_rgba(15,23,42,0.08)]"
+      }`}
     >
       {items.map(({ href, label, icon: Icon, path }) => {
         const active = pathname === "/descubrir"
@@ -61,11 +66,23 @@ export function MobileBottomNav() {
             href={href}
             aria-current={active ? "page" : undefined}
             className={`flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-bold transition ${
-              active ? "text-violet-700" : "text-slate-500 hover:text-violet-700"
+              active
+                ? isDiscovery
+                  ? "text-violet-300"
+                  : "text-violet-700"
+                : isDiscovery
+                  ? "text-slate-400 hover:text-white"
+                  : "text-slate-500 hover:text-violet-700"
             }`}
           >
             <Icon
-              className={`h-5 w-5 ${active ? "fill-violet-100" : ""}`}
+              className={`h-5 w-5 ${
+                active
+                  ? isDiscovery
+                    ? "fill-violet-400/20"
+                    : "fill-violet-100"
+                  : ""
+              }`}
               aria-hidden="true"
             />
             {label}

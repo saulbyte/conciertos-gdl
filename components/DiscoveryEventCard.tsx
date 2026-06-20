@@ -26,7 +26,10 @@ export function DiscoveryEventCard({
   }).format(event.eventDate);
 
   return (
-    <article className="relative h-full min-h-0 snap-start snap-always overflow-hidden bg-slate-950 text-white">
+    <article
+      data-discovery-card
+      className="relative h-full min-h-0 snap-start snap-always overflow-hidden bg-slate-950 text-white"
+    >
       <div className="absolute inset-0">
         <EventArtwork
           src={event.imageUrl}
@@ -39,7 +42,7 @@ export function DiscoveryEventCard({
       <div className="absolute inset-0 bg-black/15" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.62)_0%,rgba(2,6,23,0.04)_32%,rgba(2,6,23,0.22)_55%,rgba(2,6,23,0.96)_100%)]" />
 
-      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 px-4 pt-28">
+      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 px-4 pt-4">
         <div className="flex min-w-0 flex-wrap gap-2">
           <span className="inline-flex min-h-8 items-center gap-1.5 rounded-md bg-violet-600 px-2.5 py-1 text-xs font-bold shadow-lg shadow-black/20">
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />

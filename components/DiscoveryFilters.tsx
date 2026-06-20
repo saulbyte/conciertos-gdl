@@ -36,7 +36,10 @@ export function DiscoveryFilters({
   }
 
   return (
-    <div className="absolute inset-x-0 top-0 z-20 border-b border-white/10 bg-slate-950/72 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] text-white backdrop-blur-xl">
+    <div
+      data-discovery-filters
+      className="relative z-20 shrink-0 border-b border-white/10 bg-slate-950 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] text-white"
+    >
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase text-violet-300">

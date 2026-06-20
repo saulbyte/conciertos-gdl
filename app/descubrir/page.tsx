@@ -34,7 +34,7 @@ export default async function DiscoverPage({
 
   return (
     <main data-discovery-page className="bg-slate-950">
-      <section className="relative h-[calc(100dvh-4rem-env(safe-area-inset-bottom))] overflow-hidden md:hidden">
+      <section className="relative flex h-[calc(100dvh-4rem-env(safe-area-inset-bottom))] min-h-0 flex-col overflow-hidden bg-slate-950 md:hidden">
         <DiscoveryFilters
           venues={venues}
           values={values}
@@ -42,7 +42,10 @@ export default async function DiscoverPage({
         />
 
         {events.length > 0 ? (
-          <div className="h-full snap-y snap-mandatory overflow-y-auto overscroll-contain scroll-smooth">
+          <div
+            data-discovery-feed
+            className="min-h-0 flex-1 snap-y snap-mandatory overflow-y-auto overscroll-contain scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {events.map((event, index) => (
               <DiscoveryEventCard
                 key={event.id}
@@ -54,7 +57,7 @@ export default async function DiscoverPage({
             <DiscoveryEndState />
           </div>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center px-8 pt-28 text-center text-white">
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-8 text-center text-white">
             <Sparkles className="h-10 w-10 text-violet-300" aria-hidden="true" />
             <h1 className="mt-5 text-2xl font-bold">No hay eventos con estos filtros</h1>
             <p className="mt-2 text-sm leading-6 text-slate-300">
