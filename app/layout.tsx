@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -16,12 +16,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  applicationName: "Conciertos GDL",
   title: {
     default: "Conciertos GDL",
     template: "%s | Conciertos GDL",
   },
   description:
     "Descubre conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Conciertos GDL",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7c3aed",
 };
 
 export default function RootLayout({
