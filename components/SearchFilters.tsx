@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { CalendarDays, MapPin, RotateCcw, Search } from "lucide-react";
+import {
+  CalendarDays,
+  MapPin,
+  RotateCcw,
+  Search,
+  TicketCheck,
+} from "lucide-react";
 
 type VenueOption = {
   id: string;
@@ -8,6 +14,7 @@ type VenueOption = {
 
 type SearchFiltersProps = {
   venues: VenueOption[];
+  freeEventCount: number;
   values: {
     q?: string;
     venue?: string;
@@ -18,7 +25,12 @@ type SearchFiltersProps = {
   };
 };
 
-export function SearchFilters({ venues, values }: SearchFiltersProps) {
+export function SearchFilters({
+  venues,
+  freeEventCount,
+  values,
+}: SearchFiltersProps) {
+  const freeActive = values.admission === "free";
   const hasFilters = Boolean(
     values.q ||
       values.venue ||
@@ -98,7 +110,26 @@ export function SearchFilters({ venues, values }: SearchFiltersProps) {
           />
         </label>
 
-        <div className="flex items-center justify-end px-3">
+        <div className="flex items-center justify-end gap-1.5 px-3">
+          <Link
+            href={buildFreeFilterHref(values, freeActive)}
+            aria-current={freeActive ? "page" : undefined}
+            className={`inline-flex h-9 items-center gap-1.5 rounded-md border px-3 text-xs font-bold transition ${
+              freeActive
+                ? "border-emerald-500 bg-emerald-500 text-white hover:bg-emerald-600"
+                : "border-emerald-200 bg-white text-emerald-700 hover:border-emerald-300 hover:bg-emerald-50"
+            }`}
+          >
+            <TicketCheck className="h-4 w-4" aria-hidden="true" />
+            Gratis
+            <span
+              className={`rounded px-1.5 py-0.5 text-[10px] ${
+                freeActive ? "bg-white/20" : "bg-emerald-100"
+              }`}
+            >
+              {freeEventCount}
+            </span>
+          </Link>
           {hasFilters ? (
             <Link
               href="/"
@@ -115,4 +146,21 @@ export function SearchFilters({ venues, values }: SearchFiltersProps) {
       </div>
     </form>
   );
+}
+
+function buildFreeFilterHref(
+  values: SearchFiltersProps["values"],
+  freeActive: boolean,
+) {
+  const params = new URLSearchParams();
+
+  if (values.q) params.set("q", values.q);
+  if (values.venue) params.set("venue", values.venue);
+  if (values.from) params.set("from", values.from);
+  if (values.to) params.set("to", values.to);
+  if (values.when === "weekend") params.set("when", "weekend");
+  if (!freeActive) params.set("admission", "free");
+
+  const query = params.toString();
+  return `${query ? `/?${query}` : "/"}#eventos`;
 }

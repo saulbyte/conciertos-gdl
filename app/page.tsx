@@ -62,7 +62,11 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
 
           <div id="filtros" className="mt-8 max-w-4xl scroll-mt-24">
-            <SearchFilters venues={venues} values={filters} />
+            <SearchFilters
+              venues={venues}
+              values={filters}
+              freeEventCount={freeEventCount}
+            />
             <MobileDiscoveryFilters
               venues={venues}
               values={filters}
