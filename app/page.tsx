@@ -5,7 +5,12 @@ import { EventCard } from "@/components/EventCard";
 import { EventListSkeleton } from "@/components/EventListSkeleton";
 import { MobileDiscoveryFilters } from "@/components/MobileDiscoveryFilters";
 import { SearchFilters } from "@/components/SearchFilters";
-import { getEvents, getFreeEventCount, getVenueOptions } from "@/lib/events";
+import {
+  getEvents,
+  getFreeEventCount,
+  getVenueOptions,
+  getWeekendEventCount,
+} from "@/lib/events";
 
 type SearchParams = {
   q?: string;
@@ -13,6 +18,7 @@ type SearchParams = {
   from?: string;
   to?: string;
   admission?: string;
+  when?: string;
 };
 
 type HomeProps = {
@@ -21,9 +27,10 @@ type HomeProps = {
 
 export default async function Home({ searchParams }: HomeProps) {
   const filters = await searchParams;
-  const [venues, freeEventCount] = await Promise.all([
+  const [venues, freeEventCount, weekendEventCount] = await Promise.all([
     getVenueOptions(),
     getFreeEventCount(),
+    getWeekendEventCount(),
   ]);
 
   return (
@@ -60,6 +67,7 @@ export default async function Home({ searchParams }: HomeProps) {
               venues={venues}
               values={filters}
               freeEventCount={freeEventCount}
+              weekendEventCount={weekendEventCount}
             />
           </div>
 
@@ -112,6 +120,7 @@ async function EventResults({ filters }: { filters: SearchParams }) {
     from: filters.from,
     to: filters.to,
     admission: filters.admission === "free" ? "free" : undefined,
+    when: filters.when === "weekend" ? "weekend" : undefined,
   });
 
   const hasFilters = Boolean(
@@ -119,7 +128,8 @@ async function EventResults({ filters }: { filters: SearchParams }) {
       filters.venue ||
       filters.from ||
       filters.to ||
-      filters.admission === "free",
+      filters.admission === "free" ||
+      filters.when === "weekend",
   );
 
   return (
@@ -130,8 +140,12 @@ async function EventResults({ filters }: { filters: SearchParams }) {
             Cartelera
           </p>
           <h2 className="mt-1 text-2xl font-bold text-slate-950 sm:text-3xl">
-            {filters.admission === "free"
-              ? "Conciertos gratis"
+            {filters.admission === "free" && filters.when === "weekend"
+              ? "Gratis este fin"
+              : filters.when === "weekend"
+                ? "Este fin de semana"
+                : filters.admission === "free"
+                  ? "Conciertos gratis"
               : hasFilters
                 ? "Resultados"
                 : "Proximos eventos"}

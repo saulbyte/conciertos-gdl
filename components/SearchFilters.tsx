@@ -14,12 +14,18 @@ type SearchFiltersProps = {
     from?: string;
     to?: string;
     admission?: string;
+    when?: string;
   };
 };
 
 export function SearchFilters({ venues, values }: SearchFiltersProps) {
   const hasFilters = Boolean(
-    values.q || values.venue || values.from || values.to || values.admission,
+    values.q ||
+      values.venue ||
+      values.from ||
+      values.to ||
+      values.admission ||
+      values.when,
   );
 
   return (

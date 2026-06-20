@@ -7,6 +7,7 @@ import {
   Search,
   SlidersHorizontal,
   TicketCheck,
+  CalendarClock,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -23,21 +24,25 @@ type FilterValues = {
   from?: string;
   to?: string;
   admission?: string;
+  when?: string;
 };
 
 type MobileDiscoveryFiltersProps = {
   venues: VenueOption[];
   values: FilterValues;
   freeEventCount: number;
+  weekendEventCount: number;
 };
 
 export function MobileDiscoveryFilters({
   venues,
   values,
   freeEventCount,
+  weekendEventCount,
 }: MobileDiscoveryFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
   const freeActive = values.admission === "free";
+  const weekendActive = values.when === "weekend";
   const advancedFilterCount = [values.venue, values.from, values.to].filter(
     Boolean,
   ).length;
@@ -75,6 +80,9 @@ export function MobileDiscoveryFilters({
         {freeActive ? (
           <input type="hidden" name="admission" value="free" />
         ) : null}
+        {weekendActive ? (
+          <input type="hidden" name="when" value="weekend" />
+        ) : null}
 
         <div className="flex min-h-14 items-stretch">
           <label className="flex min-w-0 flex-1 items-center gap-3 px-4">
@@ -101,20 +109,41 @@ export function MobileDiscoveryFilters({
         </div>
       </form>
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div className="mt-3 grid grid-cols-3 gap-2">
         <Link
-          href={buildAdmissionHref(values, freeActive ? undefined : "free")}
+          href={buildFilterHref(values, {
+            when: weekendActive ? undefined : "weekend",
+            clearDates: !weekendActive,
+          })}
+          aria-current={weekendActive ? "page" : undefined}
+          className={`flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 text-xs font-bold transition ${
+            weekendActive
+              ? "border-violet-300 bg-violet-600 text-white shadow-lg shadow-violet-950/20"
+              : "border-white/25 bg-white/10 text-white backdrop-blur hover:bg-white/20"
+          }`}
+        >
+          <CalendarClock className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>Este fin</span>
+          <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px]">
+            {weekendEventCount}
+          </span>
+        </Link>
+
+        <Link
+          href={buildFilterHref(values, {
+            admission: freeActive ? undefined : "free",
+          })}
           aria-current={freeActive ? "page" : undefined}
-          className={`flex min-h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-bold transition ${
+          className={`flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 text-xs font-bold transition ${
             freeActive
               ? "border-emerald-400 bg-emerald-500 text-white shadow-lg shadow-emerald-950/20"
               : "border-white/25 bg-white/10 text-white backdrop-blur hover:bg-white/20"
           }`}
         >
-          <TicketCheck className="h-4 w-4" aria-hidden="true" />
+          <TicketCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
           Gratis
           <span
-            className={`rounded px-1.5 py-0.5 text-[11px] ${
+            className={`rounded px-1.5 py-0.5 text-[10px] ${
               freeActive ? "bg-white/20" : "bg-white/15"
             }`}
           >
@@ -124,12 +153,12 @@ export function MobileDiscoveryFilters({
 
         <button
           type="button"
-          className="flex min-h-11 items-center justify-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20"
+          className="flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-md border border-white/25 bg-white/10 px-2 text-xs font-bold text-white backdrop-blur transition hover:bg-white/20"
           aria-haspopup="dialog"
           onClick={() => setIsOpen(true)}
         >
-          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
-          Mas filtros
+          <SlidersHorizontal className="h-4 w-4 shrink-0" aria-hidden="true" />
+          Filtros
           {advancedFilterCount > 0 ? (
             <span className="flex h-5 min-w-5 items-center justify-center rounded bg-violet-500 px-1 text-[11px]">
               {advancedFilterCount}
@@ -258,14 +287,33 @@ export function MobileDiscoveryFilters({
   );
 }
 
-function buildAdmissionHref(values: FilterValues, admission?: "free") {
+function buildFilterHref(
+  values: FilterValues,
+  changes: {
+    admission?: "free";
+    when?: "weekend";
+    clearDates?: boolean;
+  },
+) {
   const params = new URLSearchParams();
 
   if (values.q) params.set("q", values.q);
   if (values.venue) params.set("venue", values.venue);
-  if (values.from) params.set("from", values.from);
-  if (values.to) params.set("to", values.to);
+  if (!changes.clearDates && values.from) params.set("from", values.from);
+  if (!changes.clearDates && values.to) params.set("to", values.to);
+  const admission = Object.hasOwn(changes, "admission")
+    ? changes.admission
+    : values.admission === "free"
+      ? "free"
+      : undefined;
+  const when = Object.hasOwn(changes, "when")
+    ? changes.when
+    : values.when === "weekend"
+      ? "weekend"
+      : undefined;
+
   if (admission) params.set("admission", admission);
+  if (when) params.set("when", when);
 
   const query = params.toString();
   return `${query ? `/?${query}` : "/"}#eventos`;

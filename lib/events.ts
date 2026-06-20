@@ -7,6 +7,7 @@ export type EventFilters = {
   from?: string;
   to?: string;
   admission?: "free";
+  when?: "weekend";
 };
 
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>[number];
@@ -98,6 +99,19 @@ export async function getFreeEventCount() {
   });
 }
 
+export async function getWeekendEventCount() {
+  const weekend = getWeekendRange();
+
+  return prisma.event.count({
+    where: {
+      eventDate: {
+        gte: weekend.from,
+        lte: weekend.to,
+      },
+    },
+  });
+}
+
 function buildEventWhere(filters: EventFilters): Prisma.EventWhereInput {
   const where: Prisma.EventWhereInput = {
     eventDate: {
@@ -136,6 +150,14 @@ function buildEventWhere(filters: EventFilters): Prisma.EventWhereInput {
     where.admissionType = AdmissionType.FREE;
   }
 
+  if (filters.when === "weekend") {
+    const weekend = getWeekendRange();
+    where.eventDate = {
+      gte: weekend.from,
+      lte: weekend.to,
+    };
+  }
+
   if (filters.from || filters.to) {
     where.eventDate = {
       gte: filters.from ? parseDate(filters.from) : startOfToday(),
@@ -147,13 +169,11 @@ function buildEventWhere(filters: EventFilters): Prisma.EventWhereInput {
 }
 
 function startOfToday() {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
+  return parseDate(getMexicoCityDateKey(new Date())) as Date;
 }
 
 function parseDate(value: string) {
-  const date = new Date(`${value}T00:00:00`);
+  const date = new Date(`${value}T00:00:00-06:00`);
 
   if (Number.isNaN(date.getTime())) {
     return undefined;
@@ -163,11 +183,49 @@ function parseDate(value: string) {
 }
 
 function endOfDate(value: string) {
-  const date = new Date(`${value}T23:59:59.999`);
+  const date = new Date(`${value}T23:59:59.999-06:00`);
 
   if (Number.isNaN(date.getTime())) {
     return undefined;
   }
 
   return date;
+}
+
+function getWeekendRange(now = new Date()) {
+  const localDate = getMexicoCityDateKey(now);
+  const localMidnightUtc = new Date(`${localDate}T00:00:00Z`);
+  const day = localMidnightUtc.getUTCDay();
+  const daysToFriday =
+    day === 5 ? 0 : day === 6 ? -1 : day === 0 ? -2 : 5 - day;
+
+  localMidnightUtc.setUTCDate(localMidnightUtc.getUTCDate() + daysToFriday);
+  const friday = formatUtcDateKey(localMidnightUtc);
+  localMidnightUtc.setUTCDate(localMidnightUtc.getUTCDate() + 2);
+  const sunday = formatUtcDateKey(localMidnightUtc);
+
+  return {
+    from: new Date(`${friday}T00:00:00-06:00`),
+    to: new Date(`${sunday}T23:59:59.999-06:00`),
+  };
+}
+
+function getMexicoCityDateKey(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function formatUtcDateKey(date: Date) {
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, "0"),
+    String(date.getUTCDate()).padStart(2, "0"),
+  ].join("-");
 }
