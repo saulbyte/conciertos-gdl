@@ -12,6 +12,9 @@ export type EventFilters = {
 
 export type EventListItem = Awaited<ReturnType<typeof getEvents>>[number];
 export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventById>>>;
+export type DiscoveryEvent = EventListItem & {
+  discoveryLabel: "Popular" | "Este fin" | "Recien anunciado" | "Para descubrir";
+};
 
 export async function getEvents(filters: EventFilters = {}) {
   const where = buildEventWhere(filters);
@@ -76,6 +79,60 @@ export async function getEventById(id: string) {
     ...eventDetail,
     likeCount: _count.likes,
   };
+}
+
+export async function getDiscoveryEvents(
+  filters: Pick<EventFilters, "venue" | "admission" | "when"> = {},
+  limit = 20,
+): Promise<DiscoveryEvent[]> {
+  const events = (await getEvents(filters)).filter(isDiscoveryCandidate);
+  const weekend = getWeekendRange();
+  const newThreshold = new Date();
+  const dailySeed = getMexicoCityDateKey(new Date());
+  newThreshold.setDate(newThreshold.getDate() - 10);
+
+  const popular = [...events]
+    .filter((event) => event.likeCount > 0)
+    .sort(
+      (left, right) =>
+        right.likeCount - left.likeCount ||
+        left.eventDate.getTime() - right.eventDate.getTime(),
+    );
+  const upcoming = [...events].sort(
+    (left, right) => left.eventDate.getTime() - right.eventDate.getTime(),
+  );
+  const recent = [...events]
+    .filter((event) => event.createdAt >= newThreshold)
+    .sort(
+      (left, right) =>
+        left.eventDate.getTime() - right.eventDate.getTime() ||
+        right.createdAt.getTime() - left.createdAt.getTime(),
+    );
+  const surprise = [...events].sort(
+    (left, right) =>
+      dailyOrder(left.id, dailySeed) - dailyOrder(right.id, dailySeed),
+  );
+  const selected: EventListItem[] = [];
+  const selectedIds = new Set<string>();
+
+  addUniqueEvents(selected, selectedIds, popular, Math.ceil(limit * 0.4));
+  addUniqueEvents(selected, selectedIds, upcoming, Math.ceil(limit * 0.3));
+  addUniqueEvents(selected, selectedIds, recent, Math.ceil(limit * 0.2));
+  addUniqueEvents(selected, selectedIds, surprise, limit - selected.length);
+  addUniqueEvents(selected, selectedIds, upcoming, limit - selected.length);
+
+  const popularIds = new Set(popular.slice(0, 5).map((event) => event.id));
+
+  return selected.slice(0, limit).map((event) => ({
+    ...event,
+    discoveryLabel: popularIds.has(event.id)
+      ? "Popular"
+      : event.eventDate >= weekend.from && event.eventDate <= weekend.to
+        ? "Este fin"
+        : event.createdAt >= newThreshold
+          ? "Recien anunciado"
+          : "Para descubrir",
+  }));
 }
 
 export async function getVenueOptions() {
@@ -228,4 +285,42 @@ function formatUtcDateKey(date: Date) {
     String(date.getUTCMonth() + 1).padStart(2, "0"),
     String(date.getUTCDate()).padStart(2, "0"),
   ].join("-");
+}
+
+function addUniqueEvents(
+  target: EventListItem[],
+  ids: Set<string>,
+  source: EventListItem[],
+  count: number,
+) {
+  let added = 0;
+
+  for (const event of source) {
+    if (added >= count) break;
+    if (ids.has(event.id)) continue;
+
+    target.push(event);
+    ids.add(event.id);
+    added += 1;
+  }
+}
+
+function dailyOrder(value: string, seed: string) {
+  let hash = 2166136261;
+
+  for (const character of `${seed}:${value}`) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function isDiscoveryCandidate(event: EventListItem) {
+  const title = event.title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  return !title.includes("estacionamiento");
 }

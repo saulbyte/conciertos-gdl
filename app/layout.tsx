@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { BackToTopButton } from "@/components/BackToTopButton";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,6 +54,7 @@ export default function RootLayout({
         <div className="flex-1">{children}</div>
         <SiteFooter />
         <BackToTopButton />
+        <MobileBottomNav />
         <Analytics />
       </body>
     </html>

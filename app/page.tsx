@@ -34,7 +34,7 @@ export default async function Home({ searchParams }: HomeProps) {
   ]);
 
   return (
-    <main>
+    <main id="inicio">
       <section className="relative isolate overflow-hidden bg-slate-950 text-white">
         <Image
           src="/images/concert-hero.png"

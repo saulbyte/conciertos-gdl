@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 type EventLikeButtonProps = {
   eventId: string;
   initialCount: number;
-  variant?: "card" | "detail";
+  variant?: "card" | "detail" | "discovery";
 };
 
 export function EventLikeButton({
@@ -47,6 +47,7 @@ export function EventLikeButton({
   }
 
   const isDetail = variant === "detail";
+  const isDiscovery = variant === "discovery";
 
   return (
     <button
@@ -57,13 +58,15 @@ export function EventLikeButton({
       aria-label={reacted ? "Interes registrado" : "Me interesa este evento"}
       title={hasError ? "No se pudo registrar. Intenta de nuevo." : "Me interesa"}
       className={
-        isDetail
+        isDiscovery
+          ? "flex h-12 min-w-12 flex-col items-center justify-center gap-0.5 rounded-full border border-white/25 bg-black/35 px-2 text-[11px] font-bold text-white shadow-lg backdrop-blur transition hover:bg-black/55 disabled:cursor-default disabled:text-rose-300"
+          : isDetail
           ? "inline-flex h-12 items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 transition hover:border-rose-300 hover:text-rose-600 disabled:cursor-default disabled:border-rose-200 disabled:text-rose-600"
           : "inline-flex h-9 min-w-14 items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-600 transition hover:border-rose-300 hover:text-rose-600 disabled:cursor-default disabled:border-rose-200 disabled:text-rose-600"
       }
     >
       <Heart
-        className={isDetail ? "h-5 w-5" : "h-4 w-4"}
+        className={isDetail || isDiscovery ? "h-5 w-5" : "h-4 w-4"}
         fill={reacted ? "currentColor" : "none"}
         aria-hidden="true"
       />

@@ -18,6 +18,23 @@ body {
   min-width: 320px;
 }
 
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+
+  body:has([data-discovery-page]) {
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+
+  body:has([data-discovery-page]) [data-site-header],
+  body:has([data-discovery-page]) [data-site-footer],
+  body:has([data-discovery-page]) [data-back-to-top] {
+    display: none;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }

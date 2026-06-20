@@ -3,7 +3,7 @@ import { AtSign, Music2 } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer id="acerca" className="border-t border-slate-200 bg-white">
+    <footer data-site-footer id="acerca" className="border-t border-slate-200 bg-white">
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr] lg:px-8">
         <div className="max-w-sm">
           <Link href="/" className="inline-flex items-center gap-2.5">

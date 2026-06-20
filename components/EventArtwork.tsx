@@ -8,6 +8,7 @@ type EventArtworkProps = {
   alt?: string;
   className?: string;
   iconClassName?: string;
+  loading?: "eager" | "lazy";
 };
 
 export function EventArtwork({
@@ -15,6 +16,7 @@ export function EventArtwork({
   alt = "",
   className = "h-full w-full object-cover",
   iconClassName = "h-12 w-12",
+  loading = "lazy",
 }: EventArtworkProps) {
   const [hasError, setHasError] = useState(false);
 
@@ -26,7 +28,16 @@ export function EventArtwork({
     );
   }
 
-  // Hosts vary by source, so a native image is safer than a broad allowlist.
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={alt} className={className} onError={() => setHasError(true)} />;
+  return (
+    // Hosts vary by source, so a native image is safer than a broad allowlist.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading={loading}
+      decoding="async"
+      onError={() => setHasError(true)}
+    />
+  );
 }
