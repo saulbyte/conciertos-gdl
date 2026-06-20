@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Music2 } from "lucide-react";
+import { MobileMenu } from "@/components/MobileMenu";
 
 export function SiteHeader() {
   return (
@@ -16,24 +17,20 @@ export function SiteHeader() {
 
         <nav
           aria-label="Navegacion principal"
-          className="flex items-center gap-4 text-sm font-semibold text-slate-600 sm:gap-7"
+          className="hidden items-center gap-7 text-sm font-semibold text-slate-600 md:flex"
         >
           <Link className="transition hover:text-violet-700" href="/#eventos">
             Eventos
           </Link>
-          <Link
-            className="hidden transition hover:text-violet-700 sm:inline"
-            href="/#filtros"
-          >
+          <Link className="transition hover:text-violet-700" href="/#filtros">
             Recintos
           </Link>
-          <Link
-            className="hidden transition hover:text-violet-700 md:inline"
-            href="/#acerca"
-          >
+          <Link className="transition hover:text-violet-700" href="/#acerca">
             Acerca de
           </Link>
         </nav>
+
+        <MobileMenu />
       </div>
     </header>
   );
