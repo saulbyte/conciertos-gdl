@@ -25,6 +25,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
   const nextEvent = artist.events[0] ?? null;
   const date = nextEvent ? formatDateBadge(nextEvent.eventDate) : null;
+  const avatarUrl = artist.imageUrl ?? nextEvent?.imageUrl ?? null;
 
   return (
     <main className="bg-slate-50">
@@ -50,9 +51,9 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
             <div className="min-w-0">
               <div className="flex min-w-0 items-center gap-4">
                 <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-violet-600 shadow-lg shadow-violet-950/30">
-                  {artist.imageUrl ? (
+                  {avatarUrl ? (
                     <EventArtwork
-                      src={artist.imageUrl}
+                      src={avatarUrl}
                       alt={artist.name}
                       className="h-full w-full object-cover"
                       iconClassName="h-8 w-8"

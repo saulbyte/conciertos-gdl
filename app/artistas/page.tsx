@@ -120,6 +120,8 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
 }
 
 function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>[number] }) {
+  const avatarUrl = artist.imageUrl ?? artist.nextEvent?.imageUrl ?? null;
+
   return (
     <Link
       href={`/artistas/${artist.id}`}
@@ -137,9 +139,9 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
 
         <div className="relative flex items-start justify-between gap-3">
           <span className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-violet-600 shadow-lg shadow-slate-950/25">
-            {artist.imageUrl ? (
+            {avatarUrl ? (
               <EventArtwork
-                src={artist.imageUrl}
+                src={avatarUrl}
                 alt={artist.name}
                 className="h-full w-full object-cover"
                 iconClassName="h-8 w-8"
