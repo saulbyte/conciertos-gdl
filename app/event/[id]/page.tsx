@@ -27,7 +27,7 @@ export default async function EventPage({ params }: EventPageProps) {
     notFound();
   }
 
-  const artists = event.artists.map(({ artist }) => artist.name);
+  const artists = event.artists.map(({ artist }) => artist);
 
   return (
     <main className="bg-slate-50">
@@ -88,7 +88,19 @@ export default async function EventPage({ params }: EventPageProps) {
                     className="mt-0.5 h-5 w-5 shrink-0 text-violet-600"
                     aria-hidden="true"
                   />
-                  <span>{artists.join(", ")}</span>
+                  <span className="flex flex-wrap gap-x-2 gap-y-1">
+                    {artists.map((artist, index) => (
+                      <span key={artist.id}>
+                        <Link
+                          href={`/artistas/${artist.id}`}
+                          className="font-bold text-violet-700 hover:text-violet-900"
+                        >
+                          {artist.name}
+                        </Link>
+                        {index < artists.length - 1 ? "," : ""}
+                      </span>
+                    ))}
+                  </span>
                 </p>
               ) : null}
             </div>

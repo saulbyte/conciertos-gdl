@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarDays, House, Sparkles } from "lucide-react";
+import { CalendarDays, House, Music2, Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 
 const items = [
   { href: "/#inicio", label: "Inicio", icon: House, path: "/" },
   { href: "/descubrir", label: "Descubrir", icon: Sparkles, path: "/descubrir" },
+  { href: "/artistas", label: "Artistas", icon: Music2, path: "/artistas" },
   { href: "/#eventos", label: "Eventos", icon: CalendarDays, path: "/eventos" },
 ];
 
@@ -45,7 +46,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Navegacion principal movil"
-      className={`mobile-bottom-nav fixed inset-x-0 bottom-0 z-[60] grid grid-cols-3 border-t px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden ${
+      className={`mobile-bottom-nav fixed inset-x-0 bottom-0 z-[60] grid grid-cols-4 border-t px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden ${
         isDiscovery
           ? "border-white/10 bg-slate-950/96 shadow-[0_-8px_24px_rgba(2,6,23,0.3)]"
           : "border-slate-200 bg-white/96 shadow-[0_-8px_24px_rgba(15,23,42,0.08)]"
@@ -54,7 +55,9 @@ export function MobileBottomNav() {
       {items.map(({ href, label, icon: Icon, path }) => {
         const active = pathname === "/descubrir"
           ? path === "/descubrir"
-          : pathname === "/" && path === "/eventos"
+          : pathname.startsWith("/artistas") && path === "/artistas"
+            ? true
+            : pathname === "/" && path === "/eventos"
             ? hash === "#eventos"
             : pathname === "/" && path === "/"
               ? hash !== "#eventos"

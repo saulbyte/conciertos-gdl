@@ -26,6 +26,9 @@ export function SiteFooter() {
             <Link className="hover:text-violet-700" href="/#eventos">
               Eventos
             </Link>
+            <Link className="hover:text-violet-700" href="/artistas">
+              Artistas
+            </Link>
             <Link className="hover:text-violet-700" href="/#filtros">
               Recintos y fechas
             </Link>

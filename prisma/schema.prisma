@@ -32,10 +32,11 @@ model Venue {
 }
 
 model Artist {
-  id        String        @id @default(cuid())
-  name      String        @unique
-  createdAt DateTime      @default(now())
-  events    EventArtist[]
+  id            String               @id @default(cuid())
+  name          String               @unique
+  createdAt     DateTime             @default(now())
+  events        EventArtist[]
+  subscriptions ArtistSubscription[]
 }
 
 model Event {
@@ -82,4 +83,19 @@ model EventArtist {
 
   @@id([eventId, artistId])
   @@index([artistId])
+}
+
+model ArtistSubscription {
+  id        String   @id @default(cuid())
+  artistId  String
+  email     String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([artistId, email])
+  @@index([artistId])
+  @@index([email])
+  @@index([active])
 }

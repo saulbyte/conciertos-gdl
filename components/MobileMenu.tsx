@@ -8,6 +8,7 @@ import {
   Info,
   MapPin,
   Menu,
+  Music2,
   Share,
   X,
 } from "lucide-react";
@@ -20,6 +21,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 const navigation = [
   { href: "/#eventos", label: "Eventos", icon: CalendarDays },
+  { href: "/artistas", label: "Artistas", icon: Music2 },
   { href: "/#filtros", label: "Recintos", icon: MapPin },
   { href: "/#acerca", label: "Acerca de", icon: Info },
 ];

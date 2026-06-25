@@ -5,6 +5,7 @@ import type {
   ExternalEvent,
 } from "@/lib/event-sources/types";
 import { classifyAdmission } from "@/lib/event-sources/admission";
+import { notifyArtistSubscribersOfNewEvent } from "@/lib/notifications";
 
 export async function syncEventSource(
   prisma: PrismaClient,
@@ -48,11 +49,12 @@ export async function syncEventSource(
       }
     }
 
-    await persistEvent(prisma, adapter.source, event);
-
     if (existing) {
+      await persistEvent(prisma, adapter.source, event);
       updated += 1;
     } else {
+      const createdEvent = await persistEvent(prisma, adapter.source, event);
+      await notifyArtistSubscribersOfNewEvent(prisma, createdEvent.id);
       created += 1;
     }
   }
@@ -92,7 +94,7 @@ async function persistEvent(
     }),
   );
 
-  await prisma.event.upsert({
+  return prisma.event.upsert({
     where: {
       source_externalId: {
         source,
