@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { BackToTopButton } from "@/components/BackToTopButton";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -50,6 +51,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8074659663946335"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />
