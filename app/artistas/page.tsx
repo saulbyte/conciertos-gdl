@@ -120,7 +120,8 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
 }
 
 function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>[number] }) {
-  const avatarUrl = artist.imageUrl ?? artist.nextEvent?.imageUrl ?? null;
+  const avatarUrl =
+    artist.imageUrl ?? artist.nextEvent?.imageUrl ?? artist.fallbackImageUrl ?? null;
 
   return (
     <Link
@@ -130,7 +131,7 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
       <div className="relative overflow-hidden bg-[linear-gradient(135deg,#0f172a,#312e81)] px-4 pb-5 pt-4 text-white">
         <div className="absolute inset-0 opacity-25">
           <EventArtwork
-            src={artist.imageUrl ?? artist.nextEvent?.imageUrl ?? null}
+            src={avatarUrl}
             alt=""
             className="h-full w-full object-cover blur-sm scale-110"
           />

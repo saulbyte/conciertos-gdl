@@ -5,6 +5,7 @@ export type ArtistDetail = NonNullable<Awaited<ReturnType<typeof getArtistById>>
 
 export async function getArtists(query?: string) {
   const normalizedQuery = query?.trim();
+  const today = startOfToday();
   const artists = await prisma.artist.findMany({
     where: {
       ...(normalizedQuery
@@ -26,19 +27,11 @@ export async function getArtists(query?: string) {
         },
       },
       events: {
-        where: {
-          event: {
-            eventDate: {
-              gte: startOfToday(),
-            },
-          },
-        },
         orderBy: {
           event: {
             eventDate: "asc",
           },
         },
-        take: 1,
         include: {
           event: {
             include: {
@@ -55,12 +48,17 @@ export async function getArtists(query?: string) {
 
   return artists
     .map((artist) => {
-      const nextEvent = artist.events[0]?.event ?? null;
+      const nextEvent =
+        artist.events.find(({ event }) => event.eventDate >= today)?.event ?? null;
+      const fallbackImageUrl =
+        [...artist.events].reverse().find(({ event }) => event.imageUrl)?.event
+          .imageUrl ?? null;
 
       return {
         id: artist.id,
         name: artist.name,
         imageUrl: artist.imageUrl,
+        fallbackImageUrl,
         createdAt: artist.createdAt,
         eventCount: artist._count.events,
         subscriberCount: artist._count.subscriptions,
@@ -85,47 +83,67 @@ export async function getArtists(query?: string) {
 }
 
 export async function getArtistById(id: string) {
-  const artist = await prisma.artist.findUnique({
-    where: { id },
-    include: {
-      _count: {
-        select: {
-          subscriptions: {
-            where: { active: true },
-          },
-        },
-      },
-      events: {
-        where: {
-          event: {
-            eventDate: {
-              gte: startOfToday(),
+  const [artist, latestEventWithImage] = await Promise.all([
+    prisma.artist.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            subscriptions: {
+              where: { active: true },
             },
           },
         },
-        orderBy: {
-          event: {
-            eventDate: "asc",
+        events: {
+          where: {
+            event: {
+              eventDate: {
+                gte: startOfToday(),
+              },
+            },
           },
-        },
-        include: {
-          event: {
-            include: {
-              venue: true,
-              artists: {
-                include: {
-                  artist: true,
+          orderBy: {
+            event: {
+              eventDate: "asc",
+            },
+          },
+          include: {
+            event: {
+              include: {
+                venue: true,
+                artists: {
+                  include: {
+                    artist: true,
+                  },
+                },
+                _count: {
+                  select: { likes: true },
                 },
               },
-              _count: {
-                select: { likes: true },
-              },
             },
           },
         },
       },
-    },
-  });
+    }),
+    prisma.eventArtist.findFirst({
+      where: {
+        artistId: id,
+        event: {
+          imageUrl: {
+            not: null,
+          },
+        },
+      },
+      orderBy: {
+        event: {
+          eventDate: "desc",
+        },
+      },
+      include: {
+        event: true,
+      },
+    }),
+  ]);
 
   if (!artist) {
     return null;
@@ -135,6 +153,7 @@ export async function getArtistById(id: string) {
     id: artist.id,
     name: artist.name,
     imageUrl: artist.imageUrl,
+    fallbackImageUrl: latestEventWithImage?.event.imageUrl ?? null,
     createdAt: artist.createdAt,
     subscriberCount: artist._count.subscriptions,
     events: artist.events.map(({ event }) => {
