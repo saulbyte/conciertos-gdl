@@ -4,8 +4,10 @@ import {
   CalendarDays,
   ChevronRight,
   Music2,
+  Search,
   Sparkles,
   UsersRound,
+  X,
 } from "lucide-react";
 import { EventArtwork } from "@/components/EventArtwork";
 import { getArtists } from "@/lib/artists";
@@ -13,50 +15,68 @@ import { formatEventDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-export default async function ArtistsPage() {
-  const artists = await getArtists();
-  const highlighted = artists.slice(0, 3);
+type ArtistsPageProps = {
+  searchParams: Promise<{
+    q?: string;
+  }>;
+};
+
+export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
+  const filters = await searchParams;
+  const query = typeof filters.q === "string" ? filters.q.trim() : "";
+  const artists = await getArtists(query);
+  const hasSearch = query.length > 0;
 
   return (
     <main className="bg-slate-50">
-      <section className="border-b border-violet-100 bg-white">
-        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-          <div className="max-w-3xl">
-            <p className="text-sm font-bold uppercase text-violet-700">
-              Artistas
-            </p>
-            <h1 className="mt-2 text-3xl font-bold leading-tight text-slate-950 sm:text-5xl">
-              Sigue a quien no te quieres perder
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-7 sm:px-6 sm:py-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end lg:px-8">
+          <div className="min-w-0">
+            <p className="text-sm font-bold uppercase text-violet-700">Artistas</p>
+            <h1 className="mt-2 max-w-3xl text-3xl font-bold leading-tight text-slate-950 sm:text-5xl">
+              Busca artistas y recibe alertas de conciertos
             </h1>
-            <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
-              Explora artistas con fechas proximas en Guadalajara y activa avisos
-              por correo cuando aparezcan conciertos nuevos.
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+              Encuentra perfiles de artistas con fechas en Guadalajara y deja tu
+              correo para que te avisemos cuando aparezcan nuevos eventos.
             </p>
           </div>
 
-          {highlighted.length > 0 ? (
-            <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              {highlighted.map((artist, index) => (
+          <form action="/artistas" className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm">
+            <label className="relative block">
+              <span className="sr-only">Buscar artista</span>
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                name="q"
+                defaultValue={query}
+                placeholder="Buscar artista..."
+                className="h-12 w-full rounded-md border border-slate-300 bg-white pl-10 pr-3 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+              />
+            </label>
+            <div className="mt-3 flex items-center gap-2">
+              <button
+                type="submit"
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-md bg-violet-600 px-4 text-sm font-bold text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700"
+              >
+                <Search className="h-4 w-4" aria-hidden="true" />
+                Buscar
+              </button>
+              {hasSearch ? (
                 <Link
-                  key={artist.id}
-                  href={`/artistas/${artist.id}`}
-                  className="group flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 transition hover:border-violet-200 hover:bg-violet-50"
+                  href="/artistas"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-600 transition hover:border-violet-300 hover:text-violet-700"
+                  aria-label="Limpiar busqueda"
+                  title="Limpiar busqueda"
                 >
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-slate-950 text-sm font-bold text-white">
-                    {index + 1}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-bold text-slate-950 group-hover:text-violet-700">
-                      {artist.name}
-                    </span>
-                    <span className="mt-0.5 block text-xs font-medium text-slate-500">
-                      {artist.nextEvent ? "Proxima fecha" : "En observacion"}
-                    </span>
-                  </span>
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </Link>
-              ))}
+              ) : null}
             </div>
-          ) : null}
+          </form>
         </div>
       </section>
 
@@ -67,7 +87,9 @@ export default async function ArtistsPage() {
               Catalogo
             </p>
             <h2 className="mt-1 text-2xl font-bold text-slate-950">
-              {artists.length} artistas con eventos
+              {hasSearch
+                ? `${artists.length} resultados para "${query}"`
+                : `${artists.length} artistas con eventos`}
             </h2>
           </div>
         </div>
@@ -81,10 +103,14 @@ export default async function ArtistsPage() {
         ) : (
           <div className="border-y border-dashed border-slate-300 bg-white px-5 py-16 text-center">
             <p className="text-lg font-bold text-slate-950">
-              Aun no hay artistas con proximas fechas.
+              {hasSearch
+                ? "No encontramos artistas con esa busqueda."
+                : "Aun no hay artistas con proximas fechas."}
             </p>
             <p className="mt-2 text-sm text-slate-600">
-              Corre la sincronizacion para alimentar el catalogo.
+              {hasSearch
+                ? "Prueba con otro nombre o revisa el catalogo completo."
+                : "Corre la sincronizacion para alimentar el catalogo."}
             </p>
           </div>
         )}

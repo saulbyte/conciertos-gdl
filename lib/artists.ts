@@ -3,9 +3,18 @@ import { prisma } from "@/lib/prisma";
 export type ArtistListItem = Awaited<ReturnType<typeof getArtists>>[number];
 export type ArtistDetail = NonNullable<Awaited<ReturnType<typeof getArtistById>>>;
 
-export async function getArtists() {
+export async function getArtists(query?: string) {
+  const normalizedQuery = query?.trim();
   const artists = await prisma.artist.findMany({
     where: {
+      ...(normalizedQuery
+        ? {
+            name: {
+              contains: normalizedQuery,
+              mode: "insensitive",
+            },
+          }
+        : {}),
       events: {
         some: {
           event: {
