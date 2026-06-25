@@ -48,8 +48,10 @@ export async function getArtists(query?: string) {
 
   return artists
     .map((artist) => {
-      const nextEvent =
-        artist.events.find(({ event }) => event.eventDate >= today)?.event ?? null;
+      const upcomingEvents = artist.events.filter(
+        ({ event }) => event.eventDate >= today,
+      );
+      const nextEvent = upcomingEvents[0]?.event ?? null;
       const fallbackImageUrl =
         [...artist.events].reverse().find(({ event }) => event.imageUrl)?.event
           .imageUrl ?? null;
@@ -60,7 +62,7 @@ export async function getArtists(query?: string) {
         imageUrl: artist.imageUrl,
         fallbackImageUrl,
         createdAt: artist.createdAt,
-        eventCount: artist._count.events,
+        eventCount: upcomingEvents.length,
         subscriberCount: artist._count.subscriptions,
         nextEvent: nextEvent
           ? {

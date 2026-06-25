@@ -167,7 +167,7 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-white">
               <UsersRound className="h-3.5 w-3.5" aria-hidden="true" />
-              {artist.eventCount} eventos
+              {artist.eventCount} proximos
             </span>
           </div>
         </div>
