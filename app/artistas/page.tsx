@@ -89,7 +89,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
             <h2 className="mt-1 text-2xl font-bold text-slate-950">
               {hasSearch
                 ? `${artists.length} resultados para "${query}"`
-                : `${artists.length} artistas con eventos`}
+                : `${artists.length} artistas en catalogo`}
             </h2>
           </div>
         </div>
@@ -105,7 +105,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
             <p className="text-lg font-bold text-slate-950">
               {hasSearch
                 ? "No encontramos artistas con esa busqueda."
-                : "Aun no hay artistas con proximas fechas."}
+                : "Aun no hay artistas en el catalogo."}
             </p>
             <p className="mt-2 text-sm text-slate-600">
               {hasSearch

@@ -15,15 +15,6 @@ export async function getArtists(query?: string) {
             },
           }
         : {}),
-      events: {
-        some: {
-          event: {
-            eventDate: {
-              gte: startOfToday(),
-            },
-          },
-        },
-      },
     },
     include: {
       _count: {

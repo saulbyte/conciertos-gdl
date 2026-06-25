@@ -80,6 +80,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <span>Ticketmaster</span>
             <span>C3 Stage</span>
             <span>Foro Independencia</span>
+            <span>FunTicket</span>
             <span>Visit Jalisco</span>
             <span>Superboletos</span>
           </div>
