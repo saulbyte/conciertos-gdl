@@ -34,6 +34,7 @@ model Venue {
 model Artist {
   id            String               @id @default(cuid())
   name          String               @unique
+  imageUrl      String?
   createdAt     DateTime             @default(now())
   events        EventArtist[]
   subscriptions ArtistSubscription[]

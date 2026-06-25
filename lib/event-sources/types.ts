@@ -11,8 +11,15 @@ export type ExternalEvent = {
     name: string;
     city: string;
   };
-  artists: string[];
+  artists: ExternalArtist[];
 };
+
+export type ExternalArtist =
+  | string
+  | {
+      name: string;
+      imageUrl?: string | null;
+    };
 
 export type EventSourceAdapter = {
   name: string;

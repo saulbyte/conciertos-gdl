@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Bell, CalendarDays, Heart, Music2 } from "lucide-react";
 import { ArtistInterestForm } from "@/components/ArtistInterestForm";
 import { EventCard } from "@/components/EventCard";
+import { EventArtwork } from "@/components/EventArtwork";
 import { getArtistById } from "@/lib/artists";
 import { formatDateBadge } from "@/lib/format";
 
@@ -27,7 +28,15 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
   return (
     <main className="bg-slate-50">
-      <section className="border-b border-violet-100 bg-slate-950 text-white">
+      <section className="relative isolate overflow-hidden border-b border-violet-100 bg-slate-950 text-white">
+        <div className="absolute inset-0 -z-20 opacity-30">
+          <EventArtwork
+            src={artist.imageUrl ?? nextEvent?.imageUrl ?? null}
+            alt=""
+            className="h-full w-full object-cover blur-sm scale-105"
+          />
+        </div>
+        <div className="absolute inset-0 -z-10 bg-slate-950/80" />
         <div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
           <Link
             href="/artistas"
@@ -40,8 +49,17 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
           <div className="mt-7 grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
             <div className="min-w-0">
               <div className="flex min-w-0 items-center gap-4">
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-violet-600 shadow-lg shadow-violet-950/30">
-                  <Music2 className="h-8 w-8" aria-hidden="true" />
+                <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-violet-600 shadow-lg shadow-violet-950/30">
+                  {artist.imageUrl ? (
+                    <EventArtwork
+                      src={artist.imageUrl}
+                      alt={artist.name}
+                      className="h-full w-full object-cover"
+                      iconClassName="h-8 w-8"
+                    />
+                  ) : (
+                    <Music2 className="h-8 w-8" aria-hidden="true" />
+                  )}
                 </span>
                 <div className="min-w-0">
                   <p className="text-sm font-bold uppercase text-violet-300">

@@ -83,11 +83,15 @@ async function persistEvent(
   });
 
   const artistConnections = await Promise.all(
-    event.artists.map(async (artistName) => {
+    event.artists.map(async (externalArtist) => {
+      const artistName =
+        typeof externalArtist === "string" ? externalArtist : externalArtist.name;
+      const imageUrl =
+        typeof externalArtist === "string" ? null : externalArtist.imageUrl ?? null;
       const artist = await prisma.artist.upsert({
         where: { name: artistName },
-        create: { name: artistName },
-        update: {},
+        create: { name: artistName, imageUrl },
+        update: imageUrl ? { imageUrl } : {},
       });
 
       return { artistId: artist.id };

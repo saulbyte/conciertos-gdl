@@ -60,6 +60,7 @@ export async function getArtists() {
       return {
         id: artist.id,
         name: artist.name,
+        imageUrl: artist.imageUrl,
         createdAt: artist.createdAt,
         eventCount: artist._count.events,
         subscriberCount: artist._count.subscriptions,
@@ -133,6 +134,7 @@ export async function getArtistById(id: string) {
   return {
     id: artist.id,
     name: artist.name,
+    imageUrl: artist.imageUrl,
     createdAt: artist.createdAt,
     subscriberCount: artist._count.subscriptions,
     events: artist.events.map(({ event }) => {

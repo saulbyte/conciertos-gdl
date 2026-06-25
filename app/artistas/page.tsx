@@ -1,7 +1,15 @@
 import Link from "next/link";
-import { Bell, CalendarDays, ChevronRight, Music2, UsersRound } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  ChevronRight,
+  Music2,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
+import { EventArtwork } from "@/components/EventArtwork";
 import { getArtists } from "@/lib/artists";
-import { formatDateBadge, formatEventTime } from "@/lib/format";
+import { formatEventDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -86,45 +94,68 @@ export default async function ArtistsPage() {
 }
 
 function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>[number] }) {
-  const date = artist.nextEvent ? formatDateBadge(artist.nextEvent.eventDate) : null;
-
   return (
     <Link
       href={`/artistas/${artist.id}`}
-      className="group grid min-h-56 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-slate-200/70"
+      className="group grid min-h-64 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-slate-200/70"
     >
-      <div className="flex items-start justify-between gap-3 bg-slate-950 p-4 text-white">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-violet-600">
-            <Music2 className="h-6 w-6" aria-hidden="true" />
+      <div className="relative overflow-hidden bg-[linear-gradient(135deg,#0f172a,#312e81)] px-4 pb-5 pt-4 text-white">
+        <div className="absolute inset-0 opacity-25">
+          <EventArtwork
+            src={artist.imageUrl ?? artist.nextEvent?.imageUrl ?? null}
+            alt=""
+            className="h-full w-full object-cover blur-sm scale-110"
+          />
+        </div>
+        <div className="absolute inset-0 bg-slate-950/70" />
+
+        <div className="relative flex items-start justify-between gap-3">
+          <span className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-violet-600 shadow-lg shadow-slate-950/25">
+            {artist.imageUrl ? (
+              <EventArtwork
+                src={artist.imageUrl}
+                alt={artist.name}
+                className="h-full w-full object-cover"
+                iconClassName="h-8 w-8"
+              />
+            ) : (
+              <Music2 className="h-8 w-8" aria-hidden="true" />
+            )}
           </span>
-          <div className="min-w-0">
-            <h3 className="truncate text-lg font-bold">{artist.name}</h3>
-            <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1 text-[11px] font-bold uppercase text-violet-100 backdrop-blur">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+            Perfil
+          </span>
+        </div>
+
+        <div className="relative mt-4 min-w-0">
+          <h3 className="truncate text-xl font-bold leading-7">{artist.name}</h3>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-white">
               <Bell className="h-3.5 w-3.5" aria-hidden="true" />
               {artist.subscriberCount} interesados
-            </p>
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-white">
+              <UsersRound className="h-3.5 w-3.5" aria-hidden="true" />
+              {artist.eventCount} eventos
+            </span>
           </div>
         </div>
-        {date ? (
-          <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-md bg-white text-slate-950">
-            <span className="text-xl font-bold leading-none">{date.day}</span>
-            <span className="mt-1 text-[10px] font-bold uppercase">
-              {date.month}
-            </span>
-          </span>
-        ) : null}
       </div>
 
       <div className="grid gap-4 p-4">
         {artist.nextEvent ? (
-          <div>
-            <p className="line-clamp-2 text-base font-bold leading-6 text-slate-950 group-hover:text-violet-700">
-              {artist.nextEvent.title}
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-3">
+            <p className="text-xs font-bold uppercase text-slate-500">
+              Proxima fecha
+            </p>
+            <p className="mt-1 line-clamp-1 text-sm font-bold leading-5 text-slate-950">
+              {formatEventDate(artist.nextEvent.eventDate, artist.nextEvent.source)}
             </p>
             <p className="mt-2 flex items-center gap-2 text-sm text-slate-600">
               <CalendarDays className="h-4 w-4 text-violet-600" aria-hidden="true" />
-              {formatEventTime(artist.nextEvent.eventDate, artist.nextEvent.source)}
+              <span className="line-clamp-1">{artist.nextEvent.title}</span>
             </p>
           </div>
         ) : (
@@ -134,9 +165,8 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
         )}
 
         <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-bold">
-          <span className="inline-flex items-center gap-1.5 text-slate-600">
-            <UsersRound className="h-4 w-4 text-violet-600" aria-hidden="true" />
-            {artist.eventCount} eventos
+          <span className="text-slate-500">
+            Avisos y conciertos del artista
           </span>
           <span className="inline-flex items-center gap-1 text-violet-700">
             Ver perfil

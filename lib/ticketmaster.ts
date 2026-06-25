@@ -20,6 +20,7 @@ type TicketmasterVenue = {
 
 type TicketmasterAttraction = {
   name?: string;
+  images?: TicketmasterImage[];
 };
 
 type TicketmasterEvent = {
@@ -169,13 +170,22 @@ function selectBestImage(images: TicketmasterImage[] = []) {
 }
 
 function normalizeArtists(attractions: TicketmasterAttraction[] = []) {
-  return [
-    ...new Set(
-      attractions
-        .map((attraction) => attraction.name?.trim())
-        .filter((name): name is string => Boolean(name)),
-    ),
-  ];
+  const artists = new Map<string, { name: string; imageUrl: string | null }>();
+
+  for (const attraction of attractions) {
+    const name = attraction.name?.trim();
+
+    if (!name || artists.has(name)) {
+      continue;
+    }
+
+    artists.set(name, {
+      name,
+      imageUrl: selectBestImage(attraction.images),
+    });
+  }
+
+  return [...artists.values()];
 }
 
 async function fetchTicketmasterPage(
