@@ -12,6 +12,7 @@ enum EventSource {
   SUPERBOLETOS
   C3_STAGE
   FORO_INDEPENDENCIA
+  FUNTICKET
 }
 
 enum AdmissionType {
