@@ -99,6 +99,107 @@ export async function getEventById(id: string) {
   };
 }
 
+export async function getRelatedEvents(eventId: string, limit = 8) {
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+    select: {
+      id: true,
+      eventDate: true,
+      venueId: true,
+      artists: {
+        select: {
+          artistId: true,
+        },
+      },
+    },
+  });
+
+  if (!event) {
+    return [];
+  }
+
+  const artistIds = event.artists.map(({ artistId }) => artistId);
+  const candidates = await prisma.event.findMany({
+    where: {
+      id: { not: event.id },
+      eventDate: { gte: startOfToday() },
+      OR: [
+        artistIds.length > 0
+          ? {
+              artists: {
+                some: {
+                  artistId: {
+                    in: artistIds,
+                  },
+                },
+              },
+            }
+          : undefined,
+        {
+          venueId: event.venueId,
+        },
+      ].filter(Boolean) as Prisma.EventWhereInput[],
+    },
+    orderBy: {
+      eventDate: "asc",
+    },
+    include: {
+      venue: true,
+      artists: {
+        include: {
+          artist: true,
+        },
+      },
+      _count: {
+        select: { likes: true },
+      },
+    },
+    take: limit,
+  });
+
+  if (candidates.length < limit) {
+    const fallback = await prisma.event.findMany({
+      where: {
+        id: {
+          notIn: [event.id, ...candidates.map((candidate) => candidate.id)],
+        },
+        eventDate: { gte: startOfToday() },
+      },
+      orderBy: {
+        eventDate: "asc",
+      },
+      include: {
+        venue: true,
+        artists: {
+          include: {
+            artist: true,
+          },
+        },
+        _count: {
+          select: { likes: true },
+        },
+      },
+      take: limit - candidates.length,
+    });
+
+    candidates.push(...fallback);
+  }
+
+  const popularEventIds = new Set(
+    [...candidates]
+      .filter((candidate) => candidate._count.likes >= 5)
+      .sort((left, right) => right._count.likes - left._count.likes)
+      .slice(0, 3)
+      .map((candidate) => candidate.id),
+  );
+
+  return candidates.map(({ _count, ...candidate }) => ({
+    ...candidate,
+    likeCount: _count.likes,
+    isPopular: popularEventIds.has(candidate.id),
+  }));
+}
+
 export async function getDiscoveryEvents(
   filters: Pick<EventFilters, "venue" | "admission" | "when"> = {},
   limit = 20,

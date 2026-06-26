@@ -132,6 +132,12 @@ export async function getArtists(
     });
 }
 
+export async function getRecommendedArtists(artistId: string, limit = 8) {
+  const artists = await getArtists(undefined, "upcoming");
+
+  return artists.filter((artist) => artist.id !== artistId).slice(0, limit);
+}
+
 function matchesArtistQuery(artist: ArtistListItem, query: string) {
   return [
     artist.name,

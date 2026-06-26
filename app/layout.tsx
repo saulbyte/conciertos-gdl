@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { BackToTopButton } from "@/components/BackToTopButton";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { RouteHistoryTracker } from "@/components/RouteHistoryTracker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -62,6 +64,9 @@ export default function RootLayout({
         <SiteFooter />
         <BackToTopButton />
         <MobileBottomNav />
+        <Suspense fallback={null}>
+          <RouteHistoryTracker />
+        </Suspense>
         <Analytics />
       </body>
     </html>

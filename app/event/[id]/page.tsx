@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft,
   CalendarDays,
   ExternalLink,
   MapPin,
-  Music2,
   TicketCheck,
 } from "lucide-react";
+import { EventCard } from "@/components/EventCard";
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
-import { getEventById } from "@/lib/events";
+import { EventShareButton } from "@/components/EventShareButton";
+import { SmartBackButton } from "@/components/SmartBackButton";
+import { getEventById, getRelatedEvents } from "@/lib/events";
 import { formatEventDate, formatSourceName } from "@/lib/format";
 
 type EventPageProps = {
@@ -21,7 +22,10 @@ type EventPageProps = {
 
 export default async function EventPage({ params }: EventPageProps) {
   const { id } = await params;
-  const event = await getEventById(id);
+  const [event, relatedEvents] = await Promise.all([
+    getEventById(id),
+    getRelatedEvents(id, 4),
+  ]);
 
   if (!event) {
     notFound();
@@ -32,13 +36,7 @@ export default async function EventPage({ params }: EventPageProps) {
   return (
     <main className="bg-slate-50">
       <section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
-        <Link
-          href="/#eventos"
-          className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-violet-700"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Volver a eventos
-        </Link>
+        <SmartBackButton fallbackHref="/#eventos" label="Volver" />
 
         <div className="mt-6 grid items-start gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
           <div className="relative aspect-[16/10] overflow-hidden rounded-lg bg-slate-900 shadow-xl shadow-slate-300/50">
@@ -83,11 +81,22 @@ export default async function EventPage({ params }: EventPageProps) {
                 </span>
               </p>
               {artists.length > 0 ? (
-                <p className="flex items-start gap-3">
-                  <Music2
-                    className="mt-0.5 h-5 w-5 shrink-0 text-violet-600"
-                    aria-hidden="true"
-                  />
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex -space-x-2">
+                    {artists.slice(0, 3).map((artist) => (
+                      <span
+                        key={artist.id}
+                        className="h-7 w-7 overflow-hidden rounded-full border-2 border-white bg-violet-600 shadow-sm"
+                      >
+                        <EventArtwork
+                          src={artist.imageUrl ?? event.imageUrl}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          iconClassName="h-3.5 w-3.5"
+                        />
+                      </span>
+                    ))}
+                  </div>
                   <span className="flex flex-wrap gap-x-2 gap-y-1">
                     {artists.map((artist, index) => (
                       <span key={artist.id}>
@@ -101,7 +110,7 @@ export default async function EventPage({ params }: EventPageProps) {
                       </span>
                     ))}
                   </span>
-                </p>
+                </div>
               ) : null}
             </div>
 
@@ -120,6 +129,11 @@ export default async function EventPage({ params }: EventPageProps) {
               <EventLikeButton
                 eventId={event.id}
                 initialCount={event.likeCount}
+                variant="detail"
+              />
+              <EventShareButton
+                title={event.title}
+                path={`/event/${event.id}`}
                 variant="detail"
               />
             </div>
@@ -145,6 +159,38 @@ export default async function EventPage({ params }: EventPageProps) {
               <p className="mt-4 text-base leading-8 text-slate-600">
                 {event.description}
               </p>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {relatedEvents.length > 0 ? (
+        <section className="border-t border-slate-200 bg-slate-50">
+          <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+            <div className="mb-5 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-sm font-bold uppercase text-violet-700">
+                  Sigue descubriendo
+                </p>
+                <h2 className="mt-1 text-2xl font-bold text-slate-950">
+                  Eventos relacionados
+                </h2>
+              </div>
+              <Link
+                href="/#eventos"
+                className="shrink-0 text-sm font-bold text-violet-700"
+              >
+                Ver todos
+              </Link>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {relatedEvents.map((relatedEvent) => (
+                <EventCard
+                  key={relatedEvent.id}
+                  event={relatedEvent}
+                  variant="compact"
+                />
+              ))}
             </div>
           </div>
         </section>
