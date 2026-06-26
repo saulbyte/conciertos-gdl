@@ -33,6 +33,12 @@ body {
   body:has([data-discovery-page]) [data-back-to-top] {
     display: none;
   }
+
+  body:has([data-artists-page]) [data-site-header],
+  body:has([data-artists-page]) [data-site-footer],
+  body:has([data-artists-page]) [data-back-to-top] {
+    display: none;
+  }
 }
 
 html {

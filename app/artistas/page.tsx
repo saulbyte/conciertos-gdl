@@ -1,87 +1,57 @@
 import Link from "next/link";
 import {
   Bell,
-  CalendarDays,
   ChevronRight,
+  Clock3,
+  ListMusic,
   Music2,
   Search,
+  SlidersHorizontal,
   Sparkles,
   UsersRound,
   X,
 } from "lucide-react";
 import { EventArtwork } from "@/components/EventArtwork";
-import { getArtists } from "@/lib/artists";
-import { formatEventDate } from "@/lib/format";
+import { getArtists, type ArtistSortMode } from "@/lib/artists";
 
 export const dynamic = "force-dynamic";
 
 type ArtistsPageProps = {
   searchParams: Promise<{
     q?: string;
+    mode?: string;
   }>;
 };
 
 export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
   const filters = await searchParams;
   const query = typeof filters.q === "string" ? filters.q.trim() : "";
-  const artists = await getArtists(query);
+  const mode = parseArtistMode(filters.mode);
+  const artists = await getArtists(query, mode);
   const hasSearch = query.length > 0;
 
   return (
-    <main className="bg-slate-50">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-7 sm:px-6 sm:py-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end lg:px-8">
-          <div className="min-w-0">
-            <p className="text-sm font-bold uppercase text-violet-700">Artistas</p>
-            <h1 className="mt-2 max-w-3xl text-3xl font-bold leading-tight text-slate-950 sm:text-5xl">
-              Busca artistas y recibe alertas de conciertos
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-              Encuentra perfiles de artistas con fechas en Guadalajara y deja tu
-              correo para que te avisemos cuando aparezcan nuevos eventos.
+    <main data-artists-page className="min-h-dvh bg-slate-50 md:bg-slate-50">
+      <section className="border-b border-white/10 bg-slate-950 text-white md:border-slate-200 md:bg-white md:text-slate-950">
+        <div className="mx-auto w-full max-w-7xl px-4 pb-4 pt-[max(0.9rem,env(safe-area-inset-top))] sm:px-6 md:py-8 lg:px-8">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase text-violet-300 md:text-violet-700">
+                Conciertos GDL
+              </p>
+              <h1 className="mt-0.5 text-2xl font-bold md:text-4xl">Artistas</h1>
+            </div>
+            <p className="pb-1 text-xs font-semibold text-slate-300 md:text-slate-500">
+              {artists.length} {artists.length === 1 ? "artista" : "artistas"}
             </p>
           </div>
 
-          <form action="/artistas" className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm">
-            <label className="relative block">
-              <span className="sr-only">Buscar artista</span>
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                aria-hidden="true"
-              />
-              <input
-                type="search"
-                name="q"
-                defaultValue={query}
-                placeholder="Buscar artista..."
-                className="h-12 w-full rounded-md border border-slate-300 bg-white pl-10 pr-3 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
-              />
-            </label>
-            <div className="mt-3 flex items-center gap-2">
-              <button
-                type="submit"
-                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-md bg-violet-600 px-4 text-sm font-bold text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700"
-              >
-                <Search className="h-4 w-4" aria-hidden="true" />
-                Buscar
-              </button>
-              {hasSearch ? (
-                <Link
-                  href="/artistas"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-600 transition hover:border-violet-300 hover:text-violet-700"
-                  aria-label="Limpiar busqueda"
-                  title="Limpiar busqueda"
-                >
-                  <X className="h-4 w-4" aria-hidden="true" />
-                </Link>
-              ) : null}
-            </div>
-          </form>
+          <ArtistFilters query={query} mode={mode} />
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <div className="mb-5 flex items-end justify-between gap-3">
+      <section className="mx-auto w-full max-w-7xl px-3 pb-24 pt-5 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mb-4 hidden items-end justify-between gap-3 md:flex">
           <div>
             <p className="text-sm font-bold uppercase text-violet-700">
               Catalogo
@@ -95,7 +65,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
         </div>
 
         {artists.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-3 gap-x-3 gap-y-6 sm:grid-cols-4 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5">
             {artists.map((artist) => (
               <ArtistCard key={artist.id} artist={artist} />
             ))}
@@ -119,6 +89,106 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
   );
 }
 
+function parseArtistMode(mode?: string): ArtistSortMode {
+  if (mode === "upcoming" || mode === "all" || mode === "az") {
+    return mode;
+  }
+
+  return "popular";
+}
+
+function ArtistFilters({
+  query,
+  mode,
+}: {
+  query: string;
+  mode: ArtistSortMode;
+}) {
+  const hasSearch = query.length > 0;
+  const chips: Array<{
+    mode: ArtistSortMode;
+    label: string;
+    icon: typeof Sparkles;
+  }> = [
+    { mode: "popular", label: "Populares", icon: Sparkles },
+    { mode: "upcoming", label: "Proximos", icon: Clock3 },
+    { mode: "all", label: "Todos", icon: ListMusic },
+    { mode: "az", label: "A-Z", icon: SlidersHorizontal },
+  ];
+
+  function buildHref(nextMode: ArtistSortMode, nextQuery = query) {
+    const params = new URLSearchParams();
+
+    if (nextMode !== "popular") params.set("mode", nextMode);
+    if (nextQuery) params.set("q", nextQuery);
+
+    const search = params.toString();
+    return search ? `/artistas?${search}` : "/artistas";
+  }
+
+  return (
+    <div className="mt-4 grid gap-3 md:mt-6 md:grid-cols-[minmax(0,1fr)_minmax(280px,380px)] md:items-center">
+      <div className="flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {chips.map(({ mode: chipMode, label, icon: Icon }) => {
+          const active = mode === chipMode;
+
+          return (
+            <Link
+              key={chipMode}
+              href={buildHref(chipMode)}
+              aria-current={active ? "page" : undefined}
+              className={`inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border px-3 text-xs font-bold transition md:min-h-10 md:px-4 ${
+                active
+                  ? "border-violet-400 bg-violet-600 text-white"
+                  : "border-white/20 bg-white/10 text-white md:border-slate-200 md:bg-slate-50 md:text-slate-700"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+              {label}
+            </Link>
+          );
+        })}
+      </div>
+
+      <form action="/artistas" className="flex gap-2">
+        {mode !== "popular" ? <input type="hidden" name="mode" value={mode} /> : null}
+        <label className="relative min-w-0 flex-1">
+          <span className="sr-only">Buscar artista</span>
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            aria-hidden="true"
+          />
+          <input
+            type="search"
+            name="q"
+            defaultValue={query}
+            placeholder="Buscar artista"
+            className="h-10 w-full rounded-md border border-white/20 bg-white/10 pl-9 pr-3 text-sm font-bold text-white outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/20 md:border-slate-200 md:bg-slate-50 md:text-slate-950 md:placeholder:text-slate-400"
+          />
+        </label>
+        <button
+          type="submit"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-violet-600 text-white transition hover:bg-violet-700"
+          aria-label="Buscar"
+          title="Buscar"
+        >
+          <Search className="h-4 w-4" aria-hidden="true" />
+        </button>
+        {hasSearch ? (
+          <Link
+            href={buildHref(mode, "")}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/10 text-white transition hover:border-violet-300 md:border-slate-200 md:bg-slate-50 md:text-slate-600"
+            aria-label="Limpiar busqueda"
+            title="Limpiar busqueda"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        ) : null}
+      </form>
+    </div>
+  );
+}
+
 function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>[number] }) {
   const avatarUrl =
     artist.imageUrl ?? artist.nextEvent?.imageUrl ?? artist.fallbackImageUrl ?? null;
@@ -126,24 +196,14 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
   return (
     <Link
       href={`/artistas/${artist.id}`}
-      className="group grid min-h-64 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl hover:shadow-slate-200/70"
+      className="group min-w-0 text-center transition hover:-translate-y-0.5 md:overflow-hidden md:rounded-lg md:border md:border-slate-200 md:bg-white md:p-4 md:text-left md:shadow-sm md:hover:border-violet-200 md:hover:shadow-xl md:hover:shadow-slate-200/70"
     >
-      <div className="relative overflow-hidden bg-[linear-gradient(135deg,#0f172a,#312e81)] px-4 pb-5 pt-4 text-white">
-        <div className="absolute inset-0 opacity-25">
-          <EventArtwork
-            src={avatarUrl}
-            alt=""
-            className="h-full w-full object-cover blur-sm scale-110"
-          />
-        </div>
-        <div className="absolute inset-0 bg-slate-950/70" />
-
-        <div className="relative flex items-start justify-between gap-3">
-          <span className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-violet-600 shadow-lg shadow-slate-950/25">
+      <div className="flex min-w-0 flex-col items-center md:items-start">
+        <span className="relative flex aspect-square w-full max-w-[92px] items-center justify-center overflow-hidden rounded-full border-2 border-white bg-violet-600 shadow-md shadow-slate-200 md:h-20 md:w-20 md:max-w-none md:border-violet-100">
             {avatarUrl ? (
               <EventArtwork
                 src={avatarUrl}
-                alt={artist.name}
+                alt=""
                 className="h-full w-full object-cover"
                 iconClassName="h-8 w-8"
               />
@@ -151,56 +211,25 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
               <Music2 className="h-8 w-8" aria-hidden="true" />
             )}
           </span>
-
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1 text-[11px] font-bold uppercase text-violet-100 backdrop-blur">
-            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-            Perfil
-          </span>
-        </div>
-
-        <div className="relative mt-4 min-w-0">
-          <h3 className="truncate text-xl font-bold leading-7">{artist.name}</h3>
-          <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-white">
-              <Bell className="h-3.5 w-3.5" aria-hidden="true" />
-              {artist.subscriberCount} interesados
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-white">
-              <UsersRound className="h-3.5 w-3.5" aria-hidden="true" />
-              {artist.eventCount} proximos
-            </span>
-          </div>
-        </div>
       </div>
 
-      <div className="grid gap-4 p-4">
-        {artist.nextEvent ? (
-          <div className="rounded-md border border-slate-200 bg-slate-50 p-3">
-            <p className="text-xs font-bold uppercase text-slate-500">
-              Proxima fecha
-            </p>
-            <p className="mt-1 line-clamp-1 text-sm font-bold leading-5 text-slate-950">
-              {formatEventDate(artist.nextEvent.eventDate, artist.nextEvent.source)}
-            </p>
-            <p className="mt-2 flex items-center gap-2 text-sm text-slate-600">
-              <CalendarDays className="h-4 w-4 text-violet-600" aria-hidden="true" />
-              <span className="line-clamp-1">{artist.nextEvent.title}</span>
-            </p>
-          </div>
-        ) : (
-          <p className="text-sm leading-6 text-slate-600">
-            Este artista queda listo para avisos cuando aparezca una fecha.
-          </p>
-        )}
-
-        <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-bold">
-          <span className="text-slate-500">
-            Avisos y conciertos del artista
+      <div className="mt-2 min-w-0 md:mt-4">
+        <h3 className="line-clamp-2 min-h-9 text-sm font-bold leading-[1.15] text-slate-950 md:min-h-0 md:truncate md:text-lg">
+          {artist.name}
+        </h3>
+        <div className="mt-1.5 grid grid-cols-2 gap-1 text-[11px] font-bold text-slate-500 md:mt-3 md:flex md:flex-wrap md:gap-2">
+          <span className="inline-flex min-w-0 items-center justify-center gap-1 rounded-full bg-slate-100 px-1.5 py-1 md:bg-violet-50 md:px-2.5 md:text-violet-800">
+            <UsersRound className="h-3 w-3 shrink-0" aria-hidden="true" />
+            {artist.eventCount}
           </span>
-          <span className="inline-flex items-center gap-1 text-violet-700">
-            Ver perfil
-            <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden="true" />
+          <span className="inline-flex min-w-0 items-center justify-center gap-1 rounded-full bg-slate-100 px-1.5 py-1 md:bg-slate-100 md:px-2.5">
+            <Bell className="h-3 w-3 shrink-0" aria-hidden="true" />
+            {artist.subscriberCount}
           </span>
+        </div>
+        <div className="mt-3 hidden items-center justify-between border-t border-slate-100 pt-3 text-sm font-bold md:flex">
+          <span className="text-slate-500">Ver perfil</span>
+          <ChevronRight className="h-4 w-4 text-violet-700 transition group-hover:translate-x-0.5" aria-hidden="true" />
         </div>
       </div>
     </Link>

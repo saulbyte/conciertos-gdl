@@ -37,6 +37,11 @@ export function EventArtwork({
       className={className}
       loading={loading}
       decoding="async"
+      onLoad={(event) => {
+        if (event.currentTarget.naturalWidth === 0) {
+          setHasError(true);
+        }
+      }}
       onError={() => setHasError(true)}
     />
   );

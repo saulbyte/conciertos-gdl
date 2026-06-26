@@ -1,10 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import { Music2 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { MobileMenu } from "@/components/MobileMenu";
 
 export function SiteHeader() {
+  const pathname = usePathname();
+  const immersiveMobilePage =
+    pathname === "/descubrir" || pathname.startsWith("/artistas");
+
   return (
-    <header data-site-header className="sticky top-0 z-50 border-b border-black/8 bg-white/95 backdrop-blur">
+    <header
+      data-site-header
+      className={`sticky top-0 z-50 border-b border-black/8 bg-white/95 backdrop-blur ${
+        immersiveMobilePage ? "max-md:hidden" : ""
+      }`}
+    >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:h-[72px] sm:px-6 lg:px-8">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-violet-600 text-white shadow-sm shadow-violet-200">

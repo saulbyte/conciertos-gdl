@@ -2,8 +2,9 @@ import { prisma } from "@/lib/prisma";
 
 export type ArtistListItem = Awaited<ReturnType<typeof getArtists>>[number];
 export type ArtistDetail = NonNullable<Awaited<ReturnType<typeof getArtistById>>>;
+export type ArtistSortMode = "popular" | "upcoming" | "all" | "az";
 
-export async function getArtists(query?: string) {
+export async function getArtists(query?: string, mode: ArtistSortMode = "popular") {
   const normalizedQuery = query?.trim();
   const today = startOfToday();
   const artists = await prisma.artist.findMany({
@@ -72,12 +73,33 @@ export async function getArtists(query?: string) {
           : null,
       };
     })
+    .filter((artist) => (mode === "upcoming" ? artist.eventCount > 0 : true))
     .sort((left, right) => {
       const leftDate = left.nextEvent?.eventDate.getTime() ?? Number.MAX_VALUE;
       const rightDate = right.nextEvent?.eventDate.getTime() ?? Number.MAX_VALUE;
 
+      if (mode === "az") {
+        return left.name.localeCompare(right.name);
+      }
+
+      if (mode === "upcoming") {
+        return (
+          leftDate - rightDate ||
+          right.subscriberCount - left.subscriberCount ||
+          left.name.localeCompare(right.name)
+        );
+      }
+
+      if (mode === "all") {
+        return (
+          leftDate - rightDate ||
+          left.name.localeCompare(right.name)
+        );
+      }
+
       return (
         right.subscriberCount - left.subscriberCount ||
+        right.eventCount - left.eventCount ||
         leftDate - rightDate ||
         left.name.localeCompare(right.name)
       );
