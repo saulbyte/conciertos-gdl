@@ -57,6 +57,7 @@ export function formatSourceName(source: string) {
     C3_STAGE: "C3 Stage",
     FORO_INDEPENDENCIA: "Foro Independencia",
     FUNTICKET: "FunTicket",
+    ARENA_GUADALAJARA: "Arena Guadalajara",
   };
 
   return labels[source] ?? source;

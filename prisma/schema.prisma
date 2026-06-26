@@ -13,6 +13,7 @@ enum EventSource {
   C3_STAGE
   FORO_INDEPENDENCIA
   FUNTICKET
+  ARENA_GUADALAJARA
 }
 
 enum AdmissionType {

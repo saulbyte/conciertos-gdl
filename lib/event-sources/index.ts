@@ -1,6 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 import { syncEventSource } from "@/lib/event-sources/sync";
 import type { EventSourceAdapter } from "@/lib/event-sources/types";
+import { arenaGuadalajaraAdapter } from "@/lib/event-sources/arena-guadalajara";
 import { c3StageAdapter } from "@/lib/event-sources/c3-stage";
 import { funTicketAdapter } from "@/lib/event-sources/funticket";
 import { foroIndependenciaAdapter } from "@/lib/event-sources/foro-independencia";
@@ -11,6 +12,7 @@ import { createTicketmasterAdapter } from "@/lib/ticketmaster";
 export function getEventSourceAdapters(): EventSourceAdapter[] {
   return [
     createTicketmasterAdapter(),
+    arenaGuadalajaraAdapter,
     c3StageAdapter,
     foroIndependenciaAdapter,
     funTicketAdapter,

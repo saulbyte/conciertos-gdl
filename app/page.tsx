@@ -78,6 +78,7 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-slate-300">
             <span className="text-white">Fuentes verificadas:</span>
             <span>Ticketmaster</span>
+            <span>Arena Guadalajara</span>
             <span>C3 Stage</span>
             <span>Foro Independencia</span>
             <span>FunTicket</span>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   Bell,
+  CalendarDays,
   ChevronRight,
   Clock3,
   ListMusic,
@@ -8,7 +9,6 @@ import {
   Search,
   SlidersHorizontal,
   Sparkles,
-  UsersRound,
   X,
 } from "lucide-react";
 import { EventArtwork } from "@/components/EventArtwork";
@@ -219,7 +219,7 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
         </h3>
         <div className="mt-1.5 grid grid-cols-2 gap-1 text-[11px] font-bold text-slate-500 md:mt-3 md:flex md:flex-wrap md:gap-2">
           <span className="inline-flex min-w-0 items-center justify-center gap-1 rounded-full bg-slate-100 px-1.5 py-1 md:bg-violet-50 md:px-2.5 md:text-violet-800">
-            <UsersRound className="h-3 w-3 shrink-0" aria-hidden="true" />
+            <CalendarDays className="h-3 w-3 shrink-0" aria-hidden="true" />
             {artist.eventCount}
           </span>
           <span className="inline-flex min-w-0 items-center justify-center gap-1 rounded-full bg-slate-100 px-1.5 py-1 md:bg-slate-100 md:px-2.5">
