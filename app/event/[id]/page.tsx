@@ -10,6 +10,7 @@ import { EventCard } from "@/components/EventCard";
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
 import { EventShareButton } from "@/components/EventShareButton";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SmartBackButton } from "@/components/SmartBackButton";
 import { getEventById, getRelatedEvents } from "@/lib/events";
 import { formatEventDate, formatSourceName } from "@/lib/format";
@@ -36,7 +37,16 @@ export default async function EventPage({ params }: EventPageProps) {
   return (
     <main className="bg-slate-50">
       <section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
-        <SmartBackButton fallbackHref="/#eventos" label="Volver" />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <SmartBackButton fallbackHref="/#eventos" label="Volver" />
+          <Breadcrumbs
+            items={[
+              { label: "Inicio", href: "/" },
+              { label: "Eventos", href: "/#eventos" },
+              { label: event.title },
+            ]}
+          />
+        </div>
 
         <div className="mt-6 grid items-start gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
           <div className="relative aspect-[16/10] overflow-hidden rounded-lg bg-slate-900 shadow-xl shadow-slate-300/50">

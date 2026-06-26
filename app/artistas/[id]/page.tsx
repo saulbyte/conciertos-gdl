@@ -5,6 +5,7 @@ import { ArtistInterestForm } from "@/components/ArtistInterestForm";
 import { EventCard } from "@/components/EventCard";
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventShareButton } from "@/components/EventShareButton";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SmartBackButton } from "@/components/SmartBackButton";
 import {
   getArtistById,
@@ -50,11 +51,23 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
         <div className="absolute inset-0 -z-10 bg-slate-950/80" />
         <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-10 lg:px-8">
           <div className="flex items-center justify-between gap-3">
-            <SmartBackButton
-              fallbackHref="/artistas"
-              label="Volver"
-              variant="dark"
-            />
+            <div className="min-w-0">
+              <SmartBackButton
+                fallbackHref="/artistas"
+                label="Volver"
+                variant="dark"
+              />
+              <div className="mt-2">
+                <Breadcrumbs
+                  variant="dark"
+                  items={[
+                    { label: "Inicio", href: "/" },
+                    { label: "Artistas", href: "/artistas" },
+                    { label: artist.name },
+                  ]}
+                />
+              </div>
+            </div>
             <EventShareButton
               title={artist.name}
               path={`/artistas/${artist.id}`}

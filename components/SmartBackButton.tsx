@@ -1,8 +1,11 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { getPreviousInternalRoute } from "@/components/RouteHistoryTracker";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  getInternalRouteStack,
+  setInternalRouteStack,
+} from "@/components/RouteHistoryTracker";
 
 type SmartBackButtonProps = {
   fallbackHref: string;
@@ -16,14 +19,23 @@ export function SmartBackButton({
   variant = "light",
 }: SmartBackButtonProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   function goBack() {
-    const previousRoute = getPreviousInternalRoute();
-    const target =
-      previousRoute && previousRoute !== pathname && previousRoute !== "/"
-        ? previousRoute
-        : fallbackHref;
+    const search = searchParams.toString();
+    const currentRoute = search ? `${pathname}?${search}` : pathname;
+    const stack = getInternalRouteStack();
+    const stackWithoutCurrent =
+      stack.at(-1) === currentRoute ? stack.slice(0, -1) : stack;
+    const previousRoute = stackWithoutCurrent.at(-1);
+    const target = previousRoute && previousRoute !== "/" ? previousRoute : fallbackHref;
+
+    setInternalRouteStack(
+      previousRoute && previousRoute !== "/"
+        ? stackWithoutCurrent
+        : [fallbackHref],
+    );
 
     router.push(target, { scroll: target === fallbackHref });
   }
@@ -32,13 +44,15 @@ export function SmartBackButton({
     <button
       type="button"
       onClick={goBack}
+      aria-label={label}
+      data-smart-back-button
       className={
         variant === "dark"
-          ? "inline-flex items-center gap-2 text-sm font-bold text-slate-300 transition hover:text-white"
-          : "inline-flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-violet-700"
+          ? "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md px-1 text-base font-bold text-slate-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          : "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md px-1 text-base font-bold text-slate-600 transition hover:text-violet-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600"
       }
     >
-      <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+      <ArrowLeft className="h-5 w-5" aria-hidden="true" />
       {label}
     </button>
   );
