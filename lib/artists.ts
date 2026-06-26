@@ -1,23 +1,46 @@
 import { prisma } from "@/lib/prisma";
+import { matchesFlexibleSearch } from "@/lib/search";
 
-export type ArtistListItem = Awaited<ReturnType<typeof getArtists>>[number];
+export type ArtistListItem = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  fallbackImageUrl: string | null;
+  createdAt: Date;
+  eventCount: number;
+  subscriberCount: number;
+  nextEvent: {
+    id: string;
+    externalId: string;
+    title: string;
+    description: string | null;
+    eventDate: Date;
+    imageUrl: string | null;
+    source: string;
+    sourceUrl: string | null;
+    admissionType: string;
+    venueId: string;
+    createdAt: Date;
+    updatedAt: Date;
+    venue: {
+      id: string;
+      name: string;
+      city: string;
+      createdAt: Date;
+    };
+    likeCount: number;
+  } | null;
+};
 export type ArtistDetail = NonNullable<Awaited<ReturnType<typeof getArtistById>>>;
 export type ArtistSortMode = "popular" | "upcoming" | "all" | "az";
 
-export async function getArtists(query?: string, mode: ArtistSortMode = "popular") {
+export async function getArtists(
+  query?: string,
+  mode: ArtistSortMode = "popular",
+): Promise<ArtistListItem[]> {
   const normalizedQuery = query?.trim();
   const today = startOfToday();
   const artists = await prisma.artist.findMany({
-    where: {
-      ...(normalizedQuery
-        ? {
-            name: {
-              contains: normalizedQuery,
-              mode: "insensitive",
-            },
-          }
-        : {}),
-    },
     include: {
       _count: {
         select: {
@@ -73,6 +96,9 @@ export async function getArtists(query?: string, mode: ArtistSortMode = "popular
           : null,
       };
     })
+    .filter((artist) =>
+      normalizedQuery ? matchesArtistQuery(artist, normalizedQuery) : true,
+    )
     .filter((artist) => (mode === "upcoming" ? artist.eventCount > 0 : true))
     .sort((left, right) => {
       const leftDate = left.nextEvent?.eventDate.getTime() ?? Number.MAX_VALUE;
@@ -104,6 +130,15 @@ export async function getArtists(query?: string, mode: ArtistSortMode = "popular
         left.name.localeCompare(right.name)
       );
     });
+}
+
+function matchesArtistQuery(artist: ArtistListItem, query: string) {
+  return [
+    artist.name,
+    artist.nextEvent?.title,
+    artist.nextEvent?.venue.name,
+    artist.nextEvent?.venue.city,
+  ].some((value) => value && matchesFlexibleSearch(value, query));
 }
 
 export async function getArtistById(id: string) {

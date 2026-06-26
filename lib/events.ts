@@ -1,5 +1,6 @@
 import { AdmissionType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { matchesFlexibleSearch } from "@/lib/search";
 
 export type EventFilters = {
   query?: string;
@@ -15,11 +16,25 @@ export type EventDetail = NonNullable<Awaited<ReturnType<typeof getEventById>>>;
 export type DiscoveryEvent = EventListItem & {
   discoveryLabel: "Popular" | "Este fin" | "Recien anunciado" | "Para descubrir";
 };
+type EventSearchCandidate = Prisma.EventGetPayload<{
+  include: {
+    venue: true;
+    artists: {
+      include: {
+        artist: true;
+      };
+    };
+    _count: {
+      select: { likes: true };
+    };
+  };
+}>;
 
 export async function getEvents(filters: EventFilters = {}) {
   const where = buildEventWhere(filters);
+  const normalizedQuery = filters.query?.trim();
 
-  const events = await prisma.event.findMany({
+  const eventsFromDb = await prisma.event.findMany({
     where,
     orderBy: {
       eventDate: "asc",
@@ -35,8 +50,11 @@ export async function getEvents(filters: EventFilters = {}) {
         select: { likes: true },
       },
     },
-    take: 300,
+    take: normalizedQuery ? 1000 : 300,
   });
+  const events = normalizedQuery
+    ? eventsFromDb.filter((event) => eventMatchesQuery(event, normalizedQuery))
+    : eventsFromDb;
 
   const popularEventIds = new Set(
     [...events]
@@ -176,29 +194,6 @@ function buildEventWhere(filters: EventFilters): Prisma.EventWhereInput {
     },
   };
 
-  if (filters.query) {
-    where.OR = [
-      {
-        title: {
-          contains: filters.query,
-          mode: "insensitive",
-        },
-      },
-      {
-        artists: {
-          some: {
-            artist: {
-              name: {
-                contains: filters.query,
-                mode: "insensitive",
-              },
-            },
-          },
-        },
-      },
-    ];
-  }
-
   if (filters.venue) {
     where.venueId = filters.venue;
   }
@@ -223,6 +218,16 @@ function buildEventWhere(filters: EventFilters): Prisma.EventWhereInput {
   }
 
   return where;
+}
+
+function eventMatchesQuery(event: EventSearchCandidate, query: string) {
+  return [
+    event.title,
+    event.description,
+    event.venue.name,
+    event.venue.city,
+    ...event.artists.map(({ artist }) => artist.name),
+  ].some((value) => value && matchesFlexibleSearch(value, query));
 }
 
 function startOfToday() {
