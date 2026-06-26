@@ -6,6 +6,7 @@ import { c3StageAdapter } from "@/lib/event-sources/c3-stage";
 import { eticketAdapter } from "@/lib/event-sources/eticket";
 import { funTicketAdapter } from "@/lib/event-sources/funticket";
 import { foroIndependenciaAdapter } from "@/lib/event-sources/foro-independencia";
+import { kingTicketAdapter } from "@/lib/event-sources/kingticket";
 import { superboletosAdapter } from "@/lib/event-sources/superboletos";
 import { visitJaliscoAdapter } from "@/lib/event-sources/visit-jalisco";
 import { createTicketmasterAdapter } from "@/lib/ticketmaster";
@@ -18,6 +19,7 @@ export function getEventSourceAdapters(): EventSourceAdapter[] {
     eticketAdapter,
     foroIndependenciaAdapter,
     funTicketAdapter,
+    kingTicketAdapter,
     visitJaliscoAdapter,
     superboletosAdapter,
   ];

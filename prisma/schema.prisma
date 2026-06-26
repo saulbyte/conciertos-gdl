@@ -15,6 +15,7 @@ enum EventSource {
   FUNTICKET
   ARENA_GUADALAJARA
   ETICKET
+  KINGTICKET
 }
 
 enum AdmissionType {
