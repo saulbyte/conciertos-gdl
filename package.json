@@ -19,7 +19,8 @@
     "sync:c3-stage": "tsx scripts/sync-c3-stage.ts",
     "sync:foro-independencia": "tsx scripts/sync-foro-independencia.ts",
     "sync:funticket": "tsx scripts/sync-funticket.ts",
-    "sync:arena-guadalajara": "tsx scripts/sync-arena-guadalajara.ts"
+    "sync:arena-guadalajara": "tsx scripts/sync-arena-guadalajara.ts",
+    "sync:eticket": "tsx scripts/sync-eticket.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

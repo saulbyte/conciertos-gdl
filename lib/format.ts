@@ -58,6 +58,7 @@ export function formatSourceName(source: string) {
     FORO_INDEPENDENCIA: "Foro Independencia",
     FUNTICKET: "FunTicket",
     ARENA_GUADALAJARA: "Arena Guadalajara",
+    ETICKET: "eTicket",
   };
 
   return labels[source] ?? source;
