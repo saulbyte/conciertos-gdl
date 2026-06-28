@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { BackToTopButton } from "@/components/BackToTopButton";
+import { AdSenseScript } from "@/components/AdSenseScript";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -51,13 +52,7 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8074659663946335"
-          crossOrigin="anonymous"
-        />
-      </head>
+      <head />
       <body className="flex min-h-full flex-col">
         <SiteHeader />
         <div className="flex-1">{children}</div>
@@ -66,6 +61,9 @@ export default function RootLayout({
         <MobileBottomNav />
         <Suspense fallback={null}>
           <RouteHistoryTracker />
+        </Suspense>
+        <Suspense fallback={null}>
+          <AdSenseScript />
         </Suspense>
         <Analytics />
       </body>
