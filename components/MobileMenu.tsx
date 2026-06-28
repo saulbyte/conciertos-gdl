@@ -23,7 +23,8 @@ const navigation = [
   { href: "/#eventos", label: "Eventos", icon: CalendarDays },
   { href: "/artistas", label: "Artistas", icon: Music2 },
   { href: "/#filtros", label: "Recintos", icon: MapPin },
-  { href: "/#acerca", label: "Acerca de", icon: Info },
+  { href: "/acerca-de", label: "Acerca de", icon: Info },
+  { href: "/contacto", label: "Contacto", icon: AtSign },
 ];
 
 export function MobileMenu() {

@@ -32,6 +32,12 @@ export function SiteFooter() {
             <Link className="hover:text-violet-700" href="/#filtros">
               Recintos y fechas
             </Link>
+            <Link className="hover:text-violet-700" href="/acerca-de">
+              Acerca de
+            </Link>
+            <Link className="hover:text-violet-700" href="/contacto">
+              Contacto
+            </Link>
           </div>
         </div>
 
@@ -49,20 +55,22 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="text-sm font-bold text-slate-950">
-            Sobre Conciertos GDL
-          </h2>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            Agregamos informacion de fuentes publicas y te dirigimos siempre
-            al enlace oficial. No vendemos boletos.
-          </p>
+          <h2 className="text-sm font-bold text-slate-950">Legal</h2>
+          <div className="mt-4 grid gap-3 text-sm text-slate-600">
+            <Link className="hover:text-violet-700" href="/privacidad">
+              Privacidad
+            </Link>
+            <Link className="hover:text-violet-700" href="/terminos">
+              Terminos de uso
+            </Link>
+          </div>
         </div>
       </div>
 
       <div className="border-t border-slate-200">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <p>{"\u00a9"} 2026 Conciertos GDL.</p>
-          <p>Informacion para descubrir musica en vivo.</p>
+          <p>No vendemos boletos. Solo informacion.</p>
         </div>
       </div>
     </footer>

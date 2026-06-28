@@ -40,8 +40,11 @@ export function SiteHeader() {
           <Link className="transition hover:text-violet-700" href="/#filtros">
             Recintos
           </Link>
-          <Link className="transition hover:text-violet-700" href="/#acerca">
+          <Link className="transition hover:text-violet-700" href="/acerca-de">
             Acerca de
+          </Link>
+          <Link className="transition hover:text-violet-700" href="/contacto">
+            Contacto
           </Link>
         </nav>
 
