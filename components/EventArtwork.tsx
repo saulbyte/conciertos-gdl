@@ -22,7 +22,7 @@ export function EventArtwork({
 
   if (!src || hasError) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(145deg,#0f172a,#312e81)] text-violet-200">
+      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(145deg,#071018,#0b1d26)] text-[#00c2d1]">
         <Music2 className={iconClassName} aria-hidden="true" />
       </div>
     );

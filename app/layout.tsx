@@ -21,17 +21,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "Conciertos GDL",
+  applicationName: "Donde Toca",
   title: {
-    default: "Conciertos GDL",
-    template: "%s | Conciertos GDL",
+    default: "Donde Toca",
+    template: "%s | Donde Toca",
   },
   description:
     "Descubre conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "Conciertos GDL",
+    statusBarStyle: "black-translucent",
+    title: "Donde Toca",
   },
   icons: {
     apple: "/icons/apple-touch-icon.png",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#7c3aed",
+  themeColor: "#071018",
 };
 
 export default function RootLayout({

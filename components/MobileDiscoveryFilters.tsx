@@ -102,7 +102,7 @@ export function MobileDiscoveryFilters({
             type="submit"
             aria-label="Buscar"
             title="Buscar"
-            className="m-1.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-violet-600 text-white transition hover:bg-violet-700"
+            className="m-1.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#ff304f] text-white transition hover:bg-[#ff5d74]"
           >
             <Search className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -118,7 +118,7 @@ export function MobileDiscoveryFilters({
           aria-current={weekendActive ? "page" : undefined}
           className={`flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-md border px-2 text-xs font-bold transition ${
             weekendActive
-              ? "border-violet-300 bg-violet-600 text-white shadow-lg shadow-violet-950/20"
+              ? "border-[#ff304f] bg-[#ff304f] text-white shadow-lg shadow-black/20"
               : "border-white/25 bg-white/10 text-white backdrop-blur hover:bg-white/20"
           }`}
         >
@@ -160,7 +160,7 @@ export function MobileDiscoveryFilters({
           <SlidersHorizontal className="h-4 w-4 shrink-0" aria-hidden="true" />
           Filtros
           {advancedFilterCount > 0 ? (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded bg-violet-500 px-1 text-[11px]">
+            <span className="flex h-5 min-w-5 items-center justify-center rounded bg-[#ff304f] px-1 text-[11px]">
               {advancedFilterCount}
             </span>
           ) : null}
@@ -185,7 +185,7 @@ export function MobileDiscoveryFilters({
           >
             <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-4">
               <div>
-                <p className="text-xs font-bold uppercase text-violet-700">
+                <p className="text-xs font-bold uppercase text-[#00c2d1]">
                   Descubrir
                 </p>
                 <h2
@@ -217,13 +217,13 @@ export function MobileDiscoveryFilters({
 
               <label className="grid gap-2">
                 <span className="flex items-center gap-2 text-sm font-bold text-slate-800">
-                  <MapPin className="h-4 w-4 text-violet-600" aria-hidden="true" />
+                  <MapPin className="h-4 w-4 text-[#00c2d1]" aria-hidden="true" />
                   Recinto
                 </span>
                 <select
                   name="venue"
                   defaultValue={values.venue}
-                  className="h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 focus:border-violet-500 focus:outline-none"
+                  className="h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 focus:border-[#00c2d1] focus:outline-none"
                 >
                   <option value="">Todos los recintos</option>
                   {venues.map((venue) => (
@@ -238,7 +238,7 @@ export function MobileDiscoveryFilters({
                 <label className="grid min-w-0 gap-2">
                   <span className="flex items-center gap-2 text-sm font-bold text-slate-800">
                     <CalendarDays
-                      className="h-4 w-4 text-violet-600"
+                      className="h-4 w-4 text-[#00c2d1]"
                       aria-hidden="true"
                     />
                     Desde
@@ -247,7 +247,7 @@ export function MobileDiscoveryFilters({
                     name="from"
                     type="date"
                     defaultValue={values.from}
-                    className="h-12 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm text-slate-700 focus:border-violet-500 focus:outline-none"
+                    className="h-12 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm text-slate-700 focus:border-[#00c2d1] focus:outline-none"
                   />
                 </label>
 
@@ -257,7 +257,7 @@ export function MobileDiscoveryFilters({
                     name="to"
                     type="date"
                     defaultValue={values.to}
-                    className="h-12 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm text-slate-700 focus:border-violet-500 focus:outline-none"
+                    className="h-12 min-w-0 rounded-md border border-slate-300 bg-white px-2 text-sm text-slate-700 focus:border-[#00c2d1] focus:outline-none"
                   />
                 </label>
               </div>
@@ -272,7 +272,7 @@ export function MobileDiscoveryFilters({
                 </Link>
                 <button
                   type="submit"
-                  className="h-12 rounded-md bg-violet-600 px-5 text-sm font-bold text-white transition hover:bg-violet-700"
+                  className="h-12 rounded-md bg-[#ff304f] px-5 text-sm font-bold text-white transition hover:bg-[#ff5d74]"
                 >
                   Ver resultados
                 </button>

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #071018;
+  --foreground: #f6f3ea;
 }
 
 @theme inline {
@@ -39,6 +39,10 @@ body {
   body:has([data-artists-page]) [data-back-to-top] {
     display: none;
   }
+
+  body:has([data-event-detail-page]) [data-site-header] {
+    display: none;
+  }
 }
 
 html {
@@ -46,8 +50,8 @@ html {
 }
 
 ::selection {
-  background: #ddd6fe;
-  color: #2e1065;
+  background: #00c2d1;
+  color: #071018;
 }
 
 button,
@@ -55,6 +59,14 @@ a,
 input,
 select,
 summary {
-  outline-color: #7c3aed;
+  outline-color: #00c2d1;
   outline-offset: 3px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

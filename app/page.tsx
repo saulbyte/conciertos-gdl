@@ -1,16 +1,26 @@
-import Image from "next/image";
-import { Suspense } from "react";
-import { CalendarCheck2, Link2, ShieldCheck } from "lucide-react";
-import { EventCard } from "@/components/EventCard";
-import { EventListSkeleton } from "@/components/EventListSkeleton";
-import { MobileDiscoveryFilters } from "@/components/MobileDiscoveryFilters";
-import { SearchFilters } from "@/components/SearchFilters";
+import Link from "next/link";
+import {
+  CalendarDays,
+  Flame,
+  MapPin,
+  Sparkles,
+  TicketCheck,
+  UsersRound,
+} from "lucide-react";
+import { HorizontalScroller } from "@/components/HorizontalScroller";
+import { HomeEventCard } from "@/components/HomeEventCard";
+import { HomeSearchPanel } from "@/components/HomeSearchPanel";
+import { getArtists } from "@/lib/artists";
 import {
   getEvents,
   getFreeEventCount,
   getVenueOptions,
   getWeekendEventCount,
 } from "@/lib/events";
+import {
+  formatDateBadge,
+  formatEventTime,
+} from "@/lib/format";
 
 type SearchParams = {
   q?: string;
@@ -19,6 +29,7 @@ type SearchParams = {
   to?: string;
   admission?: string;
   when?: string;
+  view?: string;
 };
 
 type HomeProps = {
@@ -27,111 +38,32 @@ type HomeProps = {
 
 export default async function Home({ searchParams }: HomeProps) {
   const filters = await searchParams;
-  const [venues, freeEventCount, weekendEventCount] = await Promise.all([
+  const [
+    events,
+    allEvents,
+    freeEvents,
+    weekendEvents,
+    artists,
+    venues,
+    freeEventCount,
+    weekendEventCount,
+  ] = await Promise.all([
+    getEvents({
+      query: filters.q,
+      venue: filters.venue,
+      from: filters.from,
+      to: filters.to,
+      admission: filters.admission === "free" ? "free" : undefined,
+      when: filters.when === "weekend" ? "weekend" : undefined,
+    }),
+    getEvents(),
+    getEvents({ admission: "free" }),
+    getEvents({ when: "weekend" }),
+    getArtists(undefined, "popular"),
     getVenueOptions(),
     getFreeEventCount(),
     getWeekendEventCount(),
   ]);
-
-  return (
-    <main id="inicio">
-      <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-        <Image
-          src="/images/concert-hero.png"
-          alt="Publico disfrutando un concierto en vivo"
-          fill
-          priority
-          sizes="100vw"
-          className="-z-20 object-cover object-[68%_55%]"
-        />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(2,6,23,0.96)_0%,rgba(2,6,23,0.86)_38%,rgba(2,6,23,0.35)_72%,rgba(2,6,23,0.12)_100%)]" />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,rgba(2,6,23,0.82)_0%,transparent_48%)]" />
-
-        <div className="mx-auto flex min-h-[430px] w-full max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="mb-4 text-sm font-bold uppercase text-violet-300">
-              Tu agenda de musica en vivo
-            </p>
-            <h1 className="max-w-xl text-4xl font-bold leading-[1.08] sm:text-5xl lg:text-6xl">
-              Conciertos en Guadalajara
-            </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">
-              Encuentra artistas, fechas y recintos en un solo lugar. Nosotros
-              reunimos la informacion; tu eliges la proxima noche.
-            </p>
-          </div>
-
-          <div id="filtros" className="mt-8 max-w-4xl scroll-mt-24">
-            <SearchFilters
-              venues={venues}
-              values={filters}
-              freeEventCount={freeEventCount}
-            />
-            <MobileDiscoveryFilters
-              venues={venues}
-              values={filters}
-              freeEventCount={freeEventCount}
-              weekendEventCount={weekendEventCount}
-            />
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-slate-300">
-            <span className="text-white">Fuentes verificadas:</span>
-            <span>Ticketmaster</span>
-            <span>Arena Guadalajara</span>
-            <span>C3 Stage</span>
-            <span>eTicket</span>
-            <span>Foro Independencia</span>
-            <span>FunTicket</span>
-            <span>KingTicket</span>
-            <span>Visit Jalisco</span>
-            <span>Superboletos</span>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="eventos"
-        className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 sm:py-14 lg:px-8"
-      >
-        <Suspense fallback={<EventListSkeleton />}>
-          <EventResults filters={filters} />
-        </Suspense>
-      </section>
-
-      <section className="border-y border-violet-100 bg-violet-50/70">
-        <div className="mx-auto grid w-full max-w-7xl gap-7 px-4 py-8 sm:px-6 md:grid-cols-3 lg:px-8">
-          <TrustItem
-            icon={ShieldCheck}
-            title="Informacion confiable"
-            text="Datos reunidos desde fuentes publicas y oficiales."
-          />
-          <TrustItem
-            icon={Link2}
-            title="Enlaces oficiales"
-            text="Cada evento te lleva directamente a su pagina de origen."
-          />
-          <TrustItem
-            icon={CalendarCheck2}
-            title="Agenda actualizada"
-            text="Nuevas fuentes y eventos se agregan continuamente."
-          />
-        </div>
-      </section>
-    </main>
-  );
-}
-
-async function EventResults({ filters }: { filters: SearchParams }) {
-  const events = await getEvents({
-    query: filters.q,
-    venue: filters.venue,
-    from: filters.from,
-    to: filters.to,
-    admission: filters.admission === "free" ? "free" : undefined,
-    when: filters.when === "weekend" ? "weekend" : undefined,
-  });
-
   const hasFilters = Boolean(
     filters.q ||
       filters.venue ||
@@ -140,43 +72,342 @@ async function EventResults({ filters }: { filters: SearchParams }) {
       filters.admission === "free" ||
       filters.when === "weekend",
   );
+  const isAllView = filters.view === "all" || hasFilters;
+  const popularEvents = [...allEvents]
+    .sort(
+      (left, right) =>
+        right.likeCount - left.likeCount ||
+        left.eventDate.getTime() - right.eventDate.getTime(),
+    )
+    .slice(0, 8);
+  const featuredEvents = popularEvents.some((event) => event.likeCount > 0)
+    ? popularEvents
+    : allEvents.slice(4, 12);
+  const activeEvents = hasFilters ? events : allEvents;
 
   return (
-    <section>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm font-bold uppercase text-violet-700">
-            Cartelera
-          </p>
-          <h2 className="mt-1 text-2xl font-bold text-slate-950 sm:text-3xl">
-            {filters.admission === "free" && filters.when === "weekend"
-              ? "Gratis este fin"
-              : filters.when === "weekend"
-                ? "Este fin de semana"
-                : filters.admission === "free"
-                  ? "Conciertos gratis"
-              : hasFilters
-                ? "Resultados"
-                : "Proximos eventos"}
-          </h2>
+    <main
+      id="inicio"
+      className="min-h-screen bg-[#071018] text-[#f6f3ea]"
+    >
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-[#071018]" />
+        <div className="relative mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+          <HomeSearchPanel
+            hideTrigger
+            artists={artists.slice(0, 8).map(toSearchArtist)}
+            events={allEvents.slice(0, 8).map(toSearchEvent)}
+            venues={venues.map((venue) => ({
+              ...venue,
+              city: "Guadalajara",
+            }))}
+          />
+
+          <section>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-black text-[#f6f3ea]">
+                Artistas que suenan
+              </h2>
+              <Link
+                href="/artistas"
+                className="text-xs font-bold text-[#00c2d1] transition hover:text-white"
+              >
+                Ver todos
+              </Link>
+            </div>
+            <HorizontalScroller
+              label="artistas"
+              className="-mx-4 mt-3 sm:-mx-6 lg:mx-0"
+              contentClassName="flex gap-4 px-4 pb-2 sm:px-6 lg:px-10"
+            >
+              {artists.slice(0, 12).map((artist) => (
+                  <Link
+                    key={artist.id}
+                    href={`/artistas/${artist.id}`}
+                    className="group grid w-20 shrink-0 justify-items-center gap-2 text-center"
+                  >
+                    <span className="relative h-16 w-16 overflow-hidden rounded-full border border-white/20 bg-[#0b1d26] transition group-hover:border-[#00c2d1]">
+                      {artist.imageUrl || artist.fallbackImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={artist.imageUrl ?? artist.fallbackImageUrl ?? ""}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="flex h-full w-full items-center justify-center text-xl font-black text-[#00c2d1]">
+                          {artist.name.slice(0, 1)}
+                        </span>
+                      )}
+                      {artist.eventCount > 0 ? (
+                        <span className="absolute right-0 top-0 h-3 w-3 rounded-full border-2 border-[#071018] bg-[#00c2d1]" />
+                      ) : null}
+                    </span>
+                    <span className="line-clamp-1 w-full text-xs font-bold text-slate-300 transition group-hover:text-white">
+                      {artist.name}
+                    </span>
+                  </Link>
+                ))}
+            </HorizontalScroller>
+          </section>
+
+          <section id="filtros" className="mt-3 scroll-mt-24">
+            <div className="flex flex-wrap gap-2">
+              <FilterChip href="/#eventos" active={!isAllView} icon={Sparkles}>
+                Descubrir
+              </FilterChip>
+              <FilterChip
+                href="/?view=all#eventos"
+                active={isAllView}
+                icon={CalendarDays}
+              >
+                Todos
+              </FilterChip>
+              <FilterChip
+                href="/?view=all&admission=free#eventos"
+                active={filters.admission === "free"}
+                icon={TicketCheck}
+              >
+                Gratis
+                <span className="rounded bg-white/12 px-1.5 py-0.5 text-[10px]">
+                  {freeEventCount}
+                </span>
+              </FilterChip>
+              <FilterChip
+                href="/?view=all&when=weekend#eventos"
+                active={filters.when === "weekend"}
+                icon={CalendarDays}
+              >
+                Este fin
+                <span className="rounded bg-white/12 px-1.5 py-0.5 text-[10px]">
+                  {weekendEventCount}
+                </span>
+              </FilterChip>
+              <FilterChip href="/?view=all#eventos" icon={Flame}>
+                Populares
+              </FilterChip>
+              <FilterChip href="/?view=all#eventos" icon={UsersRound}>
+                Mas interesados
+              </FilterChip>
+              {venues.slice(0, 2).map((venue) => (
+                <FilterChip
+                  key={venue.id}
+                  href={`/?view=all&venue=${venue.id}#eventos`}
+                  active={filters.venue === venue.id}
+                  icon={MapPin}
+                >
+                  {venue.name}
+                </FilterChip>
+              ))}
+            </div>
+          </section>
+
         </div>
-        <p className="text-sm font-medium text-slate-500">
-          {events.length} {events.length === 1 ? "evento" : "eventos"}
-        </p>
+      </section>
+
+      <section
+        id="eventos"
+        className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 pb-12 pt-4 sm:px-6 lg:px-8"
+      >
+        {isAllView ? (
+          <AllEventsSection
+            title={hasFilters ? getResultsTitle(filters) : "Todos los eventos"}
+            events={activeEvents}
+          />
+        ) : (
+          <>
+            <EventRail
+              title="Hoy suena"
+              href="/?view=all#eventos"
+              events={allEvents.slice(0, 8)}
+              compactOnMobile
+            />
+
+            <EventRail
+              title="Eventos destacados"
+              href="/descubrir"
+              events={featuredEvents}
+            />
+
+            <EventRail
+              title="Gratis esta semana"
+              href="/?view=all&admission=free#eventos"
+              events={freeEvents.slice(0, 8)}
+            />
+
+            <EventRail
+              title="Este fin"
+              href="/?view=all&when=weekend#eventos"
+              events={weekendEvents.slice(0, 8)}
+            />
+          </>
+        )}
+      </section>
+
+      <section className="mx-auto w-full max-w-7xl px-4 pb-10 pt-2 sm:px-6 lg:px-8">
+        <div className="space-y-5">
+          <div className="-mx-4 overflow-hidden sm:mx-0">
+            <div className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 pb-1 text-xs font-bold text-slate-400 sm:flex-wrap sm:overflow-visible sm:px-0">
+              <span className="inline-flex h-8 shrink-0 items-center gap-2 rounded-full bg-white/[0.045] px-3 text-[#f6f3ea]">
+              <BrandTrustIcon variant="verified" tone="cyan" />
+              Fuentes verificadas
+            </span>
+              {[
+                "Ticketmaster",
+                "Arena Guadalajara",
+                "C3 Stage",
+                "eTicket",
+                "Foro Independencia",
+                "FunTicket",
+                "KingTicket",
+                "Visit Jalisco",
+                "Superboletos",
+              ].map((source) => (
+                <span
+                  key={source}
+                  className="inline-flex h-8 shrink-0 items-center rounded-full bg-white/[0.03] px-3 text-slate-300"
+                >
+                  {source}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-t border-white/[0.08] pt-5 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4">
+            <TrustItem
+              variant="verified"
+              tone="cyan"
+              title="Fuentes confiables"
+              text="Informacion reunida desde sitios oficiales y publicos."
+            />
+            <TrustItem
+              variant="free"
+              tone="red"
+              title="Gratis visible"
+              text="Marcamos conciertos sin costo cuando la fuente lo indica."
+            />
+            <TrustItem
+              variant="artist"
+              tone="red"
+              title="Artistas primero"
+              text="Perfiles, avisos y proximas fechas desde el inicio."
+            />
+            <TrustItem
+              variant="metro"
+              tone="cyan"
+              title="Zona metropolitana"
+              text="Guadalajara, Zapopan, Tlaquepaque y recintos cercanos."
+            />
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function EventRail({
+  title,
+  href,
+  events,
+  compactOnMobile = false,
+}: {
+  title: string;
+  href: string;
+  events: Awaited<ReturnType<typeof getEvents>>;
+  compactOnMobile?: boolean;
+}) {
+  if (events.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="py-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
+          {title}
+        </h2>
+        <Link
+          href={href}
+          className="text-xs font-bold text-[#00c2d1] transition hover:text-white"
+        >
+          Ver todos
+        </Link>
+      </div>
+
+      <>
+        {compactOnMobile ? (
+          <div className="grid gap-2 md:hidden">
+            {events.slice(0, 6).map((event) => (
+              <HomeEventCard key={event.id} event={event} compact />
+            ))}
+          </div>
+        ) : null}
+        <div className={compactOnMobile ? "max-md:hidden" : ""}>
+          <HorizontalScroller
+            label={title}
+            className="-mx-4 sm:-mx-6 lg:mx-0"
+            contentClassName="flex snap-x gap-3 px-4 pb-2 sm:px-6 lg:px-10"
+          >
+            {events.slice(0, 8).map((event) => (
+              <div key={event.id} className="w-64 shrink-0 snap-start lg:w-72">
+                <HomeEventCard event={event} />
+              </div>
+            ))}
+          </HorizontalScroller>
+        </div>
+      </>
+    </section>
+  );
+}
+
+function AllEventsSection({
+  title,
+  events,
+}: {
+  title: string;
+  events: Awaited<ReturnType<typeof getEvents>>;
+}) {
+  return (
+    <section className="py-5">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-black tracking-tight text-[#f6f3ea]">
+            {title}
+          </h2>
+          <p className="mt-1 text-sm font-semibold text-slate-400">
+            {events.length} {events.length === 1 ? "evento" : "eventos"} por fecha mas cercana
+          </p>
+        </div>
+        {events.length > 0 ? (
+          <Link
+            href="/#eventos"
+            className="text-xs font-bold text-[#00c2d1] transition hover:text-white"
+          >
+            Ver por secciones
+          </Link>
+        ) : null}
       </div>
 
       {events.length > 0 ? (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {events.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-2 md:hidden">
+            {events.map((event) => (
+              <HomeEventCard key={event.id} event={event} compact />
+            ))}
+          </div>
+          <div className="hidden grid-cols-2 gap-4 md:grid lg:grid-cols-3 xl:grid-cols-4">
+            {events.map((event) => (
+              <HomeEventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </>
       ) : (
-        <div className="border-y border-dashed border-slate-300 bg-white px-5 py-16 text-center">
-          <p className="text-lg font-bold text-slate-950">
+        <div className="rounded-lg border border-dashed border-white/12 bg-white/[0.035] px-5 py-12 text-center">
+          <p className="text-lg font-black text-[#f6f3ea]">
             No encontramos eventos con esos filtros.
           </p>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-slate-400">
             Prueba con otra fecha, artista o recinto.
           </p>
         </div>
@@ -185,22 +416,182 @@ async function EventResults({ filters }: { filters: SearchParams }) {
   );
 }
 
-type TrustItemProps = {
-  icon: typeof ShieldCheck;
+function FilterChip({
+  href,
+  active = false,
+  redAccent = false,
+  icon: Icon,
+  children,
+}: {
+  href: string;
+  active?: boolean;
+  redAccent?: boolean;
+  icon: typeof UsersRound;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition ${
+        active
+          ? "border-[#ff304f] bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.22)]"
+          : redAccent
+            ? "border-[#ff304f]/45 bg-[#ff304f]/10 text-[#f6f3ea] hover:border-[#ff304f]"
+            : "border-white/12 bg-white/5 text-[#f6f3ea] hover:border-[#ff304f]/65 hover:text-white"
+      }`}
+    >
+      <Icon className="h-4 w-4" aria-hidden="true" />
+      {children}
+    </Link>
+  );
+}
+
+function TrustItem({
+  variant,
+  tone,
+  title,
+  text,
+}: {
+  variant: BrandTrustIconVariant;
+  tone: BrandTrustIconTone;
   title: string;
   text: string;
-};
-
-function TrustItem({ icon: Icon, title, text }: TrustItemProps) {
+}) {
   return (
-    <div className="flex items-start gap-4">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-violet-200 bg-white text-violet-700">
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </span>
-      <div>
-        <h2 className="text-sm font-bold text-slate-950">{title}</h2>
-        <p className="mt-1 text-sm leading-5 text-slate-600">{text}</p>
-      </div>
+    <div className="min-w-0">
+      <BrandTrustIcon variant={variant} tone={tone} large />
+      <h2 className="mt-2 text-sm font-black leading-tight text-[#f6f3ea]">
+        {title}
+      </h2>
+      <p className="mt-1 text-xs leading-5 text-slate-400 sm:text-sm">
+        {text}
+      </p>
     </div>
   );
+}
+
+type BrandTrustIconVariant = "verified" | "free" | "artist" | "metro";
+type BrandTrustIconTone = "cyan" | "red";
+
+function BrandTrustIcon({
+  variant,
+  tone,
+  large = false,
+}: {
+  variant: BrandTrustIconVariant;
+  tone: BrandTrustIconTone;
+  large?: boolean;
+}) {
+  const color = tone === "red" ? "#ff304f" : "#00c2d1";
+  const sizeClass = large ? "h-7 w-7 sm:h-8 sm:w-8" : "h-4 w-4";
+
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={`${sizeClass} shrink-0`}
+      fill="none"
+      aria-hidden="true"
+    >
+      {variant === "verified" ? (
+        <>
+          <path
+            d="M16 4.5 25 8v7.2c0 5.7-3.5 9.8-9 12.3-5.5-2.5-9-6.6-9-12.3V8l9-3.5Z"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinejoin="round"
+          />
+          <path
+            d="m11.5 16.2 3 3 6-7"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </>
+      ) : null}
+      {variant === "free" ? (
+        <>
+          <path
+            d="M16 5.5v21"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M21.5 10.5c-1.2-1.7-3-2.5-5.2-2.5-3 0-5.1 1.4-5.1 3.8 0 5.3 10.1 2.7 10.1 8.2 0 2.5-2.1 4-5.2 4-2.5 0-4.4-.9-5.7-2.7"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+        </>
+      ) : null}
+      {variant === "artist" ? (
+        <>
+          <path
+            d="M10 23.5V8.5l12-2.7v14.8"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M10 23.5c0 1.8-1.7 3-3.6 3S3 25.4 3 23.9s1.5-2.8 3.5-2.8c1.3 0 2.5.5 3.5 1.4M22 20.6c0 1.8-1.7 3-3.6 3S15 22.5 15 21s1.5-2.8 3.5-2.8c1.3 0 2.5.5 3.5 1.4"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+        </>
+      ) : null}
+      {variant === "metro" ? (
+        <>
+          <path
+            d="M16 28s8-7.2 8-14a8 8 0 1 0-16 0c0 6.8 8 14 8 14Z"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M13 14h6M16 11v6"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+        </>
+      ) : null}
+    </svg>
+  );
+}
+
+function getResultsTitle(filters: SearchParams) {
+  if (filters.admission === "free" && filters.when === "weekend") {
+    return "Gratis este fin";
+  }
+  if (filters.admission === "free") return "Conciertos gratis";
+  if (filters.when === "weekend") return "Este fin";
+  if (filters.q) return `Resultados para "${filters.q}"`;
+  return "Resultados";
+}
+
+function toSearchArtist(artist: Awaited<ReturnType<typeof getArtists>>[number]) {
+  return {
+    id: artist.id,
+    name: artist.name,
+    imageUrl: artist.imageUrl ?? artist.fallbackImageUrl,
+    subscriberCount: artist.subscriberCount,
+  };
+}
+
+function toSearchEvent(event: Awaited<ReturnType<typeof getEvents>>[number]) {
+  const date = formatDateBadge(event.eventDate);
+
+  return {
+    id: event.id,
+    title: event.title,
+    imageUrl: event.imageUrl,
+    dateLabel: `${date.day} ${date.month}`,
+    venueName: event.venue.name,
+    timeLabel: formatEventTime(event.eventDate, event.source),
+    admissionType: event.admissionType,
+  };
 }

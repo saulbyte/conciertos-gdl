@@ -61,7 +61,7 @@ export function SearchFilters({
         </label>
         <button
           type="submit"
-          className="m-1.5 inline-flex min-w-12 items-center justify-center gap-2 rounded-md bg-violet-600 px-4 text-sm font-bold text-white transition hover:bg-violet-700 sm:px-6"
+          className="m-1.5 inline-flex min-w-12 items-center justify-center gap-2 rounded-full bg-[#ff304f] px-4 text-sm font-bold text-white transition hover:bg-[#ff5d74] sm:px-6"
         >
           <Search className="h-4 w-4 sm:hidden" aria-hidden="true" />
           <span className="hidden sm:inline">Buscar</span>
@@ -70,7 +70,7 @@ export function SearchFilters({
 
       <div className="grid border-t border-slate-200 bg-slate-50 md:grid-cols-[1.2fr_1fr_1fr_auto]">
         <label className="flex min-w-0 items-center gap-2 border-b border-slate-200 px-4 md:border-b-0 md:border-r">
-          <MapPin className="h-4 w-4 shrink-0 text-violet-600" aria-hidden="true" />
+          <MapPin className="h-4 w-4 shrink-0 text-[#00c2d1]" aria-hidden="true" />
           <span className="sr-only">Recinto</span>
           <select
             name="venue"
@@ -88,7 +88,7 @@ export function SearchFilters({
 
         <label className="flex items-center gap-2 border-b border-slate-200 px-4 md:border-b-0 md:border-r">
           <CalendarDays
-            className="h-4 w-4 shrink-0 text-violet-600"
+            className="h-4 w-4 shrink-0 text-[#00c2d1]"
             aria-hidden="true"
           />
           <span className="text-xs font-bold text-slate-500">Desde</span>

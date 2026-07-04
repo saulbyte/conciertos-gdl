@@ -1,96 +1,186 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { CalendarCheck2, ExternalLink, ShieldCheck } from "lucide-react";
+import {
+  CalendarSearch,
+  ExternalLink,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+  TicketX,
+} from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const metadata: Metadata = {
   title: "Acerca de",
   description:
-    "Conoce que es Conciertos GDL y como reunimos informacion de eventos musicales en Guadalajara.",
+    "Conoce que es Donde Toca y como reunimos informacion de conciertos en Guadalajara.",
 };
+
+const imageSrc = "/images/about-concert-scene.png";
 
 export default function AboutPage() {
   return (
-    <main className="bg-slate-50">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-bold uppercase text-violet-700">
-            Acerca de
-          </p>
-          <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            Conciertos GDL
-          </h1>
-          <p className="mt-5 text-lg leading-8 text-slate-600">
-            Conciertos GDL es una agenda independiente para descubrir conciertos
-            y eventos musicales en Guadalajara y su zona metropolitana.
-            Reunimos informacion publica de distintas fuentes para que sea mas
-            facil encontrar fechas, artistas, recintos y enlaces oficiales.
-          </p>
+    <main className="bg-[#071018] text-[#f6f3ea]">
+      <section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.86fr)_minmax(480px,1fr)] lg:items-center">
+          <div className="max-w-2xl">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00c2d1]">
+              Acerca de
+            </p>
+            <div className="mt-3">
+              <Image
+                src="/brand/donde-toca-lockup.svg"
+                alt="Dónde Toca"
+                width={360}
+                height={112}
+                priority
+                className="h-auto w-52 sm:w-64"
+              />
+            </div>
+            <h1 className="mt-5 max-w-xl text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl">
+              La agenda viva de conciertos en Guadalajara
+            </h1>
+            <p className="mt-5 text-base leading-8 text-slate-300 sm:text-lg">
+              Una guia independiente para descubrir conciertos y eventos
+              musicales en Guadalajara y su zona metropolitana. Reunimos
+              informacion publica de fuentes oficiales para que encuentres
+              fechas, artistas, recintos y enlaces de origen sin brincar entre
+              tantas paginas.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Link
+                href="/#eventos"
+                className="inline-flex h-11 items-center gap-2 rounded-md bg-[#00c2d1] px-4 text-sm font-black text-[#071018] transition hover:bg-[#33d4de]"
+              >
+                Ver eventos
+                <CalendarSearch className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/contacto"
+                className="inline-flex h-11 items-center gap-2 rounded-md bg-white/[0.045] px-4 text-sm font-black text-[#f6f3ea] transition hover:bg-white/[0.07] hover:text-[#00c2d1]"
+              >
+                Contacto
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+
+          <AboutCollage />
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-4xl gap-5 px-4 py-10 sm:px-6 lg:px-8">
-        <InfoBlock
-          icon={ShieldCheck}
-          title="No vendemos boletos"
-          text="El sitio funciona como agregador informativo. Cuando un evento tiene enlace disponible, te dirigimos a la fuente de origen para consultar detalles, disponibilidad y compra."
-        />
-        <InfoBlock
-          icon={ExternalLink}
-          title="Fuentes publicas y verificables"
-          text="La informacion puede venir de plataformas de boletaje, recintos, fuentes institucionales o paginas publicas de eventos. Siempre buscamos mantener enlaces claros hacia el origen."
-        />
-        <InfoBlock
-          icon={CalendarCheck2}
-          title="Actualizacion constante"
-          text="El catalogo se actualiza periodicamente para sumar nuevos eventos, corregir informacion disponible y mejorar la experiencia de descubrimiento."
-        />
+      <section className="border-y border-white/8">
+        <div className="mx-auto grid w-full max-w-7xl gap-3 px-4 py-6 sm:px-6 md:grid-cols-4 lg:px-8">
+          <TrustPill icon={ShieldCheck} label="Fuentes verificadas" />
+          <TrustPill icon={TicketX} label="Sin venta de boletos" tone="red" />
+          <TrustPill icon={Sparkles} label="Gratis visible" tone="red" />
+          <TrustPill icon={MapPin} label="Zona metropolitana" />
+        </div>
+      </section>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-6">
-          <h2 className="text-xl font-bold text-slate-950">
-            Para quien es este sitio
-          </h2>
-          <p className="mt-3 leading-7 text-slate-600">
-            Para personas que quieren encontrar musica en vivo en la ciudad sin
-            revisar muchas paginas por separado. La idea es que puedas descubrir
-            eventos por artista, fecha, recinto o tipo de entrada, y despues
-            confirmar la informacion directamente en la fuente oficial.
+      <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-5">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00c2d1]">
+            Como funciona
           </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href="/#eventos"
-              className="inline-flex h-11 items-center rounded-md bg-violet-600 px-4 text-sm font-bold text-white transition hover:bg-violet-700"
-            >
-              Ver eventos
-            </Link>
-            <Link
-              href="/contacto"
-              className="inline-flex h-11 items-center rounded-md border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 transition hover:border-violet-300 hover:text-violet-700"
-            >
-              Contacto
-            </Link>
-          </div>
+          <h2 className="mt-1 text-2xl font-black text-[#f6f3ea]">
+            Una agenda viva, sin intermediacion
+          </h2>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-3">
+          <Step
+            number="01"
+            title="Buscamos"
+            text="Revisamos fuentes publicas, recintos, boletaje y sitios institucionales con eventos musicales."
+          />
+          <Step
+            number="02"
+            title="Organizamos"
+            text="Ordenamos la informacion por fecha, artista, recinto, costo y senales de interes."
+          />
+          <Step
+            number="03"
+            title="Te llevamos a la fuente"
+            text="Cada evento apunta al sitio de origen para confirmar disponibilidad, requisitos y detalles."
+          />
         </div>
       </section>
     </main>
   );
 }
 
-type InfoBlockProps = {
+function AboutCollage() {
+  return (
+    <div className="relative min-h-[340px] sm:min-h-[420px]">
+      <div className="absolute left-0 top-4 w-[78%] overflow-hidden rounded-lg bg-[#0b1d26] shadow-2xl shadow-black/30">
+        <Image
+          src={imageSrc}
+          alt="Concierto nocturno en Guadalajara"
+          width={1600}
+          height={1000}
+          priority
+          className="aspect-[4/3] h-auto w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#071018]/90 via-[#071018]/10 to-transparent" />
+      </div>
+
+      <div className="absolute right-0 top-0 w-[48%] overflow-hidden rounded-lg bg-[#0b1d26] shadow-xl shadow-black/30">
+        <Image
+          src={imageSrc}
+          alt=""
+          width={900}
+          height={900}
+          className="aspect-square h-auto w-full object-cover object-right"
+        />
+        <div className="absolute inset-0 bg-[#00c2d1]/10" />
+      </div>
+
+      <div className="absolute bottom-0 right-3 w-[58%] rounded-lg bg-[#0b1d26]/92 p-4 shadow-2xl shadow-black/40 backdrop-blur">
+        <BrandLogo compact markOnly />
+        <p className="mt-3 text-lg font-black leading-tight text-[#f6f3ea]">
+          Una agenda viva de musica en Guadalajara
+        </p>
+        <p className="mt-2 text-xs leading-5 text-slate-400">
+          Que toca, donde toca y desde que fuente confirmarlo.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+type TrustPillProps = {
   icon: typeof ShieldCheck;
-  title: string;
-  text: string;
+  label: string;
+  tone?: "cyan" | "red";
 };
 
-function InfoBlock({ icon: Icon, title, text }: InfoBlockProps) {
+function TrustPill({ icon: Icon, label, tone = "cyan" }: TrustPillProps) {
+  const color = tone === "red" ? "text-[#ff8a9b]" : "text-[#00c2d1]";
+
   return (
-    <article className="flex gap-4 rounded-lg border border-slate-200 bg-white p-5">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
-        <Icon className="h-5 w-5" aria-hidden="true" />
-      </span>
-      <div>
-        <h2 className="text-lg font-bold text-slate-950">{title}</h2>
-        <p className="mt-2 leading-7 text-slate-600">{text}</p>
-      </div>
+    <div className="flex min-h-16 items-center gap-3 rounded-lg bg-white/[0.03] px-4">
+      <Icon className={`h-5 w-5 shrink-0 ${color}`} aria-hidden="true" />
+      <span className="text-sm font-black text-[#f6f3ea]">{label}</span>
+    </div>
+  );
+}
+
+function Step({
+  number,
+  title,
+  text,
+}: {
+  number: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <article className="border-t border-white/10 pt-4">
+      <p className="text-sm font-black text-[#ff8a9b]">{number}</p>
+      <h3 className="mt-2 text-xl font-black text-[#f6f3ea]">{title}</h3>
+      <p className="mt-2 text-sm leading-7 text-slate-400">{text}</p>
     </article>
   );
 }
