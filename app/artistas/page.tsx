@@ -54,15 +54,6 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
             </div>
           </div>
 
-          <div className="flex items-end justify-between gap-3 md:hidden">
-            <div>
-              <h1 className="text-2xl font-black md:mt-0.5 md:text-4xl">Artistas</h1>
-            </div>
-            <p className="pb-1 text-xs font-semibold text-slate-400">
-              {artists.length} {artists.length === 1 ? "artista" : "artistas"}
-            </p>
-          </div>
-
           {featuredArtists.length > 0 ? (
             <FeaturedArtists artists={featuredArtists} />
           ) : null}
@@ -74,7 +65,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
       <section className="mx-auto w-full max-w-7xl px-4 pb-24 pt-3 sm:px-6 md:pt-4 lg:px-8">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
-            {hasSearch ? `Resultados para "${query}"` : "Catalogo"}
+            {hasSearch ? `Resultados para "${query}"` : "Catalogo de artistas"}
           </h2>
           <span className="text-xs font-bold text-slate-400">
             {artists.length}
@@ -159,9 +150,6 @@ function FeaturedArtist({
             {artist.name.slice(0, 1)}
           </span>
         )}
-        {artist.eventCount > 0 ? (
-          <span className="absolute right-0 top-0 h-3 w-3 rounded-full border-2 border-[#071018] bg-[#00c2d1]" />
-        ) : null}
       </span>
       <span className="line-clamp-1 w-full text-xs font-bold text-slate-300 transition group-hover:text-white">
         {artist.name}
@@ -266,9 +254,6 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
             ) : (
               <Music2 className="h-8 w-8" aria-hidden="true" />
             )}
-            {artist.eventCount > 0 ? (
-              <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-[#00c2d1] ring-2 ring-[#071018]" />
-            ) : null}
           </span>
       </div>
 
