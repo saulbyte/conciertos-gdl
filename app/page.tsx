@@ -88,6 +88,9 @@ export default async function Home({ searchParams }: HomeProps) {
   const artistsPlayingThisMonth = artists
     .filter((artist) => artist.nextEvent && isThisMonth(artist.nextEvent.eventDate))
     .slice(0, 12);
+  const todayEvents = allEvents.filter((event) => isToday(event.eventDate));
+  const leadEvents = todayEvents.length > 0 ? todayEvents : allEvents.slice(0, 8);
+  const leadEventsTitle = todayEvents.length > 0 ? "Hoy toca" : "Proximos eventos";
 
   return (
     <main
@@ -144,9 +147,6 @@ export default async function Home({ searchParams }: HomeProps) {
                           {artist.name.slice(0, 1)}
                         </span>
                       )}
-                      {artist.eventCount > 0 ? (
-                        <span className="absolute right-0 top-0 h-3 w-3 rounded-full border-2 border-[#071018] bg-[#00c2d1]" />
-                      ) : null}
                     </span>
                     <span className="line-clamp-1 w-full text-xs font-bold text-slate-300 transition group-hover:text-white">
                       {artist.name}
@@ -230,9 +230,9 @@ export default async function Home({ searchParams }: HomeProps) {
         ) : (
           <>
             <EventRail
-              title="Hoy suena"
+              title={leadEventsTitle}
               href="/?view=all#eventos"
-              events={allEvents.slice(0, 8)}
+              events={leadEvents}
               compactOnMobile
             />
 
@@ -607,6 +607,18 @@ function isThisMonth(date: Date) {
   const formatter = new Intl.DateTimeFormat("en-US", {
     month: "2-digit",
     year: "numeric",
+    timeZone: "America/Mexico_City",
+  });
+
+  return formatter.format(date) === formatter.format(now);
+}
+
+function isToday(date: Date) {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     timeZone: "America/Mexico_City",
   });
 

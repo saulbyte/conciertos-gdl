@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { EventArtwork } from "@/components/EventArtwork";
+import { HorizontalScroller } from "@/components/HorizontalScroller";
 import { MobileMenu } from "@/components/MobileMenu";
 import { getArtists, type ArtistSortMode } from "@/lib/artists";
 import { formatDateBadge } from "@/lib/format";
@@ -114,13 +115,15 @@ function FeaturedArtists({
         </Link>
       </div>
 
-      <div className="-mx-4 overflow-hidden sm:-mx-6 lg:mx-0">
-        <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 sm:px-6 lg:px-10">
-          {artists.map((artist) => (
-            <FeaturedArtist key={artist.id} artist={artist} />
-          ))}
-        </div>
-      </div>
+      <HorizontalScroller
+        label="artistas"
+        className="-mx-4 sm:-mx-6 lg:mx-0"
+        contentClassName="flex gap-4 px-4 pb-2 sm:px-6 lg:px-10"
+      >
+        {artists.map((artist) => (
+          <FeaturedArtist key={artist.id} artist={artist} />
+        ))}
+      </HorizontalScroller>
     </section>
   );
 }

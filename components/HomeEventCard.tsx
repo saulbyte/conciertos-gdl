@@ -137,7 +137,7 @@ function DateBadge({
 }) {
   return (
     <span
-      className={`flex shrink-0 flex-col items-center justify-center rounded-md border border-[#00c2d1]/30 bg-[#071018]/90 text-[#f6f3ea] shadow-lg shadow-black/30 ${
+      className={`relative z-10 flex shrink-0 flex-col items-center justify-center rounded-md border border-[#00c2d1]/30 bg-[#071018]/90 text-[#f6f3ea] shadow-lg shadow-black/30 ${
         small ? "h-10 w-10" : "h-14 w-14"
       }`}
     >

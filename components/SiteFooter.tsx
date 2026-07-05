@@ -9,8 +9,8 @@ export function SiteFooter() {
       id="acerca"
       className="border-t border-white/10 bg-[#071018] text-[#f6f3ea]"
     >
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr] lg:px-8">
-        <div className="max-w-sm">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-2 gap-x-6 gap-y-8 px-4 py-8 sm:px-6 md:grid-cols-2 md:gap-10 md:py-10 lg:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr] lg:px-8">
+        <div className="col-span-2 max-w-sm lg:col-span-1">
           <BrandLogo compact />
           <p className="mt-4 text-sm leading-6 text-slate-400">
             Tu agenda de conciertos y eventos musicales en Guadalajara y su
@@ -20,7 +20,7 @@ export function SiteFooter() {
 
         <div>
           <h2 className="text-sm font-bold text-[#f6f3ea]">Navegacion</h2>
-          <div className="mt-4 grid gap-3 text-sm text-slate-400">
+          <div className="mt-3 grid gap-2.5 text-sm text-slate-400 md:mt-4 md:gap-3">
             <Link className="hover:text-[#00c2d1]" href="/#eventos">
               Eventos
             </Link>
@@ -42,16 +42,16 @@ export function SiteFooter() {
             href="https://www.instagram.com/conciertos.gdl/"
             target="_blank"
             rel="noreferrer"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-[#00c2d1]"
+            className="mt-3 inline-flex min-w-0 items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-[#00c2d1] md:mt-4"
           >
             <AtSign className="h-5 w-5" aria-hidden="true" />
-            @conciertos.gdl
+            <span className="truncate">@conciertos.gdl</span>
           </a>
         </div>
 
         <div>
           <h2 className="text-sm font-bold text-[#f6f3ea]">Legal</h2>
-          <div className="mt-4 grid gap-3 text-sm text-slate-400">
+          <div className="mt-3 grid gap-2.5 text-sm text-slate-400 md:mt-4 md:gap-3">
             <Link className="hover:text-[#00c2d1]" href="/privacidad">
               Privacidad
             </Link>
