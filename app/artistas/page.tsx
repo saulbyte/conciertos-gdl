@@ -32,7 +32,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
   const artists = await getArtists(query, mode);
   const hasSearch = query.length > 0;
   const featuredArtists = artists
-    .filter((artist) => artist.nextEvent || artist.subscriberCount > 0)
+    .filter((artist) => artist.nextEvent && isThisMonth(artist.nextEvent.eventDate))
     .slice(0, 12);
 
   return (
@@ -44,7 +44,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
             <div className="flex items-center gap-2">
               <Link
                 href="/?search=open"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
+                className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
                 aria-label="Buscar artista"
                 title="Buscar artista"
               >
@@ -114,7 +114,7 @@ function FeaturedArtists({
   return (
     <section className="mt-5 md:mt-0">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-sm font-black text-[#f6f3ea]">Artistas que suenan</h2>
+        <h2 className="text-sm font-black text-[#f6f3ea]">Artistas que tocan</h2>
         <Link
           href="/artistas?mode=upcoming"
           className="text-xs font-bold text-[#00c2d1] transition hover:text-white"
@@ -176,6 +176,17 @@ function parseArtistMode(mode?: string): ArtistSortMode {
   }
 
   return "popular";
+}
+
+function isThisMonth(date: Date) {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "America/Mexico_City",
+  });
+
+  return formatter.format(date) === formatter.format(now);
 }
 
 function ArtistFilters({

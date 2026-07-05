@@ -30,6 +30,7 @@ type SearchParams = {
   admission?: string;
   when?: string;
   view?: string;
+  sort?: string;
 };
 
 type HomeProps = {
@@ -83,7 +84,10 @@ export default async function Home({ searchParams }: HomeProps) {
   const featuredEvents = popularEvents.some((event) => event.likeCount > 0)
     ? popularEvents
     : allEvents.slice(4, 12);
-  const activeEvents = hasFilters ? events : allEvents;
+  const activeEvents = applyEventSort(hasFilters ? events : allEvents, filters.sort);
+  const artistsPlayingThisMonth = artists
+    .filter((artist) => artist.nextEvent && isThisMonth(artist.nextEvent.eventDate))
+    .slice(0, 12);
 
   return (
     <main
@@ -106,7 +110,7 @@ export default async function Home({ searchParams }: HomeProps) {
           <section>
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-sm font-black text-[#f6f3ea]">
-                Artistas que suenan
+                Artistas que tocan
               </h2>
               <Link
                 href="/artistas"
@@ -120,7 +124,7 @@ export default async function Home({ searchParams }: HomeProps) {
               className="-mx-4 mt-3 sm:-mx-6 lg:mx-0"
               contentClassName="flex gap-4 px-4 pb-2 sm:px-6 lg:px-10"
             >
-              {artists.slice(0, 12).map((artist) => (
+              {artistsPlayingThisMonth.map((artist) => (
                   <Link
                     key={artist.id}
                     href={`/artistas/${artist.id}`}
@@ -153,7 +157,7 @@ export default async function Home({ searchParams }: HomeProps) {
           </section>
 
           <section id="filtros" className="mt-3 scroll-mt-24">
-            <div className="flex flex-wrap gap-2">
+            <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-0.5 sm:mx-0 sm:px-0">
               <FilterChip href="/#eventos" active={!isAllView} icon={Sparkles}>
                 Descubrir
               </FilterChip>
@@ -184,10 +188,18 @@ export default async function Home({ searchParams }: HomeProps) {
                   {weekendEventCount}
                 </span>
               </FilterChip>
-              <FilterChip href="/?view=all#eventos" icon={Flame}>
+              <FilterChip
+                href="/?view=all&sort=popular#eventos"
+                active={filters.sort === "popular"}
+                icon={Flame}
+              >
                 Populares
               </FilterChip>
-              <FilterChip href="/?view=all#eventos" icon={UsersRound}>
+              <FilterChip
+                href="/?view=all&sort=interested#eventos"
+                active={filters.sort === "interested"}
+                icon={UsersRound}
+              >
                 Mas interesados
               </FilterChip>
               {venues.slice(0, 2).map((venue) => (
@@ -564,6 +576,8 @@ function BrandTrustIcon({
 }
 
 function getResultsTitle(filters: SearchParams) {
+  if (filters.sort === "popular") return "Eventos populares";
+  if (filters.sort === "interested") return "Mas interesados";
   if (filters.admission === "free" && filters.when === "weekend") {
     return "Gratis este fin";
   }
@@ -571,6 +585,32 @@ function getResultsTitle(filters: SearchParams) {
   if (filters.when === "weekend") return "Este fin";
   if (filters.q) return `Resultados para "${filters.q}"`;
   return "Resultados";
+}
+
+function applyEventSort(
+  events: Awaited<ReturnType<typeof getEvents>>,
+  sort?: string,
+) {
+  if (sort === "popular" || sort === "interested") {
+    return [...events].sort(
+      (left, right) =>
+        right.likeCount - left.likeCount ||
+        left.eventDate.getTime() - right.eventDate.getTime(),
+    );
+  }
+
+  return events;
+}
+
+function isThisMonth(date: Date) {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "America/Mexico_City",
+  });
+
+  return formatter.format(date) === formatter.format(now);
 }
 
 function toSearchArtist(artist: Awaited<ReturnType<typeof getArtists>>[number]) {

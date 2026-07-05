@@ -21,21 +21,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "Donde Toca",
+  applicationName: "D\u00f3nde Toca",
   title: {
-    default: "Donde Toca",
-    template: "%s | Donde Toca",
+    default: "D\u00f3nde Toca",
+    template: "%s | D\u00f3nde Toca",
   },
   description:
     "Descubre conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Donde Toca",
+    title: "D\u00f3nde Toca",
   },
   icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/icons/apple-touch-icon.png",
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {

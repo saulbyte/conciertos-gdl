@@ -3,14 +3,10 @@
 import Link from "next/link";
 import {
   ArrowLeft,
-  CalendarDays,
   ChevronRight,
   MapPin,
   Search,
-  TicketCheck,
-  UsersRound,
   X,
-  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -46,8 +42,6 @@ type HomeSearchPanelProps = {
   hideTrigger?: boolean;
 };
 
-const tabs = ["Todo", "Artistas", "Eventos", "Recintos"];
-
 export function HomeSearchPanel({
   artists,
   events,
@@ -75,7 +69,7 @@ export function HomeSearchPanel({
       {hideTrigger ? null : (
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/5 text-[#f6f3ea] transition hover:border-[#00c2d1]/60 hover:text-[#00c2d1]"
+          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/12 bg-white/5 text-[#f6f3ea] transition hover:border-[#00c2d1]/60 hover:text-[#00c2d1]"
           aria-label="Abrir busqueda"
           title="Buscar"
           onClick={() => setIsOpen(true)}
@@ -126,44 +120,9 @@ export function HomeSearchPanel({
                   Buscar
                 </button>
               </form>
-
-              <div className="mt-3 flex gap-6 overflow-x-auto text-sm font-bold text-slate-400">
-                {tabs.map((tab, index) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    className={`relative shrink-0 pb-2 transition hover:text-white ${
-                      index === 0 ? "text-[#f6f3ea]" : ""
-                    }`}
-                  >
-                    {tab}
-                    {index === 0 ? (
-                      <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-[#00c2d1]" />
-                    ) : null}
-                  </button>
-                ))}
-              </div>
             </div>
 
             <div className="space-y-7 p-4 md:p-5">
-              <div className="flex flex-wrap gap-2">
-                <QuickLink href="/?admission=free#eventos" active icon={TicketCheck}>
-                  Gratis
-                </QuickLink>
-                <QuickLink href="/?when=weekend#eventos" icon={CalendarDays}>
-                  Este fin
-                </QuickLink>
-                <QuickLink href="/#eventos" icon={Zap} redAccent>
-                  Populares
-                </QuickLink>
-                <QuickLink href="/#eventos" icon={UsersRound}>
-                  Mas interesados
-                </QuickLink>
-                <QuickLink href="/#eventos" icon={MapPin}>
-                  Cerca de mi
-                </QuickLink>
-              </div>
-
               <ResultSection title="Artistas" href="/artistas">
                 {artists.slice(0, 5).map((artist) => (
                   <ResultRow
@@ -205,36 +164,6 @@ export function HomeSearchPanel({
         </div>
       ) : null}
     </>
-  );
-}
-
-function QuickLink({
-  href,
-  active = false,
-  redAccent = false,
-  icon: Icon,
-  children,
-}: {
-  href: string;
-  active?: boolean;
-  redAccent?: boolean;
-  icon: typeof TicketCheck;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-black transition ${
-        active
-          ? "border-[#00c2d1] bg-[#00c2d1] text-[#071018]"
-          : redAccent
-            ? "border-[#ff304f]/40 bg-[#ff304f]/8 text-[#f6f3ea] hover:border-[#ff304f]"
-            : "border-white/12 bg-white/5 text-[#f6f3ea] hover:border-[#00c2d1]/70"
-      }`}
-    >
-      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-      {children}
-    </Link>
   );
 }
 

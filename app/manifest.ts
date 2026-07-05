@@ -2,15 +2,15 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Conciertos GDL",
-    short_name: "Conciertos GDL",
+    name: "D\u00f3nde Toca",
+    short_name: "D\u00f3nde Toca",
     description:
       "Agenda de conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#f8fafc",
-    theme_color: "#7c3aed",
+    background_color: "#071018",
+    theme_color: "#071018",
     lang: "es-MX",
     categories: ["entertainment", "music"],
     icons: [

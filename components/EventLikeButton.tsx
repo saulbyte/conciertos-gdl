@@ -14,8 +14,13 @@ export function EventLikeButton({
   initialCount,
   variant = "card",
 }: EventLikeButtonProps) {
+  const storageKey = `donde-toca:event-like:${eventId}`;
   const [count, setCount] = useState(initialCount);
-  const [reacted, setReacted] = useState(false);
+  const [reacted, setReacted] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.localStorage.getItem(storageKey) === "1",
+  );
   const [isPending, setIsPending] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -42,6 +47,7 @@ export function EventLikeButton({
       const result = (await response.json()) as { count: number };
       setCount(result.count);
       setReacted(true);
+      window.localStorage.setItem(storageKey, "1");
     } catch {
       setHasError(true);
     } finally {
@@ -52,7 +58,7 @@ export function EventLikeButton({
   const isDetail = variant === "detail";
   const isDiscovery = variant === "discovery";
   const isDarkCard = variant === "darkCard";
-  const isFilled = reacted || count > 0;
+  const isFilled = reacted;
 
   return (
     <button

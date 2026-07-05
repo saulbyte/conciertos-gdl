@@ -49,7 +49,7 @@ export function SiteHeader() {
           {pathname === "/" ? (
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
+              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
               aria-label="Buscar"
               title="Buscar"
               onClick={openHomeSearch}
@@ -59,7 +59,7 @@ export function SiteHeader() {
           ) : (
             <Link
               href="/?search=open"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
+              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
               aria-label="Buscar"
               title="Buscar"
             >
@@ -76,7 +76,7 @@ export function SiteHeader() {
           {pathname === "/" ? (
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
+              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
               aria-label="Buscar"
               title="Buscar"
               onClick={openHomeSearch}
@@ -86,7 +86,7 @@ export function SiteHeader() {
           ) : (
             <Link
               href="/?search=open"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
+              className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)] transition hover:bg-[#ff5d74]"
               aria-label="Buscar"
               title="Buscar"
             >
