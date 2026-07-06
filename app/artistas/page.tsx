@@ -33,7 +33,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
   const artists = await getArtists(query, mode);
   const hasSearch = query.length > 0;
   const featuredArtists = artists
-    .filter((artist) => artist.nextEvent && isThisMonth(artist.nextEvent.eventDate))
+    .filter((artist) => artist.nextEvent && isWithinNextMonths(artist.nextEvent.eventDate, 2))
     .slice(0, 12);
 
   return (
@@ -169,15 +169,23 @@ function parseArtistMode(mode?: string): ArtistSortMode {
   return "popular";
 }
 
-function isThisMonth(date: Date) {
+function isWithinNextMonths(date: Date, months: number) {
   const now = new Date();
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "America/Mexico_City",
-  });
+  const start = getMexicoCityDateKey(now);
+  const end = new Date(now);
+  end.setMonth(end.getMonth() + months);
 
-  return formatter.format(date) === formatter.format(now);
+  const eventDay = getMexicoCityDateKey(date);
+  return eventDay >= start && eventDay < getMexicoCityDateKey(end);
+}
+
+function getMexicoCityDateKey(date: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(date);
 }
 
 function ArtistFilters({

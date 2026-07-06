@@ -31,7 +31,9 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
               className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
               iconClassName="h-7 w-7"
             />
-            <DateBadge day={date.day} month={date.month} small />
+            <div className="absolute left-2 top-2">
+              <DateBadge day={date.day} month={date.month} small />
+            </div>
           </div>
           <div className="min-w-0 py-1">
             <h3 className="line-clamp-1 text-sm font-black text-[#f6f3ea] transition group-hover:text-[#00c2d1]">

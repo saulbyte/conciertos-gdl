@@ -86,11 +86,12 @@ export default async function Home({ searchParams }: HomeProps) {
     : allEvents.slice(4, 12);
   const activeEvents = applyEventSort(hasFilters ? events : allEvents, filters.sort);
   const artistsPlayingThisMonth = artists
-    .filter((artist) => artist.nextEvent && isThisMonth(artist.nextEvent.eventDate))
+    .filter((artist) => artist.nextEvent && isWithinNextMonths(artist.nextEvent.eventDate, 2))
     .slice(0, 12);
   const todayEvents = allEvents.filter((event) => isToday(event.eventDate));
-  const leadEvents = todayEvents.length > 0 ? todayEvents : allEvents.slice(0, 8);
-  const leadEventsTitle = todayEvents.length > 0 ? "Hoy toca" : "Proximos eventos";
+  const monthEvents = allEvents
+    .filter((event) => isThisMonth(event.eventDate) && !isToday(event.eventDate))
+    .slice(0, 8);
 
   return (
     <main
@@ -230,9 +231,16 @@ export default async function Home({ searchParams }: HomeProps) {
         ) : (
           <>
             <EventRail
-              title={leadEventsTitle}
+              title="Hoy toca"
               href="/?view=all#eventos"
-              events={leadEvents}
+              events={todayEvents}
+              compactOnMobile
+            />
+
+            <EventRail
+              title="Este mes"
+              href="/?view=all#eventos"
+              events={monthEvents}
               compactOnMobile
             />
 
@@ -613,16 +621,27 @@ function isThisMonth(date: Date) {
   return formatter.format(date) === formatter.format(now);
 }
 
-function isToday(date: Date) {
+function isWithinNextMonths(date: Date, months: number) {
   const now = new Date();
-  const formatter = new Intl.DateTimeFormat("en-CA", {
+  const start = getMexicoCityDateKey(now);
+  const end = new Date(now);
+  end.setMonth(end.getMonth() + months);
+
+  const eventDay = getMexicoCityDateKey(date);
+  return eventDay >= start && eventDay < getMexicoCityDateKey(end);
+}
+
+function getMexicoCityDateKey(date: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
     timeZone: "America/Mexico_City",
-  });
+  }).format(date);
+}
 
-  return formatter.format(date) === formatter.format(now);
+function isToday(date: Date) {
+  return getMexicoCityDateKey(date) === getMexicoCityDateKey(new Date());
 }
 
 function toSearchArtist(artist: Awaited<ReturnType<typeof getArtists>>[number]) {
