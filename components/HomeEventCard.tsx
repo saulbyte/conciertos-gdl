@@ -35,11 +35,6 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
             <div className="absolute left-2 top-2">
               <DateBadge day={date.day} month={date.month} small />
             </div>
-            {recentlyAdded ? (
-              <div className="absolute bottom-2 left-2">
-                <NewPill small />
-              </div>
-            ) : null}
           </div>
           <div className="min-w-0 py-1">
             <h3 className="line-clamp-1 text-sm font-black text-[#f6f3ea] transition group-hover:text-[#00c2d1]">
@@ -67,7 +62,8 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
             variant="darkCard"
           />
         </div>
-        <div className="absolute bottom-2 right-2">
+        <div className="absolute bottom-2 right-2 flex max-w-[calc(100%-7rem)] items-center gap-1">
+          {recentlyAdded ? <NewPill small /> : null}
           {event.admissionType === "FREE" ? (
             <FreePill />
           ) : (
@@ -91,7 +87,6 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#071018]/80 via-transparent to-[#071018]/20" />
         <div className="absolute left-3 top-3 flex flex-col gap-2">
           <DateBadge day={date.day} month={date.month} />
-          {recentlyAdded ? <NewPill /> : null}
           {event.admissionType === "FREE" ? <FreePill /> : null}
           {event.isPopular ? <PopularPill /> : null}
         </div>
@@ -105,10 +100,11 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
       </div>
 
       <div className="flex min-h-40 flex-1 flex-col p-3.5">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-md border border-white/10 px-2 py-1 text-[10px] font-black text-slate-300">
             {formatSourceName(event.source)}
           </span>
+          {recentlyAdded ? <NewPill /> : null}
         </div>
         <Link href={`/event/${event.id}`} className="mt-2">
           <h3 className="line-clamp-2 text-base font-black leading-5 text-[#f6f3ea] transition group-hover:text-[#00c2d1]">
@@ -181,11 +177,14 @@ function PopularPill() {
 function NewPill({ small = false }: { small?: boolean }) {
   return (
     <span
-      className={`inline-flex w-fit items-center gap-1 rounded-md bg-[#ff304f] font-black text-white shadow-[0_0_18px_rgba(255,48,79,0.36)] ${
+      className={`inline-flex w-fit items-center gap-1 rounded-md border border-[#00c2d1]/40 bg-[#f6f3ea] font-black text-[#071018] shadow-[0_0_16px_rgba(0,194,209,0.16)] ${
         small ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-1 text-[10px]"
       }`}
     >
-      <Sparkles className={small ? "h-2.5 w-2.5" : "h-3 w-3"} aria-hidden="true" />
+      <Sparkles
+        className={`${small ? "h-2.5 w-2.5" : "h-3 w-3"} text-[#00a7b7]`}
+        aria-hidden="true"
+      />
       Nuevo
     </span>
   );

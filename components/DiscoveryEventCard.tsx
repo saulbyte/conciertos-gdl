@@ -56,8 +56,8 @@ export function DiscoveryEventCard({
             {event.discoveryLabel}
           </span>
           {recentlyAdded ? (
-            <span className="inline-flex min-h-8 items-center gap-1.5 rounded-md bg-[#ff304f] px-2.5 py-1 text-xs font-black text-white shadow-[0_0_20px_rgba(255,48,79,0.36)] backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+            <span className="inline-flex min-h-8 items-center gap-1.5 rounded-md border border-[#00c2d1]/40 bg-[#f6f3ea] px-2.5 py-1 text-xs font-black text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.18)] backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5 text-[#00a7b7]" aria-hidden="true" />
               Nuevo
             </span>
           ) : null}
