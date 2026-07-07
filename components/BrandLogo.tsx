@@ -6,64 +6,162 @@ type BrandLogoProps = {
   size?: "sm" | "md" | "lg";
 };
 
+const textClass =
+  "[font-family:Impact,Haettenschweiler,'Arial_Narrow_Bold','Arial_Black',sans-serif]";
+
 export function BrandLogo({
   compact = false,
   markOnly = false,
   size = "md",
 }: BrandLogoProps) {
-  const iconSize = size === "lg" ? 76 : compact || size === "sm" ? 36 : 44;
-  const textSize =
-    size === "lg" ? "text-3xl" : compact || size === "sm" ? "text-base" : "text-xl";
+  const width = markOnly
+    ? size === "lg"
+      ? 108
+      : compact || size === "sm"
+        ? 52
+        : 64
+    : size === "lg"
+      ? 390
+      : compact || size === "sm"
+        ? 198
+        : 210;
+  const height = markOnly
+    ? size === "lg"
+      ? 108
+      : compact || size === "sm"
+        ? 52
+        : 64
+    : size === "lg"
+      ? 92
+      : compact || size === "sm"
+        ? 46
+        : 50;
 
   return (
-    <Link href="/" className="flex min-w-0 items-center gap-2.5">
-      <svg
-        width={iconSize}
-        height={iconSize}
-        viewBox="0 0 48 48"
-        className="shrink-0 drop-shadow-[0_0_14px_rgba(255,48,79,0.18)]"
-        aria-hidden="true"
-      >
-        <path
-          d="M24 4.5C13.8 4.5 6 12.3 6 22.1c0 12.1 14.6 20.4 18 22.1 3.4-1.7 18-10 18-22.1C42 12.3 34.2 4.5 24 4.5Z"
-          fill="#071018"
-          stroke="#ff304f"
-          strokeWidth="3"
-          strokeLinejoin="round"
-        />
-        <circle
-          cx="24"
-          cy="22"
-          r="12"
-          fill="#071018"
-          stroke="#ff304f"
-          strokeWidth="2"
-          opacity="0.95"
-        />
-        <path
-          d="M15.8 22h2.7m2.6 0v-5.5m0 5.5v5.5m2.9-5.5V14m0 8v8m2.9-8v-5.5m0 5.5v5.5m2.6-5.5h2.7"
-          fill="none"
-          stroke="#f6f3ea"
-          strokeLinecap="round"
-          strokeWidth="2.6"
-        />
-        <path
-          d="M24 14v16"
-          fill="none"
-          stroke="#00c2d1"
-          strokeLinecap="round"
-          strokeWidth="2"
-          opacity="0.9"
-        />
-      </svg>
-      {markOnly ? null : (
-        <span
-          className={`min-w-0 font-black leading-none tracking-tight text-[#f6f3ea] ${textSize}`}
-        >
-          <span className="block">D&oacute;nde</span>
-          <span className="block">Toca</span>
-        </span>
+    <Link
+      href="/"
+      aria-label="La Cartelera"
+      className="group inline-flex min-w-0 items-center text-[#f6f3ea] transition hover:text-[#ff304f] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff304f]"
+    >
+      {markOnly ? (
+        <LaCarteleraMark width={width} height={height} />
+      ) : (
+        <LaCarteleraWordmark width={width} height={height} />
       )}
     </Link>
+  );
+}
+
+function LaCarteleraWordmark({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 640 150"
+      role="img"
+      aria-labelledby="la-cartelera-title"
+      className="block h-auto max-w-full overflow-visible"
+    >
+      <title id="la-cartelera-title">La Cartelera</title>
+      <defs>
+        <clipPath id="la-cartelera-top">
+          <polygon points="0,0 640,0 640,70 0,61" />
+        </clipPath>
+        <clipPath id="la-cartelera-bottom">
+          <polygon points="0,84 640,74 640,150 0,150" />
+        </clipPath>
+      </defs>
+      <g
+        className={`${textClass} fill-current font-black uppercase tracking-[-0.055em]`}
+      >
+        <text
+          x="5"
+          y="113"
+          fontSize="104"
+          fontWeight="900"
+          clipPath="url(#la-cartelera-top)"
+          transform="scale(1.02, 1.18)"
+        >
+          LA CARTELERA
+        </text>
+        <text
+          x="5"
+          y="113"
+          fontSize="104"
+          fontWeight="900"
+          clipPath="url(#la-cartelera-bottom)"
+          transform="scale(1.02, 1.18)"
+        >
+          LA CARTELERA
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+function LaCarteleraMark({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 160 160"
+      role="img"
+      aria-labelledby="la-cartelera-mark-title"
+      className="block h-auto overflow-visible"
+    >
+      <title id="la-cartelera-mark-title">La Cartelera</title>
+      <defs>
+        <clipPath id="la-cartelera-mark-top">
+          <polygon points="0,0 160,0 160,74 0,65" />
+        </clipPath>
+        <clipPath id="la-cartelera-mark-bottom">
+          <polygon points="0,88 160,78 160,160 0,160" />
+        </clipPath>
+      </defs>
+      <rect
+        x="8"
+        y="8"
+        width="144"
+        height="144"
+        rx="18"
+        fill="#071018"
+        stroke="currentColor"
+        strokeWidth="8"
+      />
+      <g
+        className={`${textClass} fill-current font-black uppercase tracking-[-0.08em]`}
+      >
+        <text
+          x="27"
+          y="112"
+          fontSize="92"
+          fontWeight="900"
+          clipPath="url(#la-cartelera-mark-top)"
+        >
+          LC
+        </text>
+        <text
+          x="27"
+          y="112"
+          fontSize="92"
+          fontWeight="900"
+          clipPath="url(#la-cartelera-mark-bottom)"
+        >
+          LC
+        </text>
+      </g>
+    </svg>
   );
 }

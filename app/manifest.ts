@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "D\u00f3nde Toca",
-    short_name: "D\u00f3nde Toca",
+    name: "La Cartelera",
+    short_name: "La Cartelera",
     description:
       "Agenda de conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
     start_url: "/",

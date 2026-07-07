@@ -6,7 +6,7 @@ import { AtSign, ExternalLink, Info, Link2, MapPin, ShieldCheck } from "lucide-r
 export const metadata: Metadata = {
   title: "Contacto",
   description:
-    "Contacta a Dónde Toca por Instagram para sugerir eventos, corregir información o proponer fuentes.",
+    "Contacta a La Cartelera por Instagram para sugerir eventos, corregir información o proponer fuentes.",
 };
 
 const instagramUrl = "https://www.instagram.com/conciertos.gdl/";
@@ -43,7 +43,7 @@ export default function ContactPage() {
                 href="/acerca-de"
                 className="inline-flex h-11 items-center rounded-md bg-white/[0.045] px-4 text-sm font-black text-[#f6f3ea] transition hover:bg-white/[0.07] hover:text-[#00c2d1]"
               >
-                Acerca de Dónde Toca
+                Acerca de La Cartelera
               </Link>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function ContactPage() {
       <section className="border-t border-white/8">
         <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:px-8">
           <p className="max-w-3xl text-sm leading-7 text-slate-400">
-            Dónde Toca no vende boletos ni gestiona accesos. Para compras,
+            La Cartelera no vende boletos ni gestiona accesos. Para compras,
             reembolsos, cambios o disponibilidad, consulta directamente la
             fuente oficial del evento.
           </p>

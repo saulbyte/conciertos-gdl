@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Politica de privacidad",
   description:
-    "Conoce como Conciertos GDL maneja informacion, analitica, cookies, avisos por correo y anuncios.",
+    "Conoce como La Cartelera maneja informacion, analitica, cookies, avisos por correo y anuncios.",
 };
 
 export default function PrivacyPage() {
@@ -26,7 +26,7 @@ export default function PrivacyPage() {
       <section className="mx-auto grid w-full max-w-4xl gap-6 px-4 py-10 text-slate-700 sm:px-6 lg:px-8">
         <PolicySection title="Informacion que podemos recopilar">
           <p>
-            Conciertos GDL puede recopilar informacion tecnica y de uso, como
+            La Cartelera puede recopilar informacion tecnica y de uso, como
             paginas visitadas, interacciones generales, dispositivo, navegador,
             fecha aproximada de acceso y fuente de trafico. Esto nos ayuda a
             entender si el sitio es util y a mejorar la experiencia.

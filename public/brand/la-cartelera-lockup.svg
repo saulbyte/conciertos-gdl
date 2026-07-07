@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="150" viewBox="0 0 640 150" role="img" aria-labelledby="title">
+  <title id="title">La Cartelera</title>
+  <defs>
+    <clipPath id="top">
+      <polygon points="0,0 640,0 640,70 0,61"/>
+    </clipPath>
+    <clipPath id="bottom">
+      <polygon points="0,84 640,74 640,150 0,150"/>
+    </clipPath>
+    <style>
+      .word {
+        fill: #f6f3ea;
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", "Arial Black", sans-serif;
+        font-size: 104px;
+        font-weight: 900;
+        letter-spacing: -5.7px;
+      }
+    </style>
+  </defs>
+  <rect width="640" height="150" fill="#071018"/>
+  <g transform="scale(1.02 1.18)">
+    <text class="word" x="5" y="113" clip-path="url(#top)">LA CARTELERA</text>
+    <text class="word" x="5" y="113" clip-path="url(#bottom)">LA CARTELERA</text>
+  </g>
+</svg>

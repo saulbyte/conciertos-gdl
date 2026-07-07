@@ -14,7 +14,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 export const metadata: Metadata = {
   title: "Acerca de",
   description:
-    "Conoce que es Donde Toca y como reunimos informacion de conciertos en Guadalajara.",
+    "Conoce que es La Cartelera y como reunimos informacion de conciertos en Guadalajara.",
 };
 
 const imageSrc = "/images/about-concert-scene.png";
@@ -30,8 +30,8 @@ export default function AboutPage() {
             </p>
             <div className="mt-3">
               <Image
-                src="/brand/donde-toca-lockup.svg"
-                alt="Dónde Toca"
+                src="/brand/la-cartelera-lockup.svg"
+                alt="La Cartelera"
                 width={360}
                 height={112}
                 priority
@@ -143,7 +143,7 @@ function AboutCollage() {
           Una agenda viva de musica en Guadalajara
         </p>
         <p className="mt-2 text-xs leading-5 text-slate-400">
-          Que toca, donde toca y desde que fuente confirmarlo.
+          Que hay, cuando es y desde que fuente confirmarlo.
         </p>
       </div>
     </div>

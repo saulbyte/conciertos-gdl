@@ -14,12 +14,14 @@ export function EventLikeButton({
   initialCount,
   variant = "card",
 }: EventLikeButtonProps) {
-  const storageKey = `donde-toca:event-like:${eventId}`;
+  const storageKey = `la-cartelera:event-like:${eventId}`;
+  const legacyStorageKey = `${["donde", "toca"].join("-")}:event-like:${eventId}`;
   const [count, setCount] = useState(initialCount);
   const [reacted, setReacted] = useState(
     () =>
       typeof window !== "undefined" &&
-      window.localStorage.getItem(storageKey) === "1",
+      (window.localStorage.getItem(storageKey) === "1" ||
+        window.localStorage.getItem(legacyStorageKey) === "1"),
   );
   const [isPending, setIsPending] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -48,6 +50,7 @@ export function EventLikeButton({
       setCount(result.count);
       setReacted(true);
       window.localStorage.setItem(storageKey, "1");
+      window.localStorage.removeItem(legacyStorageKey);
     } catch {
       setHasError(true);
     } finally {

@@ -21,17 +21,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "D\u00f3nde Toca",
+  applicationName: "La Cartelera",
   title: {
-    default: "D\u00f3nde Toca",
-    template: "%s | D\u00f3nde Toca",
+    default: "La Cartelera",
+    template: "%s | La Cartelera",
   },
   description:
     "Descubre conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "D\u00f3nde Toca",
+    title: "La Cartelera",
   },
   icons: {
     icon: [

@@ -1,8 +1,0 @@
-<svg width="360" height="112" viewBox="0 0 360 112" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M56 8C32.2 8 14 26.2 14 49.1C14 77.3 48.1 96.7 56 100.7C63.9 96.7 98 77.3 98 49.1C98 26.2 79.8 8 56 8Z" fill="#071018" stroke="#ff304f" stroke-width="7" stroke-linejoin="round"/>
-  <circle cx="56" cy="49" r="27" fill="#071018" stroke="#ff304f" stroke-width="4.5" opacity="0.95"/>
-  <path d="M37 49h6.3m6.1 0V36.2m0 12.8v12.8m6.8-12.8V30.3m0 18.7v18.7M63 49V36.2m0 12.8v12.8m6.1-12.8H75.4" stroke="#f6f3ea" stroke-width="6" stroke-linecap="round"/>
-  <path d="M56 30.3v37.4" stroke="#00c2d1" stroke-width="4.6" stroke-linecap="round" opacity="0.9"/>
-  <text x="124" y="48" fill="#f6f3ea" font-family="Arial, Helvetica, sans-serif" font-size="35" font-weight="900" letter-spacing="-1.2">D&#243;nde</text>
-  <text x="124" y="86" fill="#f6f3ea" font-family="Arial, Helvetica, sans-serif" font-size="35" font-weight="900" letter-spacing="-1.2">Toca</text>
-</svg>
