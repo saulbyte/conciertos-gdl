@@ -113,7 +113,7 @@ function NavLink({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`relative py-2 transition hover:text-[#ff304f] ${
+      className={`relative py-2 transition hover:text-[#00c2d1] ${
         active ? "text-[#f6f3ea]" : ""
       }`}
     >
