@@ -39,8 +39,8 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
   return (
     <main data-artists-page className="min-h-dvh bg-[#071018] text-[#f6f3ea]">
       <section className="bg-[#071018] text-[#f6f3ea]">
-        <div className="mx-auto w-full max-w-7xl px-4 pb-4 pt-[max(0.9rem,env(safe-area-inset-top))] sm:px-6 md:pt-5 lg:px-8">
-          <div className="relative mb-5 flex items-center justify-between gap-3 md:hidden">
+        <div className="mx-auto w-full max-w-7xl px-4 pb-4 pt-0 sm:px-6 md:pt-5 lg:px-8">
+          <div className="relative mb-5 flex h-16 items-center justify-between gap-3 md:hidden">
             <BrandLogo compact />
             <div className="flex items-center gap-2">
               <Link

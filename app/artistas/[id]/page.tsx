@@ -50,8 +50,8 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
   return (
     <main data-artists-page className="bg-[#071018] text-[#f6f3ea]">
       <section className="bg-[#071018] text-[#f6f3ea]">
-        <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-          <div className="mb-5 flex items-center justify-between gap-3 md:hidden">
+        <div className="mx-auto w-full max-w-7xl px-4 pb-5 pt-0 sm:px-6 sm:py-7 lg:px-8">
+          <div className="mb-5 flex h-16 items-center justify-between gap-3 md:hidden">
             <BrandLogo compact />
             <div className="flex items-center gap-2">
               <Link
