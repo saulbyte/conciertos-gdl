@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, Clock3, MapPin, TicketCheck } from "lucide-react";
+import { CalendarDays, Clock3, MapPin, Sparkles, TicketCheck } from "lucide-react";
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
@@ -17,6 +17,7 @@ type HomeEventCardProps = {
 export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
   const date = formatDateBadge(event.eventDate);
   const artists = event.artists.map(({ artist }) => artist.name).join(", ");
+  const recentlyAdded = isRecentlyAdded(event.createdAt);
 
   if (compact) {
     return (
@@ -34,6 +35,11 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
             <div className="absolute left-2 top-2">
               <DateBadge day={date.day} month={date.month} small />
             </div>
+            {recentlyAdded ? (
+              <div className="absolute bottom-2 left-2">
+                <NewPill small />
+              </div>
+            ) : null}
           </div>
           <div className="min-w-0 py-1">
             <h3 className="line-clamp-1 text-sm font-black text-[#f6f3ea] transition group-hover:text-[#00c2d1]">
@@ -85,6 +91,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#071018]/80 via-transparent to-[#071018]/20" />
         <div className="absolute left-3 top-3 flex flex-col gap-2">
           <DateBadge day={date.day} month={date.month} />
+          {recentlyAdded ? <NewPill /> : null}
           {event.admissionType === "FREE" ? <FreePill /> : null}
           {event.isPopular ? <PopularPill /> : null}
         </div>
@@ -169,4 +176,24 @@ function PopularPill() {
       Popular
     </span>
   );
+}
+
+function NewPill({ small = false }: { small?: boolean }) {
+  return (
+    <span
+      className={`inline-flex w-fit items-center gap-1 rounded-md bg-[#ff304f] font-black text-white shadow-[0_0_18px_rgba(255,48,79,0.36)] ${
+        small ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-1 text-[10px]"
+      }`}
+    >
+      <Sparkles className={small ? "h-2.5 w-2.5" : "h-3 w-3"} aria-hidden="true" />
+      Nuevo
+    </span>
+  );
+}
+
+function isRecentlyAdded(createdAt: Date) {
+  const threshold = new Date();
+  threshold.setDate(threshold.getDate() - 14);
+
+  return createdAt >= threshold;
 }

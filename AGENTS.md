@@ -12,4 +12,5 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Usar los assets `public/brand/la-cartelera-wordmark-base.png` y `public/brand/la-cartelera-wordmark-hover.png` para base y hover rojo.
 - No reemplazar el logo por texto normal, iniciales, iconos sueltos, SVG recreados, lockups alternos ni una variante especifica de movil.
 - Desktop y movil deben usar el mismo wordmark oficial; si no cabe, ajustar dimensiones/contenedor sin recortar la palabra.
+- Excepcion: el icono instalable/PWA usa monograma dedicado `LC` en `public/icons/`, no el wordmark largo.
 <!-- END:brand-rules -->

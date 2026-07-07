@@ -24,6 +24,7 @@ export function DiscoveryEventCard({
     month: "long",
     timeZone: "America/Mexico_City",
   }).format(event.eventDate);
+  const recentlyAdded = isRecentlyAdded(event.createdAt);
 
   return (
     <article
@@ -54,6 +55,12 @@ export function DiscoveryEventCard({
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
             {event.discoveryLabel}
           </span>
+          {recentlyAdded ? (
+            <span className="inline-flex min-h-8 items-center gap-1.5 rounded-md bg-[#ff304f] px-2.5 py-1 text-xs font-black text-white shadow-[0_0_20px_rgba(255,48,79,0.36)] backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+              Nuevo
+            </span>
+          ) : null}
           {event.admissionType === "FREE" ? (
             <span className="inline-flex min-h-8 items-center gap-1.5 rounded-md border border-[#00c2d1]/50 bg-[#00c2d1]/14 px-2.5 py-1 text-xs font-black text-[#9ff6ff] shadow-lg shadow-black/20 backdrop-blur">
               <TicketCheck className="h-3.5 w-3.5" aria-hidden="true" />
@@ -109,4 +116,11 @@ export function DiscoveryEventCard({
       </div>
     </article>
   );
+}
+
+function isRecentlyAdded(createdAt: Date) {
+  const threshold = new Date();
+  threshold.setDate(threshold.getDate() - 14);
+
+  return createdAt >= threshold;
 }
