@@ -4,6 +4,7 @@ type BrandLogoProps = {
   compact?: boolean;
   markOnly?: boolean;
   size?: "sm" | "md" | "lg";
+  variant?: "auto" | "wordmark" | "mobile";
 };
 
 const textClass =
@@ -13,13 +14,17 @@ export function BrandLogo({
   compact = false,
   markOnly = false,
   size = "md",
+  variant = "auto",
 }: BrandLogoProps) {
+  const mobile = variant === "mobile";
   const width = markOnly
     ? size === "lg"
       ? 108
       : compact || size === "sm"
         ? 52
         : 64
+    : mobile
+      ? 138
     : size === "lg"
       ? 390
       : compact || size === "sm"
@@ -31,6 +36,8 @@ export function BrandLogo({
       : compact || size === "sm"
         ? 52
         : 64
+    : mobile
+      ? 32
     : size === "lg"
       ? 92
       : compact || size === "sm"
@@ -41,7 +48,7 @@ export function BrandLogo({
     <Link
       href="/"
       aria-label="La Cartelera"
-      className="group inline-flex min-w-0 items-center text-[#f6f3ea] transition hover:text-[#ff304f] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff304f]"
+      className="group inline-flex shrink-0 items-center text-[#f6f3ea] transition hover:text-[#ff304f] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff304f]"
     >
       {markOnly ? (
         <LaCarteleraMark width={width} height={height} />

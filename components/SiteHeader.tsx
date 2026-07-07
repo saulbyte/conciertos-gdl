@@ -25,7 +25,12 @@ export function SiteHeader() {
       }`}
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:h-[72px] sm:px-6 lg:px-8">
-        <BrandLogo compact />
+        <span className="md:hidden">
+          <BrandLogo compact variant="mobile" />
+        </span>
+        <span className="hidden md:inline-flex">
+          <BrandLogo compact />
+        </span>
 
         <nav
           aria-label="Navegacion principal"
@@ -72,7 +77,7 @@ export function SiteHeader() {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex min-w-0 items-center gap-2 md:hidden">
           {pathname === "/" ? (
             <button
               type="button"

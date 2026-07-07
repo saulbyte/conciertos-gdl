@@ -131,6 +131,61 @@ summary {
   animation: like-spark-4 620ms ease-out;
 }
 
+.filter-chip {
+  transform: translateZ(0);
+}
+
+.filter-chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.filter-chip[data-tone="cyan"]::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(0, 194, 209, 0.26), transparent 36%),
+    linear-gradient(135deg, rgba(0, 194, 209, 0.12), transparent 58%);
+}
+
+.filter-chip[data-tone="red"]::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 48, 79, 0.28), transparent 36%),
+    linear-gradient(135deg, rgba(255, 48, 79, 0.14), transparent 58%);
+}
+
+.filter-chip:hover,
+.filter-chip[aria-current="page"] {
+  transform: translateY(-1px);
+}
+
+.filter-chip:hover::before,
+.filter-chip[aria-current="page"]::before {
+  opacity: 1;
+}
+
+.filter-chip-icon {
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.filter-chip:hover .filter-chip-icon,
+.filter-chip[aria-current="page"] .filter-chip-icon {
+  transform: scale(1.08) rotate(-5deg);
+}
+
+.filter-chip-count {
+  border-radius: 999px;
+  background: rgba(246, 243, 234, 0.13);
+  padding: 0.125rem 0.45rem;
+  font-size: 0.65rem;
+  line-height: 1;
+  color: currentColor;
+}
+
 @keyframes like-pop {
   0% {
     transform: scale(1);

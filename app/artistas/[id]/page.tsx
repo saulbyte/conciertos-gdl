@@ -52,7 +52,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
       <section className="bg-[#071018] text-[#f6f3ea]">
         <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
           <div className="mb-5 flex items-center justify-between gap-3 md:hidden">
-            <BrandLogo compact />
+            <BrandLogo compact variant="mobile" />
             <div className="flex items-center gap-2">
               <Link
                 href="/?search=open"

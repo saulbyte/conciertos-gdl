@@ -5,7 +5,6 @@ import {
   MapPin,
   Sparkles,
   TicketCheck,
-  UsersRound,
 } from "lucide-react";
 import { HorizontalScroller } from "@/components/HorizontalScroller";
 import { HomeEventCard } from "@/components/HomeEventCard";
@@ -175,7 +174,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 icon={TicketCheck}
               >
                 Gratis
-                <span className="rounded bg-white/12 px-1.5 py-0.5 text-[10px]">
+                <span className="filter-chip-count">
                   {freeEventCount}
                 </span>
               </FilterChip>
@@ -185,7 +184,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 icon={CalendarDays}
               >
                 Este fin
-                <span className="rounded bg-white/12 px-1.5 py-0.5 text-[10px]">
+                <span className="filter-chip-count">
                   {weekendEventCount}
                 </span>
               </FilterChip>
@@ -193,15 +192,9 @@ export default async function Home({ searchParams }: HomeProps) {
                 href="/?view=all&sort=popular#eventos"
                 active={filters.sort === "popular"}
                 icon={Flame}
+                redAccent
               >
                 Populares
-              </FilterChip>
-              <FilterChip
-                href="/?view=all&sort=interested#eventos"
-                active={filters.sort === "interested"}
-                icon={UsersRound}
-              >
-                Mas interesados
               </FilterChip>
               {venues.slice(0, 2).map((venue) => (
                 <FilterChip
@@ -446,22 +439,39 @@ function FilterChip({
   href: string;
   active?: boolean;
   redAccent?: boolean;
-  icon: typeof UsersRound;
+  icon: typeof Sparkles;
   children: React.ReactNode;
 }) {
+  const tone = redAccent ? "red" : "cyan";
+
   return (
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-black transition ${
+      data-tone={tone}
+      className={`filter-chip group relative isolate inline-flex h-11 shrink-0 select-none items-center gap-2 overflow-hidden rounded-full px-3.5 text-sm font-black transition duration-200 active:scale-95 ${
         active
-          ? "border-[#ff304f] bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.22)]"
+          ? redAccent
+            ? "bg-[#ff304f] text-white shadow-[0_12px_28px_rgba(255,48,79,0.26)] ring-1 ring-[#ff304f]"
+            : "bg-[#00c2d1] text-[#071018] shadow-[0_12px_28px_rgba(0,194,209,0.22)] ring-1 ring-[#00c2d1]"
           : redAccent
-            ? "border-[#ff304f]/45 bg-[#ff304f]/10 text-[#f6f3ea] hover:border-[#ff304f]"
-            : "border-white/12 bg-white/5 text-[#f6f3ea] hover:border-[#ff304f]/65 hover:text-white"
+            ? "bg-[#071018]/78 text-[#f6f3ea] ring-1 ring-[#ff304f]/38 hover:bg-[#ff304f]/12 hover:ring-[#ff304f]/75"
+            : "bg-[#071018]/78 text-[#f6f3ea] ring-1 ring-white/12 hover:bg-white/[0.075] hover:ring-[#00c2d1]/62"
       }`}
     >
-      <Icon className="h-4 w-4" aria-hidden="true" />
+      <span
+        className={`filter-chip-icon grid h-6 w-6 place-items-center rounded-full ${
+          active
+            ? redAccent
+              ? "bg-white/16 text-white"
+              : "bg-[#071018]/12 text-[#071018]"
+            : redAccent
+              ? "bg-[#ff304f]/13 text-[#ff4964] group-hover:bg-[#ff304f]/20"
+              : "bg-[#00c2d1]/12 text-[#00c2d1] group-hover:bg-[#00c2d1]/18"
+        }`}
+      >
+        <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+      </span>
       {children}
     </Link>
   );
@@ -585,7 +595,6 @@ function BrandTrustIcon({
 
 function getResultsTitle(filters: SearchParams) {
   if (filters.sort === "popular") return "Eventos populares";
-  if (filters.sort === "interested") return "Mas interesados";
   if (filters.admission === "free" && filters.when === "weekend") {
     return "Gratis este fin";
   }
