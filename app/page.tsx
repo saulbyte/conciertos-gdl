@@ -651,14 +651,23 @@ function getTopVenueSections(events: Awaited<ReturnType<typeof getEvents>>) {
     byVenue.set(event.venue.id, current);
   }
 
-  return [...byVenue.values()]
+  const sections = [...byVenue.values()]
     .filter((section) => section.events.length >= 2)
     .sort(
       (left, right) =>
         right.events.length - left.events.length ||
         left.events[0].eventDate.getTime() - right.events[0].eventDate.getTime(),
     )
-    .slice(0, 3)
+    .slice(0, 3);
+  const c3Section = [...byVenue.values()].find((section) =>
+    section.venue.name.toLowerCase().includes("c3"),
+  );
+
+  if (c3Section && !sections.some((section) => section.venue.id === c3Section.venue.id)) {
+    sections.splice(1, 0, c3Section);
+  }
+
+  return sections
     .map((section) => ({
       ...section,
       events: section.events

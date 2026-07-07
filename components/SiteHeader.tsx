@@ -26,7 +26,7 @@ export function SiteHeader() {
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:h-[72px] sm:px-6 lg:px-8">
         <span className="md:hidden">
-          <BrandLogo compact variant="mobile" />
+          <BrandLogo compact />
         </span>
         <span className="hidden md:inline-flex">
           <BrandLogo compact />

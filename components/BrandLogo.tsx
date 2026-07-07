@@ -4,7 +4,6 @@ type BrandLogoProps = {
   compact?: boolean;
   markOnly?: boolean;
   size?: "sm" | "md" | "lg";
-  variant?: "auto" | "wordmark" | "mobile";
 };
 
 const textClass =
@@ -14,35 +13,29 @@ export function BrandLogo({
   compact = false,
   markOnly = false,
   size = "md",
-  variant = "auto",
 }: BrandLogoProps) {
-  const mobile = variant === "mobile";
   const width = markOnly
     ? size === "lg"
       ? 108
       : compact || size === "sm"
         ? 52
         : 64
-    : mobile
-      ? 138
     : size === "lg"
-      ? 390
+      ? 420
       : compact || size === "sm"
-        ? 198
-        : 210;
+        ? 184
+        : 224;
   const height = markOnly
     ? size === "lg"
       ? 108
       : compact || size === "sm"
         ? 52
         : 64
-    : mobile
-      ? 32
     : size === "lg"
       ? 92
       : compact || size === "sm"
-        ? 46
-        : 50;
+        ? 38
+        : 46;
 
   return (
     <Link
@@ -70,18 +63,18 @@ function LaCarteleraWordmark({
     <svg
       width={width}
       height={height}
-      viewBox="0 0 640 150"
+      viewBox="0 0 720 150"
       role="img"
       aria-labelledby="la-cartelera-title"
-      className="block h-auto max-w-full overflow-visible"
+      className="block h-auto overflow-visible"
     >
       <title id="la-cartelera-title">La Cartelera</title>
       <defs>
         <clipPath id="la-cartelera-top">
-          <polygon points="0,0 640,0 640,70 0,61" />
+          <polygon points="0,0 720,0 720,70 0,61" />
         </clipPath>
         <clipPath id="la-cartelera-bottom">
-          <polygon points="0,84 640,74 640,150 0,150" />
+          <polygon points="0,84 720,74 720,150 0,150" />
         </clipPath>
       </defs>
       <g

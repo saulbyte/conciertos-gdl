@@ -50,7 +50,7 @@ export default async function EventPage({ params }: EventPageProps) {
     <main data-event-detail-page className="bg-[#071018] text-[#f6f3ea]">
       <section className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-5 flex items-center justify-between gap-3 md:hidden">
-          <BrandLogo compact variant="mobile" />
+          <BrandLogo compact />
           <div className="flex items-center gap-2">
             <Link
               href="/?search=open"
