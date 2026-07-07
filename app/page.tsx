@@ -12,6 +12,7 @@ import { getArtists } from "@/lib/artists";
 import {
   getEvents,
   getFreeEventCount,
+  getRecentlyAddedEvents,
   getVenueOptions,
   getWeekendEventCount,
 } from "@/lib/events";
@@ -46,6 +47,7 @@ export default async function Home({ searchParams }: HomeProps) {
     venues,
     freeEventCount,
     weekendEventCount,
+    recentlyAddedEvents,
   ] = await Promise.all([
     getEvents({
       query: filters.q,
@@ -62,6 +64,7 @@ export default async function Home({ searchParams }: HomeProps) {
     getVenueOptions(),
     getFreeEventCount(),
     getWeekendEventCount(),
+    getRecentlyAddedEvents(10),
   ]);
   const hasFilters = Boolean(
     filters.q ||
@@ -228,6 +231,13 @@ export default async function Home({ searchParams }: HomeProps) {
             />
 
             <EventRail
+              title="Recien añadidos"
+              href="/?view=all#eventos"
+              events={recentlyAddedEvents}
+              itemLimit={10}
+            />
+
+            <EventRail
               title="Eventos destacados"
               href="/descubrir"
               events={featuredEvents}
@@ -323,11 +333,13 @@ function EventRail({
   href,
   events,
   compactOnMobile = false,
+  itemLimit = 8,
 }: {
   title: string;
   href: string;
   events: Awaited<ReturnType<typeof getEvents>>;
   compactOnMobile?: boolean;
+  itemLimit?: number;
 }) {
   if (events.length === 0) {
     return null;
@@ -350,7 +362,7 @@ function EventRail({
       <>
         {compactOnMobile ? (
           <div className="grid gap-2 md:hidden">
-            {events.slice(0, 6).map((event) => (
+            {events.slice(0, itemLimit).map((event) => (
               <HomeEventCard key={event.id} event={event} compact />
             ))}
           </div>
@@ -361,7 +373,7 @@ function EventRail({
             className="-mx-4 sm:-mx-6 lg:mx-0"
             contentClassName="flex snap-x gap-3 px-4 pb-2 sm:px-6 lg:px-10"
           >
-            {events.slice(0, 8).map((event) => (
+            {events.slice(0, itemLimit).map((event) => (
               <div key={event.id} className="w-64 shrink-0 snap-start lg:w-72">
                 <HomeEventCard event={event} />
               </div>

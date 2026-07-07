@@ -71,6 +71,50 @@ export async function getEvents(filters: EventFilters = {}) {
   }));
 }
 
+export async function getRecentlyAddedEvents(limit = 10) {
+  const events = await prisma.event.findMany({
+    where: {
+      eventDate: {
+        gte: startOfToday(),
+      },
+    },
+    orderBy: [
+      {
+        createdAt: "desc",
+      },
+      {
+        eventDate: "asc",
+      },
+    ],
+    include: {
+      venue: true,
+      artists: {
+        include: {
+          artist: true,
+        },
+      },
+      _count: {
+        select: { likes: true },
+      },
+    },
+    take: limit,
+  });
+
+  const popularEventIds = new Set(
+    [...events]
+      .filter((event) => event._count.likes >= 5)
+      .sort((left, right) => right._count.likes - left._count.likes)
+      .slice(0, 3)
+      .map((event) => event.id),
+  );
+
+  return events.map(({ _count, ...event }) => ({
+    ...event,
+    likeCount: _count.likes,
+    isPopular: popularEventIds.has(event.id),
+  }));
+}
+
 export async function getEventById(id: string) {
   const event = await prisma.event.findUnique({
     where: { id },
