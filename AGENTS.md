@@ -8,8 +8,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # Brand rules
 
 - El nombre publico del producto es `La Cartelera`.
-- El logo oficial es el wordmark completo `LA CARTELERA` estilo cartel, en crema por defecto y rojo `#ff304f` en hover/activo.
-- No reemplazar el logo por texto normal, iniciales, iconos sueltos, lockups alternos ni una variante especifica de movil.
+- El logo oficial es el wordmark completo `LA CARTELERA` estilo cartel partido a la mitad.
+- Usar los assets `public/brand/la-cartelera-wordmark-base.png` y `public/brand/la-cartelera-wordmark-hover.png` para base y hover rojo.
+- No reemplazar el logo por texto normal, iniciales, iconos sueltos, SVG recreados, lockups alternos ni una variante especifica de movil.
 - Desktop y movil deben usar el mismo wordmark oficial; si no cabe, ajustar dimensiones/contenedor sin recortar la palabra.
-- El SVG fuente del lockup debe conservar espacio suficiente para que nunca se corte `LA CARTELERA`.
 <!-- END:brand-rules -->

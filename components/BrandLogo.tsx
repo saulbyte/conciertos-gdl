@@ -6,162 +6,49 @@ type BrandLogoProps = {
   size?: "sm" | "md" | "lg";
 };
 
-const textClass =
-  "[font-family:Impact,Haettenschweiler,'Arial_Narrow_Bold','Arial_Black',sans-serif]";
+const WORDMARK_WIDTH = 364;
+const WORDMARK_HEIGHT = 107;
 
 export function BrandLogo({
   compact = false,
-  markOnly = false,
   size = "md",
 }: BrandLogoProps) {
-  const width = markOnly
-    ? size === "lg"
-      ? 108
+  const width =
+    size === "lg"
+      ? 320
       : compact || size === "sm"
-        ? 52
-        : 64
-    : size === "lg"
-      ? 420
-      : compact || size === "sm"
-        ? 184
-        : 224;
-  const height = markOnly
-    ? size === "lg"
-      ? 108
-      : compact || size === "sm"
-        ? 52
-        : 64
-    : size === "lg"
-      ? 92
-      : compact || size === "sm"
-        ? 38
-        : 46;
+        ? 172
+        : 210;
 
   return (
     <Link
       href="/"
       aria-label="La Cartelera"
-      className="group inline-flex shrink-0 items-center text-[#f6f3ea] transition hover:text-[#ff304f] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff304f]"
+      className="group relative inline-flex shrink-0 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff304f]"
+      style={{ width }}
     >
-      {markOnly ? (
-        <LaCarteleraMark width={width} height={height} />
-      ) : (
-        <LaCarteleraWordmark width={width} height={height} />
-      )}
+      <span
+        className="relative block w-full"
+        style={{ aspectRatio: `${WORDMARK_WIDTH} / ${WORDMARK_HEIGHT}` }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/la-cartelera-wordmark-base.png"
+          alt="La Cartelera"
+          className="absolute inset-0 h-full w-full object-contain transition duration-200 group-hover:opacity-0"
+          width={WORDMARK_WIDTH}
+          height={WORDMARK_HEIGHT}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/la-cartelera-wordmark-hover.png"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-contain opacity-0 transition duration-200 group-hover:opacity-100"
+          width={WORDMARK_WIDTH}
+          height={WORDMARK_HEIGHT}
+        />
+      </span>
     </Link>
-  );
-}
-
-function LaCarteleraWordmark({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) {
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 720 150"
-      role="img"
-      aria-labelledby="la-cartelera-title"
-      className="block h-auto overflow-visible"
-    >
-      <title id="la-cartelera-title">La Cartelera</title>
-      <defs>
-        <clipPath id="la-cartelera-top">
-          <polygon points="0,0 720,0 720,70 0,61" />
-        </clipPath>
-        <clipPath id="la-cartelera-bottom">
-          <polygon points="0,84 720,74 720,150 0,150" />
-        </clipPath>
-      </defs>
-      <g
-        className={`${textClass} fill-current font-black uppercase tracking-[-0.055em]`}
-      >
-        <text
-          x="5"
-          y="113"
-          fontSize="104"
-          fontWeight="900"
-          clipPath="url(#la-cartelera-top)"
-          transform="scale(1.02, 1.18)"
-        >
-          LA CARTELERA
-        </text>
-        <text
-          x="5"
-          y="113"
-          fontSize="104"
-          fontWeight="900"
-          clipPath="url(#la-cartelera-bottom)"
-          transform="scale(1.02, 1.18)"
-        >
-          LA CARTELERA
-        </text>
-      </g>
-    </svg>
-  );
-}
-
-function LaCarteleraMark({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) {
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 160 160"
-      role="img"
-      aria-labelledby="la-cartelera-mark-title"
-      className="block h-auto overflow-visible"
-    >
-      <title id="la-cartelera-mark-title">La Cartelera</title>
-      <defs>
-        <clipPath id="la-cartelera-mark-top">
-          <polygon points="0,0 160,0 160,74 0,65" />
-        </clipPath>
-        <clipPath id="la-cartelera-mark-bottom">
-          <polygon points="0,88 160,78 160,160 0,160" />
-        </clipPath>
-      </defs>
-      <rect
-        x="8"
-        y="8"
-        width="144"
-        height="144"
-        rx="18"
-        fill="#071018"
-        stroke="currentColor"
-        strokeWidth="8"
-      />
-      <g
-        className={`${textClass} fill-current font-black uppercase tracking-[-0.08em]`}
-      >
-        <text
-          x="27"
-          y="112"
-          fontSize="92"
-          fontWeight="900"
-          clipPath="url(#la-cartelera-mark-top)"
-        >
-          LC
-        </text>
-        <text
-          x="27"
-          y="112"
-          fontSize="92"
-          fontWeight="900"
-          clipPath="url(#la-cartelera-mark-bottom)"
-        >
-          LC
-        </text>
-      </g>
-    </svg>
   );
 }
