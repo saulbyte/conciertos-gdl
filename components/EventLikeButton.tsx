@@ -1,6 +1,6 @@
 "use client";
 
-import { type MouseEvent, useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useState, useSyncExternalStore } from "react";
 import { Heart } from "lucide-react";
 
 type EventLikeButtonProps = {
@@ -8,6 +8,8 @@ type EventLikeButtonProps = {
   initialCount: number;
   variant?: "card" | "detail" | "discovery" | "darkCard";
 };
+
+const LIKE_SYNC_EVENT = "la-cartelera:event-liked";
 
 export function EventLikeButton({
   eventId,
@@ -17,15 +19,56 @@ export function EventLikeButton({
   const storageKey = `la-cartelera:event-like:${eventId}`;
   const legacyStorageKey = `${["donde", "toca"].join("-")}:event-like:${eventId}`;
   const [count, setCount] = useState(initialCount);
-  const [reacted, setReacted] = useState(
+  const reacted = useSyncExternalStore(
+    (onStoreChange) => {
+      function syncLikedEvent(event: Event) {
+        const detail = (event as CustomEvent<{ eventId: string; count: number }>).detail;
+
+        if (detail?.eventId === eventId) {
+          onStoreChange();
+        }
+      }
+
+      function syncStorage(event: StorageEvent) {
+        if (event.key === storageKey || event.key === legacyStorageKey) {
+          onStoreChange();
+        }
+      }
+
+      window.addEventListener(LIKE_SYNC_EVENT, syncLikedEvent);
+      window.addEventListener("storage", syncStorage);
+
+      return () => {
+        window.removeEventListener(LIKE_SYNC_EVENT, syncLikedEvent);
+        window.removeEventListener("storage", syncStorage);
+      };
+    },
     () =>
-      typeof window !== "undefined" &&
-      (window.localStorage.getItem(storageKey) === "1" ||
-        window.localStorage.getItem(legacyStorageKey) === "1"),
+      window.localStorage.getItem(storageKey) === "1" ||
+      window.localStorage.getItem(legacyStorageKey) === "1",
+    () => false,
   );
   const [isPending, setIsPending] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [justLiked, setJustLiked] = useState(false);
+
+  useEffect(() => {
+    function syncLikedEvent(event: Event) {
+      const detail = (event as CustomEvent<{ eventId: string; count: number }>).detail;
+
+      if (detail?.eventId !== eventId) {
+        return;
+      }
+
+      setCount(detail.count);
+    }
+
+    window.addEventListener(LIKE_SYNC_EVENT, syncLikedEvent);
+
+    return () => {
+      window.removeEventListener(LIKE_SYNC_EVENT, syncLikedEvent);
+    };
+  }, [eventId]);
 
   useEffect(() => {
     if (!justLiked) return;
@@ -56,10 +99,17 @@ export function EventLikeButton({
 
       const result = (await response.json()) as { count: number };
       setCount(result.count);
-      setReacted(true);
       setJustLiked(true);
       window.localStorage.setItem(storageKey, "1");
       window.localStorage.removeItem(legacyStorageKey);
+      window.dispatchEvent(
+        new CustomEvent(LIKE_SYNC_EVENT, {
+          detail: {
+            eventId,
+            count: result.count,
+          },
+        }),
+      );
     } catch {
       setHasError(true);
     } finally {
