@@ -2,7 +2,6 @@ import Link from "next/link";
 import {
   CalendarDays,
   Flame,
-  MapPin,
   Sparkles,
   TicketCheck,
 } from "lucide-react";
@@ -91,6 +90,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const monthEvents = allEvents
     .filter((event) => isThisMonth(event.eventDate) && !isToday(event.eventDate))
     .slice(0, 8);
+  const venueSections = getTopVenueSections(allEvents);
 
   return (
     <main
@@ -156,8 +156,8 @@ export default async function Home({ searchParams }: HomeProps) {
             </HorizontalScroller>
           </section>
 
-          <section id="filtros" className="mt-3 scroll-mt-24">
-            <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-0.5 sm:mx-0 sm:px-0">
+          <section id="filtros" className="mt-2 scroll-mt-24">
+            <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 py-2 sm:mx-0 sm:px-0">
               <FilterChip href="/#eventos" active={!isAllView} icon={Sparkles}>
                 Descubrir
               </FilterChip>
@@ -196,16 +196,6 @@ export default async function Home({ searchParams }: HomeProps) {
               >
                 Populares
               </FilterChip>
-              {venues.slice(0, 2).map((venue) => (
-                <FilterChip
-                  key={venue.id}
-                  href={`/?view=all&venue=${venue.id}#eventos`}
-                  active={filters.venue === venue.id}
-                  icon={MapPin}
-                >
-                  {venue.name}
-                </FilterChip>
-              ))}
             </div>
           </section>
 
@@ -242,6 +232,15 @@ export default async function Home({ searchParams }: HomeProps) {
               href="/descubrir"
               events={featuredEvents}
             />
+
+            {venueSections.map((section) => (
+              <EventRail
+                key={section.venue.id}
+                title={section.venue.name}
+                href={`/?view=all&venue=${section.venue.id}#eventos`}
+                events={section.events}
+              />
+            ))}
 
             <EventRail
               title="Gratis esta semana"
@@ -617,6 +616,55 @@ function applyEventSort(
   }
 
   return events;
+}
+
+function getTopVenueSections(events: Awaited<ReturnType<typeof getEvents>>) {
+  const now = new Date();
+  const todayKey = getMexicoCityDateKey(now);
+  const rangeEnd = new Date(now);
+  rangeEnd.setDate(now.getDate() + 60);
+  const rangeEndKey = getMexicoCityDateKey(rangeEnd);
+  const byVenue = new Map<
+    string,
+    {
+      venue: { id: string; name: string };
+      events: Awaited<ReturnType<typeof getEvents>>;
+    }
+  >();
+
+  for (const event of events) {
+    const eventDay = getMexicoCityDateKey(event.eventDate);
+
+    if (eventDay < todayKey || eventDay > rangeEndKey) {
+      continue;
+    }
+
+    const current = byVenue.get(event.venue.id) ?? {
+      venue: {
+        id: event.venue.id,
+        name: event.venue.name,
+      },
+      events: [],
+    };
+
+    current.events.push(event);
+    byVenue.set(event.venue.id, current);
+  }
+
+  return [...byVenue.values()]
+    .filter((section) => section.events.length >= 2)
+    .sort(
+      (left, right) =>
+        right.events.length - left.events.length ||
+        left.events[0].eventDate.getTime() - right.events[0].eventDate.getTime(),
+    )
+    .slice(0, 3)
+    .map((section) => ({
+      ...section,
+      events: section.events
+        .sort((left, right) => left.eventDate.getTime() - right.eventDate.getTime())
+        .slice(0, 8),
+    }));
 }
 
 function isThisMonth(date: Date) {

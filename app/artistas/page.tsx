@@ -218,22 +218,41 @@ function ArtistFilters({
 
   return (
     <div className="mt-4 grid gap-3 md:mt-6">
-      <div className="flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
         {chips.map(({ mode: chipMode, label, icon: Icon }) => {
           const active = mode === chipMode;
+          const redAccent = chipMode === "popular";
+          const tone = redAccent ? "red" : "cyan";
 
           return (
             <Link
               key={chipMode}
               href={buildHref(chipMode)}
               aria-current={active ? "page" : undefined}
-              className={`inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border px-3 text-xs font-bold transition md:min-h-10 md:px-4 ${
+              data-tone={tone}
+              className={`filter-chip group relative isolate inline-flex h-11 shrink-0 select-none items-center gap-2 overflow-hidden rounded-full px-3.5 text-sm font-black transition duration-200 active:scale-95 ${
                 active
-                  ? "border-[#ff304f] bg-[#ff304f] text-white shadow-[0_0_18px_rgba(255,48,79,0.18)]"
-                  : "border-white/10 bg-white/[0.04] text-[#f6f3ea] hover:border-[#ff304f]/65"
+                  ? redAccent
+                    ? "bg-[#ff304f] text-white shadow-[0_12px_28px_rgba(255,48,79,0.26)] ring-1 ring-[#ff304f]"
+                    : "bg-[#00c2d1] text-[#071018] shadow-[0_12px_28px_rgba(0,194,209,0.22)] ring-1 ring-[#00c2d1]"
+                  : redAccent
+                    ? "bg-[#071018]/78 text-[#f6f3ea] ring-1 ring-[#ff304f]/38 hover:bg-[#ff304f]/12 hover:ring-[#ff304f]/75"
+                    : "bg-[#071018]/78 text-[#f6f3ea] ring-1 ring-white/12 hover:bg-white/[0.075] hover:ring-[#00c2d1]/62"
               }`}
             >
-              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+              <span
+                className={`filter-chip-icon grid h-6 w-6 place-items-center rounded-full ${
+                  active
+                    ? redAccent
+                      ? "bg-white/16 text-white"
+                      : "bg-[#071018]/12 text-[#071018]"
+                    : redAccent
+                      ? "bg-[#ff304f]/13 text-[#ff4964] group-hover:bg-[#ff304f]/20"
+                      : "bg-[#00c2d1]/12 text-[#00c2d1] group-hover:bg-[#00c2d1]/18"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+              </span>
               {label}
             </Link>
           );
