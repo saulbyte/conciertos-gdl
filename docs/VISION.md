@@ -2,7 +2,8 @@
 
 ## Problema
 
-Las personas interesadas en conciertos y eventos musicales en Guadalajara descubren muchos eventos demasiado tarde porque la información se encuentra dispersa entre:
+Las personas no pierden experiencias por falta de eventos. Las pierden porque
+la informacion esta fragmentada entre:
 
 * Ticketmaster
 * Eventbrite
@@ -11,13 +12,15 @@ Las personas interesadas en conciertos y eventos musicales en Guadalajara descub
 * Promotoras
 * Foros y comunidades
 
-Actualmente no existe un único lugar simple para consultar próximos conciertos locales.
+La informacion existe, pero esta dispersa. REVERA nace para que nadie vuelva a
+perderse una experiencia que habria amado vivir.
 
 ---
 
 ## Objetivo
 
-Crear una plataforma web que centralice eventos musicales de Guadalajara y permita descubrir conciertos próximos mediante búsqueda y filtros.
+Convertir el descubrimiento de experiencias en vivo en algo tan simple como
+abrir una aplicacion.
 
 ---
 
@@ -25,8 +28,8 @@ Crear una plataforma web que centralice eventos musicales de Guadalajara y permi
 
 Personas entre 20 y 45 años que:
 
-* Asisten ocasionalmente a conciertos.
-* Buscan eventos locales.
+* Quieren vivir mas historias.
+* Buscan que hacer sin revisar diez fuentes distintas.
 * No desean seguir decenas de cuentas de redes sociales.
 * Quieren descubrir nuevos eventos de forma sencilla.
 
@@ -36,7 +39,7 @@ Personas entre 20 y 45 años que:
 
 Un único sitio donde consultar:
 
-* Próximos conciertos.
+* Proximas experiencias en vivo.
 * Eventos por artista.
 * Eventos por venue.
 * Eventos por fecha.

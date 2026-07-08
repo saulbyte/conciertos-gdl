@@ -66,7 +66,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
       <section className="mx-auto w-full max-w-7xl px-4 pb-24 pt-3 sm:px-6 md:pt-4 lg:px-8">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
-            {hasSearch ? `Resultados para "${query}"` : "Catalogo de artistas"}
+            {hasSearch ? `Resultados para "${query}"` : "Artistas para seguir"}
           </h2>
           <span className="text-xs font-bold text-slate-400">
             {artists.length}
@@ -84,12 +84,12 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
             <p className="text-lg font-black text-[#f6f3ea]">
               {hasSearch
                 ? "No encontramos artistas con esa busqueda."
-                : "Aun no hay artistas en el catalogo."}
+                : "Aun no tenemos artistas para descubrir."}
             </p>
             <p className="mt-2 text-sm text-slate-400">
               {hasSearch
-                ? "Prueba con otro nombre o revisa el catalogo completo."
-                : "Corre la sincronizacion para alimentar el catalogo."}
+                ? "Prueba con otro nombre o explora artistas con fechas proximas."
+                : "Corre la sincronizacion para encontrar nuevas experiencias."}
             </p>
           </div>
         )}

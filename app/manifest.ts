@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "REVERA",
     short_name: "REVERA",
     description:
-      "Agenda de conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
+      "Descubre experiencias en vivo que vale la pena vivir en Guadalajara y su zona metropolitana.",
     start_url: "/",
     scope: "/",
     display: "standalone",

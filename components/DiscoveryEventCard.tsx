@@ -110,7 +110,7 @@ export function DiscoveryEventCard({
           href={`/event/${event.id}`}
           className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#ff304f] px-5 text-sm font-black text-white shadow-xl shadow-black/30 transition hover:bg-[#ff5d74]"
         >
-          Ver evento
+          Ver fuente
           <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       </div>

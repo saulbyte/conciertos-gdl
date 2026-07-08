@@ -142,7 +142,7 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
             href={`/event/${event.id}`}
             className="flex items-center gap-1 text-xs font-bold text-[#00c2d1]"
           >
-            Ver evento
+            Ver fuente
             <ArrowUpRight
               className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
               aria-hidden="true"

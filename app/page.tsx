@@ -211,7 +211,7 @@ export default async function Home({ searchParams }: HomeProps) {
       >
         {isAllView ? (
           <AllEventsSection
-            title={hasFilters ? getResultsTitle(filters) : "Todos los eventos"}
+            title={hasFilters ? getResultsTitle(filters) : "Todo lo que viene"}
             events={activeEvents}
           />
         ) : (
@@ -231,14 +231,14 @@ export default async function Home({ searchParams }: HomeProps) {
             />
 
             <EventRail
-              title="Recien añadidos"
+              title="Recien descubiertos"
               href="/?view=all#eventos"
               events={recentlyAddedEvents}
               itemLimit={10}
             />
 
             <EventRail
-              title="Eventos destacados"
+              title="Vale la pena mirar"
               href="/descubrir"
               events={featuredEvents}
             />
@@ -273,7 +273,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <div className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 pb-1 text-xs font-bold text-slate-400 sm:flex-wrap sm:overflow-visible sm:px-0">
               <span className="inline-flex h-8 shrink-0 items-center gap-2 rounded-full bg-white/[0.045] px-3 text-[#f6f3ea]">
               <BrandTrustIcon variant="verified" tone="cyan" />
-              Fuentes verificadas
+              Fuentes de origen
             </span>
               {[
                 "Ticketmaster",
@@ -301,26 +301,26 @@ export default async function Home({ searchParams }: HomeProps) {
             <TrustItem
               variant="verified"
               tone="cyan"
-              title="Fuentes confiables"
-              text="Informacion reunida desde sitios oficiales y publicos."
+              title="Confianza primero"
+              text="Reunimos informacion publica y enlaces de origen para confirmar cada experiencia."
             />
             <TrustItem
               variant="free"
               tone="red"
-              title="Gratis visible"
-              text="Marcamos conciertos sin costo cuando la fuente lo indica."
+              title="Oportunidades visibles"
+              text="Marcamos experiencias sin costo cuando la fuente lo indica."
             />
             <TrustItem
               variant="artist"
               tone="red"
-              title="Artistas primero"
-              text="Perfiles, avisos y proximas fechas desde el inicio."
+              title="Descubrir sin perderte"
+              text="Artistas, fechas y avisos para encontrar lo que podria convertirse en recuerdo."
             />
             <TrustItem
               variant="metro"
               tone="cyan"
               title="Zona metropolitana"
-              text="Guadalajara, Zapopan, Tlaquepaque y recintos cercanos."
+              text="Guadalajara, Zapopan, Tlaquepaque y lugares cercanos donde pasan cosas."
             />
           </div>
         </div>
@@ -401,7 +401,7 @@ function AllEventsSection({
             {title}
           </h2>
           <p className="mt-1 text-sm font-semibold text-slate-400">
-            {events.length} {events.length === 1 ? "evento" : "eventos"} por fecha mas cercana
+            {events.length} {events.length === 1 ? "experiencia" : "experiencias"} por fecha mas cercana
           </p>
         </div>
         {events.length > 0 ? (
@@ -430,10 +430,10 @@ function AllEventsSection({
       ) : (
         <div className="rounded-lg border border-dashed border-white/12 bg-white/[0.035] px-5 py-12 text-center">
           <p className="text-lg font-black text-[#f6f3ea]">
-            No encontramos eventos con esos filtros.
+            No encontramos experiencias con esos filtros.
           </p>
           <p className="mt-2 text-sm text-slate-400">
-            Prueba con otra fecha, artista o recinto.
+            Prueba con otra fecha, artista o recinto para descubrir algo nuevo.
           </p>
         </div>
       )}

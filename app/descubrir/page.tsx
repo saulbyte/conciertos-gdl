@@ -7,9 +7,9 @@ import { DiscoveryFilters } from "@/components/DiscoveryFilters";
 import { getDiscoveryEvents, getVenueOptions } from "@/lib/events";
 
 export const metadata: Metadata = {
-  title: "Descubrir conciertos",
+  title: "Descubrir",
   description:
-    "Descubre conciertos populares, proximos y recien anunciados en Guadalajara.",
+    "Explora experiencias proximas, populares y recien anunciadas en Guadalajara.",
 };
 
 type DiscoverSearchParams = {
@@ -66,7 +66,7 @@ export default async function DiscoverPage({
               No hay eventos con estos filtros
             </h1>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Prueba con otra combinacion para seguir descubriendo conciertos.
+              Prueba con otra combinacion para encontrar algo que valga la pena vivir.
             </p>
             <Link
               href="/descubrir"
@@ -97,8 +97,8 @@ function DiscoveryEndState() {
         Ya descubriste todo por ahora
       </h2>
       <p className="mt-3 max-w-sm text-sm leading-6 text-slate-300">
-        La mezcla cambia con nuevos eventos y con lo que interesa a la
-        comunidad.
+        La mezcla cambia cuando aparecen nuevas experiencias y cuando la
+        comunidad empieza a mirar hacia ellas.
       </p>
       <div className="mt-7 grid w-full max-w-xs gap-3">
         <Link
@@ -106,7 +106,7 @@ function DiscoveryEndState() {
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#00c2d1] px-5 text-sm font-black text-[#071018]"
         >
           <CalendarDays className="h-4 w-4" aria-hidden="true" />
-          Ver todos los eventos
+          Ver experiencias
         </Link>
         <Link
           href="/descubrir"

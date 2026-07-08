@@ -14,7 +14,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 export const metadata: Metadata = {
   title: "Acerca de",
   description:
-    "Conoce que es REVERA y como reunimos informacion de conciertos en Guadalajara.",
+    "Conoce por que REVERA existe para ayudarte a descubrir experiencias que vale la pena vivir.",
 };
 
 const imageSrc = "/images/about-concert-scene.png";
@@ -42,18 +42,17 @@ export default function AboutPage() {
               Descubre lo proximo que vale la pena vivir
             </h1>
             <p className="mt-5 text-base leading-8 text-slate-300 sm:text-lg">
-              Una guia independiente para descubrir conciertos y eventos
-              musicales en Guadalajara y su zona metropolitana. Reunimos
-              informacion publica de fuentes oficiales para que encuentres
-              fechas, artistas, recintos y enlaces de origen sin brincar entre
-              tantas paginas.
+              REVERA existe para que no vuelvas a enterarte tarde de algo que
+              habrias amado vivir. Reunimos informacion publica de fuentes de
+              origen para que encuentres fechas, artistas, recintos y
+              experiencias sin brincar entre tantas paginas.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <Link
                 href="/#eventos"
                 className="inline-flex h-11 items-center gap-2 rounded-md bg-[#00c2d1] px-4 text-sm font-black text-[#071018] transition hover:bg-[#33d4de]"
               >
-                Ver eventos
+                Descubrir experiencias
                 <CalendarSearch className="h-4 w-4" aria-hidden="true" />
               </Link>
               <Link
@@ -74,7 +73,7 @@ export default function AboutPage() {
         <div className="mx-auto grid w-full max-w-7xl gap-3 px-4 py-6 sm:px-6 md:grid-cols-4 lg:px-8">
           <TrustPill icon={ShieldCheck} label="Fuentes verificadas" />
           <TrustPill icon={TicketX} label="Sin venta de boletos" tone="red" />
-          <TrustPill icon={Sparkles} label="Gratis visible" tone="red" />
+          <TrustPill icon={Sparkles} label="Oportunidades visibles" tone="red" />
           <TrustPill icon={MapPin} label="Zona metropolitana" />
         </div>
       </section>
@@ -85,25 +84,25 @@ export default function AboutPage() {
             Como funciona
           </p>
           <h2 className="mt-1 text-2xl font-black text-[#f6f3ea]">
-            Una agenda viva, sin intermediacion
+            Descubrir sin perderte lo importante
           </h2>
         </div>
 
         <div className="grid gap-5 md:grid-cols-3">
           <Step
             number="01"
-            title="Buscamos"
-            text="Revisamos fuentes publicas, recintos, boletaje y sitios institucionales con eventos musicales."
+            title="Encontramos"
+            text="Revisamos fuentes publicas, recintos, artistas, boleteras y sitios institucionales."
           />
           <Step
             number="02"
             title="Organizamos"
-            text="Ordenamos la informacion por fecha, artista, recinto, costo y senales de interes."
+            text="Ordenamos lo disperso por fecha, artista, recinto, costo y senales de interes."
           />
           <Step
             number="03"
-            title="Te llevamos a la fuente"
-            text="Cada evento apunta al sitio de origen para confirmar disponibilidad, requisitos y detalles."
+            title="Te acercamos al momento"
+            text="Cada experiencia apunta a su fuente de origen para confirmar disponibilidad, requisitos y detalles."
           />
         </div>
       </section>
@@ -140,10 +139,10 @@ function AboutCollage() {
       <div className="absolute bottom-0 right-3 w-[58%] rounded-lg bg-[#0b1d26]/92 p-4 shadow-2xl shadow-black/40 backdrop-blur">
         <BrandLogo compact markOnly />
         <p className="mt-3 text-lg font-black leading-tight text-[#f6f3ea]">
-          Una agenda viva de musica en Guadalajara
+          Lo proximo que vale la pena vivir
         </p>
         <p className="mt-2 text-xs leading-5 text-slate-400">
-          Que hay, cuando es y desde que fuente confirmarlo.
+          Que pasa, cuando es y donde confirmarlo.
         </p>
       </div>
     </div>

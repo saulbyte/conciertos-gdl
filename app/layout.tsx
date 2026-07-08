@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | REVERA",
   },
   description:
-    "Descubre conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
+    "Descubre experiencias en vivo que vale la pena vivir en Guadalajara y su zona metropolitana.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

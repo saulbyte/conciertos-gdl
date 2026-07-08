@@ -193,10 +193,10 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
           ) : (
             <div className="rounded-lg border border-dashed border-white/12 px-5 py-12 text-center">
               <p className="text-lg font-black text-[#f6f3ea]">
-                Todavia no tenemos fechas futuras.
+                Todavia no encontramos fechas futuras.
               </p>
               <p className="mt-2 text-sm text-slate-400">
-                Puedes dejar tu correo y te avisamos cuando aparezca una.
+                Puedes dejar tu correo y te avisamos cuando aparezca algo que valga la pena vivir.
               </p>
             </div>
           )}
@@ -223,7 +223,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
                   Sigue descubriendo
                 </p>
                 <h2 className="mt-1 text-xl font-black text-[#f6f3ea]">
-                  Artistas con fechas proximas
+                  Artistas que podrias descubrir despues
                 </h2>
               </div>
               <Link

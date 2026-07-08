@@ -191,7 +191,7 @@ export default async function EventPage({ params }: EventPageProps) {
                   rel="noreferrer"
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#00c2d1] px-5 text-sm font-black text-[#071018] shadow-lg shadow-black/30 transition hover:bg-[#33d4de] sm:w-auto"
                 >
-                  Ver evento oficial
+                  Ver fuente oficial
                   <ExternalLink className="h-4 w-4" aria-hidden="true" />
                 </a>
               ) : null}
@@ -220,10 +220,10 @@ export default async function EventPage({ params }: EventPageProps) {
           <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00c2d1]">
-                Sobre el evento
+                Sobre esta experiencia
               </p>
               <h2 className="mt-1 text-xl font-black text-[#f6f3ea]">
-                Informacion
+                Lo que sabemos
               </h2>
               <p className="mt-3 text-sm leading-7 text-slate-400 sm:text-base">
                 {event.description}
@@ -242,7 +242,7 @@ export default async function EventPage({ params }: EventPageProps) {
                   Sigue descubriendo
                 </p>
                 <h2 className="mt-1 text-xl font-black text-[#f6f3ea]">
-                  Eventos relacionados
+                  Sigue encontrando momentos
                 </h2>
               </div>
               <Link

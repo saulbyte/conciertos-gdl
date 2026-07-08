@@ -72,7 +72,7 @@ export function ArtistInterestForm({
             Avisame por correo
           </h2>
           <p className="mt-1 text-xs leading-5 text-slate-400 sm:text-sm">
-            Recibe una alerta cuando encontremos un concierto nuevo de{" "}
+            Recibe una alerta cuando encontremos una nueva fecha de{" "}
             {artistName} en Guadalajara.
           </p>
         </div>

@@ -192,7 +192,7 @@ export function MobileDiscoveryFilters({
                   id="mobile-filters-title"
                   className="text-xl font-bold text-slate-950"
                 >
-                  Filtrar conciertos
+                  Filtrar experiencias
                 </h2>
               </div>
               <button

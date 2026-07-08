@@ -6,7 +6,7 @@ import { AtSign, ExternalLink, Info, Link2, MapPin, ShieldCheck } from "lucide-r
 export const metadata: Metadata = {
   title: "Contacto",
   description:
-    "Contacta a REVERA por Instagram para sugerir eventos, corregir informacion o proponer fuentes.",
+    "Contacta a REVERA por Instagram para sugerir experiencias, corregir informacion o proponer fuentes.",
 };
 
 const instagramUrl = "https://www.instagram.com/conciertos.gdl/";
@@ -22,12 +22,12 @@ export default function ContactPage() {
               Contacto
             </p>
             <h1 className="mt-2 text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl">
-              Escríbenos por Instagram
+              Escribenos por Instagram
             </h1>
             <p className="mt-5 text-base leading-8 text-slate-300 sm:text-lg">
-              Para sugerir eventos, corregir información o proponer fuentes,
-              escríbenos por Instagram. Es el canal más rápido para revisar
-              links oficiales y actualizar la agenda.
+              Si viste algo que vale la pena vivir, mandanos la fuente por
+              Instagram. Revisamos links oficiales, corregimos datos y
+              sumamos experiencias que no deberian perderse.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <a
@@ -56,28 +56,28 @@ export default function ContactPage() {
         <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-5">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00c2d1]">
-              Qué mandar
+              Que mandar
             </p>
             <h2 className="mt-1 text-2xl font-black text-[#f6f3ea]">
-              Ayuda a mantener la agenda viva
+              Ayuda a que nadie se lo pierda
             </h2>
           </div>
 
           <div className="grid gap-3 md:grid-cols-3">
             <ContactRow
               icon={Link2}
-              title="Link oficial del evento"
-              text="La fuente de origen ayuda a validar rápido."
+              title="Link de origen"
+              text="La fuente oficial ayuda a validar rapido."
             />
             <ContactRow
               icon={MapPin}
               title="Artista, fecha y recinto"
-              text="Con esos datos ubicamos y comparamos el evento."
+              text="Con esos datos ubicamos y comparamos la experiencia."
             />
             <ContactRow
               icon={Info}
-              title="Corrección o fuente"
-              text="Mándanos el dato correcto y dónde se publicó."
+              title="Correccion o fuente"
+              text="Manda el dato correcto y donde se publico."
             />
           </div>
         </div>
@@ -87,14 +87,14 @@ export default function ContactPage() {
         <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:px-8">
           <p className="max-w-3xl text-sm leading-7 text-slate-400">
             REVERA no vende boletos ni gestiona accesos. Para compras,
-            reembolsos, cambios o disponibilidad, consulta directamente la
-            fuente oficial del evento.
+            reembolsos, cambios o disponibilidad, confirma siempre en la
+            fuente de origen.
           </p>
           <Link
             href="/terminos"
             className="inline-flex h-11 w-fit items-center rounded-md bg-white/[0.045] px-4 text-sm font-black text-[#f6f3ea] transition hover:bg-white/[0.07] hover:text-[#00c2d1]"
           >
-            Términos de uso
+            Terminos de uso
           </Link>
         </div>
       </section>
