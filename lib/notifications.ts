@@ -103,7 +103,7 @@ async function sendArtistEventEmail({
       subject: `${artistName} tiene nuevo concierto en Guadalajara`,
       html: `
         <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.6;">
-          <p style="font-size: 14px; color: #6d28d9; font-weight: 700; text-transform: uppercase;">Conciertos GDL</p>
+          <p style="font-size: 14px; color: #ff3060; font-weight: 700; text-transform: uppercase;">REVERA</p>
           <h1 style="font-size: 24px; margin: 0 0 12px;">Nuevo concierto detectado</h1>
           <p>Encontramos una fecha nueva de <strong>${escapeHtml(artistName)}</strong>.</p>
           <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 18px 0;">

@@ -9,14 +9,15 @@ type EventLikeButtonProps = {
   variant?: "card" | "detail" | "discovery" | "darkCard";
 };
 
-const LIKE_SYNC_EVENT = "la-cartelera:event-liked";
+const LIKE_SYNC_EVENT = "revera:event-liked";
 
 export function EventLikeButton({
   eventId,
   initialCount,
   variant = "card",
 }: EventLikeButtonProps) {
-  const storageKey = `la-cartelera:event-like:${eventId}`;
+  const storageKey = `revera:event-like:${eventId}`;
+  const previousBrandStorageKey = `la-cartelera:event-like:${eventId}`;
   const legacyStorageKey = `${["donde", "toca"].join("-")}:event-like:${eventId}`;
   const [count, setCount] = useState(initialCount);
   const reacted = useSyncExternalStore(
@@ -30,7 +31,11 @@ export function EventLikeButton({
       }
 
       function syncStorage(event: StorageEvent) {
-        if (event.key === storageKey || event.key === legacyStorageKey) {
+        if (
+          event.key === storageKey ||
+          event.key === previousBrandStorageKey ||
+          event.key === legacyStorageKey
+        ) {
           onStoreChange();
         }
       }
@@ -45,12 +50,29 @@ export function EventLikeButton({
     },
     () =>
       window.localStorage.getItem(storageKey) === "1" ||
+      window.localStorage.getItem(previousBrandStorageKey) === "1" ||
       window.localStorage.getItem(legacyStorageKey) === "1",
     () => false,
   );
   const [isPending, setIsPending] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [justLiked, setJustLiked] = useState(false);
+
+  useEffect(() => {
+    const hasCurrentLike = window.localStorage.getItem(storageKey) === "1";
+    const hasPreviousBrandLike =
+      window.localStorage.getItem(previousBrandStorageKey) === "1";
+    const hasLegacyLike = window.localStorage.getItem(legacyStorageKey) === "1";
+
+    if (
+      hasCurrentLike ||
+      (!hasPreviousBrandLike && !hasLegacyLike)
+    ) {
+      return;
+    }
+
+    window.localStorage.setItem(storageKey, "1");
+  }, [legacyStorageKey, previousBrandStorageKey, storageKey]);
 
   useEffect(() => {
     function syncLikedEvent(event: Event) {
@@ -101,6 +123,7 @@ export function EventLikeButton({
       setCount(result.count);
       setJustLiked(true);
       window.localStorage.setItem(storageKey, "1");
+      window.localStorage.removeItem(previousBrandStorageKey);
       window.localStorage.removeItem(legacyStorageKey);
       window.dispatchEvent(
         new CustomEvent(LIKE_SYNC_EVENT, {

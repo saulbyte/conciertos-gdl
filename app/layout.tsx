@@ -21,17 +21,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "La Cartelera",
+  applicationName: "REVERA",
   title: {
-    default: "La Cartelera",
-    template: "%s | La Cartelera",
+    default: "REVERA",
+    template: "%s | REVERA",
   },
   description:
     "Descubre conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "La Cartelera",
+    title: "REVERA",
   },
   icons: {
     icon: [

@@ -14,7 +14,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 export const metadata: Metadata = {
   title: "Acerca de",
   description:
-    "Conoce que es La Cartelera y como reunimos informacion de conciertos en Guadalajara.",
+    "Conoce que es REVERA y como reunimos informacion de conciertos en Guadalajara.",
 };
 
 const imageSrc = "/images/about-concert-scene.png";
@@ -30,16 +30,16 @@ export default function AboutPage() {
             </p>
             <div className="mt-3">
               <Image
-                src="/brand/la-cartelera-lockup.svg"
-                alt="La Cartelera"
-                width={360}
-                height={112}
+                src="/brand/revera-lockup.png"
+                alt="REVERA"
+                width={1210}
+                height={300}
                 priority
-                className="h-auto w-52 sm:w-64"
+                className="h-auto w-60 sm:w-72"
               />
             </div>
             <h1 className="mt-5 max-w-xl text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl">
-              La agenda viva de conciertos en Guadalajara
+              Descubre lo proximo que vale la pena vivir
             </h1>
             <p className="mt-5 text-base leading-8 text-slate-300 sm:text-lg">
               Una guia independiente para descubrir conciertos y eventos

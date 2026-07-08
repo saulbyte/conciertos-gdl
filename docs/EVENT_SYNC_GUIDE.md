@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Este documento explica como actualizar la cartelera de Conciertos GDL, verificar
+Este documento explica como actualizar la agenda de REVERA, verificar
 el resultado, publicar cambios, administrar el esquema de la base de datos y
 reaccionar ante errores. Actualmente la sincronizacion es manual.
 

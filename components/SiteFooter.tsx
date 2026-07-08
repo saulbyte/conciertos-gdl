@@ -64,7 +64,7 @@ export function SiteFooter() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>{"\u00a9"} 2026 La Cartelera.</p>
+          <p>{"\u00a9"} 2026 REVERA.</p>
           <p>No vendemos boletos. Solo informacion.</p>
         </div>
       </div>
