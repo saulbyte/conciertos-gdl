@@ -284,6 +284,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 "FunTicket",
                 "KingTicket",
                 "Visit Jalisco",
+                "Vibra Jalisco",
                 "Superboletos",
               ].map((source) => (
                 <span

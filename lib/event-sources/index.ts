@@ -9,6 +9,7 @@ import { foroIndependenciaAdapter } from "@/lib/event-sources/foro-independencia
 import { kingTicketAdapter } from "@/lib/event-sources/kingticket";
 import { superboletosAdapter } from "@/lib/event-sources/superboletos";
 import { visitJaliscoAdapter } from "@/lib/event-sources/visit-jalisco";
+import { vibraJaliscoAdapter } from "@/lib/event-sources/vibra-jalisco";
 import { createTicketmasterAdapter } from "@/lib/ticketmaster";
 
 export function getEventSourceAdapters(): EventSourceAdapter[] {
@@ -21,6 +22,7 @@ export function getEventSourceAdapters(): EventSourceAdapter[] {
     funTicketAdapter,
     kingTicketAdapter,
     visitJaliscoAdapter,
+    vibraJaliscoAdapter,
     superboletosAdapter,
   ];
 }

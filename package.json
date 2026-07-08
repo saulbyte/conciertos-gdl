@@ -21,7 +21,8 @@
     "sync:funticket": "tsx scripts/sync-funticket.ts",
     "sync:arena-guadalajara": "tsx scripts/sync-arena-guadalajara.ts",
     "sync:eticket": "tsx scripts/sync-eticket.ts",
-    "sync:kingticket": "tsx scripts/sync-kingticket.ts"
+    "sync:kingticket": "tsx scripts/sync-kingticket.ts",
+    "sync:vibra-jalisco": "tsx scripts/sync-vibra-jalisco.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
