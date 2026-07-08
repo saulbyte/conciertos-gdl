@@ -158,7 +158,7 @@ function DateBadge({
 
 function FreePill() {
   return (
-    <span className="inline-flex w-fit items-center gap-1 rounded-md border border-[#00c2d1]/45 bg-[#00c2d1]/10 px-2 py-1 text-[10px] font-black text-[#00c2d1]">
+    <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#00c2d1] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.24)]">
       <TicketCheck className="h-3 w-3" aria-hidden="true" />
       Gratis
     </span>
@@ -167,7 +167,7 @@ function FreePill() {
 
 function PopularPill() {
   return (
-    <span className="inline-flex w-fit items-center gap-1 rounded-md border border-[#ff304f]/45 bg-[#ff304f]/10 px-2 py-1 text-[10px] font-black text-[#ff8a9b]">
+    <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#ff304f] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.02em] text-white shadow-[0_0_18px_rgba(255,48,79,0.24)]">
       <CalendarDays className="h-3 w-3" aria-hidden="true" />
       Popular
     </span>
@@ -177,12 +177,12 @@ function PopularPill() {
 function NewPill({ small = false }: { small?: boolean }) {
   return (
     <span
-      className={`inline-flex w-fit items-center gap-1 rounded-md border border-[#00c2d1]/40 bg-[#f6f3ea] font-black text-[#071018] shadow-[0_0_16px_rgba(0,194,209,0.16)] ${
-        small ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-1 text-[10px]"
+      className={`inline-flex w-fit items-center gap-1 rounded-full bg-[#ff304f] font-black uppercase tracking-[0.02em] text-white shadow-[0_0_18px_rgba(255,48,79,0.26)] ${
+        small ? "px-2 py-0.5 text-[9px]" : "px-2.5 py-1 text-[10px]"
       }`}
     >
       <Sparkles
-        className={`${small ? "h-2.5 w-2.5" : "h-3 w-3"} text-[#00a7b7]`}
+        className={small ? "h-2.5 w-2.5" : "h-3 w-3"}
         aria-hidden="true"
       />
       Nuevo

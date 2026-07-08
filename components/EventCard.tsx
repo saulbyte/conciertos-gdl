@@ -41,7 +41,7 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
                 {formatSourceName(event.source)}
               </span>
               {event.admissionType === "FREE" ? (
-                <span className="inline-flex shrink-0 items-center gap-1 rounded bg-[#00c2d1]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#00c2d1]">
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#00c2d1] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_14px_rgba(0,194,209,0.22)]">
                   <TicketCheck className="h-3 w-3" aria-hidden="true" />
                   Gratis
                 </span>
@@ -92,13 +92,13 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
               {formatSourceName(event.source)}
             </span>
             {event.admissionType === "FREE" ? (
-              <span className="inline-flex items-center gap-1.5 rounded-md bg-[#00c2d1] px-2.5 py-1 text-[11px] font-bold text-[#071018] shadow-sm">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#00c2d1] px-3 py-1 text-[11px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.24)]">
                 <TicketCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                Entrada gratis
+                Gratis
               </span>
             ) : null}
             {event.isPopular ? (
-              <span className="rounded-md bg-[#ff304f] px-2.5 py-1 text-[11px] font-bold text-white shadow-sm">
+              <span className="rounded-full bg-[#ff304f] px-3 py-1 text-[11px] font-black uppercase tracking-[0.02em] text-white shadow-[0_0_18px_rgba(255,48,79,0.24)]">
                 Popular
               </span>
             ) : null}

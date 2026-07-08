@@ -90,7 +90,7 @@ export default async function EventPage({ params }: EventPageProps) {
             <div className="absolute left-3 top-3 flex flex-col gap-2">
               <DateBadge day={date.day} month={date.month} />
               {event.admissionType === "FREE" ? (
-                <span className="inline-flex w-fit items-center gap-1 rounded-md border border-[#00c2d1]/45 bg-[#00c2d1]/15 px-2 py-1 text-[10px] font-black text-[#00c2d1] backdrop-blur">
+                <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#00c2d1] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.24)]">
                   <TicketCheck className="h-3 w-3" aria-hidden="true" />
                   Gratis
                 </span>
@@ -116,7 +116,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 {formatSourceName(event.source)}
               </p>
               {event.admissionType === "FREE" ? (
-                <p className="inline-flex items-center gap-1.5 rounded-md bg-[#00c2d1]/10 px-3 py-1.5 text-xs font-black text-[#00c2d1]">
+                <p className="inline-flex items-center gap-1.5 rounded-full bg-[#00c2d1] px-3 py-1.5 text-xs font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.2)]">
                   <TicketCheck className="h-4 w-4" aria-hidden="true" />
                   Entrada gratis
                 </p>
