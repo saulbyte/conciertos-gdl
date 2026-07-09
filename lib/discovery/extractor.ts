@@ -70,8 +70,10 @@ export function extractCandidateFromHtml(
   result: SearchResult,
 ): CandidateInput | null {
   const $ = load(html);
+  const structuredEvent = extractStructuredEvent(html);
   const title = cleanText(
-    $("meta[property='og:title']").attr("content") ||
+    structuredEvent?.title ||
+      $("meta[property='og:title']").attr("content") ||
       $("h1").first().text() ||
       $("title").text() ||
       result.title,
@@ -83,7 +85,9 @@ export function extractCandidateFromHtml(
         result.content,
     ) || null;
   const imageUrl =
-    cleanText($("meta[property='og:image']").attr("content")) || null;
+    cleanText(structuredEvent?.imageUrl) ||
+    cleanText($("meta[property='og:image']").attr("content")) ||
+    null;
   const bodyText = cleanText($("body").text());
   const rawText = truncate(`${title}\n${description ?? ""}\n${bodyText}`, 8_000);
   const normalized = normalizeText(rawText);
@@ -92,10 +96,13 @@ export function extractCandidateFromHtml(
     return null;
   }
 
-  const eventDate = extractDate(html, rawText);
-  const venueName = extractVenue(rawText);
-  const city = inferCity(rawText);
-  const admissionType = classifyAdmission(title, description);
+  const eventDate = structuredEvent?.eventDate ?? extractDate(html, rawText);
+  const venueName = structuredEvent?.venueName ?? extractVenue(rawText);
+  const city = structuredEvent?.city ?? inferCity(rawText);
+  const admissionType = classifyAdmission(
+    title,
+    `${description ?? ""} ${rawText}`,
+  );
   const confidence = scoreCandidate({
     normalized,
     eventDate,
@@ -123,6 +130,96 @@ export function extractCandidateFromHtml(
     confidence,
     rawText,
   };
+}
+
+function extractStructuredEvent(html: string) {
+  const $ = load(html);
+  const scripts = $("script[type='application/ld+json']")
+    .map((_, element) => $(element).text())
+    .get();
+
+  for (const script of scripts) {
+    const records = flattenJsonLd(parseJson(script));
+    const event = records.find((record) =>
+      /event$/iu.test(String(record["@type"] ?? "")),
+    );
+
+    if (!event) {
+      continue;
+    }
+
+    const location = isRecord(event.location) ? event.location : null;
+    const address = isRecord(location?.address) ? location.address : null;
+    const eventDate = parseDate(stringValue(event.startDate));
+
+    return {
+      title:
+        cleanText(stringValue(event.name)) ||
+        cleanText(stringValue(event.headline)) ||
+        null,
+      eventDate,
+      imageUrl: imageValue(event.image),
+      venueName: cleanText(stringValue(location?.name)) || null,
+      city:
+        cleanText(stringValue(address?.addressLocality)) ||
+        cleanText(stringValue(address?.addressRegion)) ||
+        null,
+    };
+  }
+
+  return null;
+}
+
+function flattenJsonLd(value: unknown): Record<string, unknown>[] {
+  if (Array.isArray(value)) {
+    return value.flatMap(flattenJsonLd);
+  }
+
+  if (!isRecord(value)) {
+    return [];
+  }
+
+  const graph = value["@graph"];
+
+  if (Array.isArray(graph)) {
+    return [value, ...graph.flatMap(flattenJsonLd)];
+  }
+
+  return [value];
+}
+
+function parseJson(value: string) {
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+function parseDate(value: string) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function imageValue(value: unknown) {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return imageValue(value[0]);
+  }
+
+  if (isRecord(value)) {
+    return stringValue(value.url) || stringValue(value.contentUrl) || null;
+  }
+
+  return null;
 }
 
 function looksLikeMusicEvent(normalized: string) {
@@ -271,4 +368,12 @@ function normalizeText(value: string) {
 
 function truncate(value: string, length: number) {
   return value.length > length ? `${value.slice(0, length - 1)}…` : value;
+}
+
+function stringValue(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }
