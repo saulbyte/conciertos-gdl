@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarDays, RotateCcw, Sparkles } from "lucide-react";
+import { DesktopDiscoverRedirect } from "@/components/DesktopDiscoverRedirect";
 import { DiscoveryEventCard } from "@/components/DiscoveryEventCard";
 import { DiscoveryFilters } from "@/components/DiscoveryFilters";
 import { getDiscoveryEvents, getVenueOptions } from "@/lib/events";
 
 export const metadata: Metadata = {
-  title: "Descubrir conciertos",
-  description: "Descubre conciertos populares, próximos y recién anunciados en Guadalajara.",
+  title: "Descubrir",
+  description:
+    "Explora experiencias proximas, populares y recien anunciadas en Guadalajara.",
 };
 
 type DiscoverSearchParams = {
@@ -33,8 +35,9 @@ export default async function DiscoverPage({
   ]);
 
   return (
-    <main data-discovery-page className="bg-slate-950">
-      <section className="relative flex h-[calc(100dvh-4rem-env(safe-area-inset-bottom))] min-h-0 flex-col overflow-hidden bg-slate-950 md:hidden">
+    <main data-discovery-page className="bg-[#071018]">
+      <DesktopDiscoverRedirect />
+      <section className="relative flex h-[calc(100dvh-4rem-env(safe-area-inset-bottom))] min-h-0 flex-col overflow-hidden bg-[#071018] md:hidden">
         <DiscoveryFilters
           venues={venues}
           values={values}
@@ -57,15 +60,17 @@ export default async function DiscoverPage({
             <DiscoveryEndState />
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-8 text-center text-white">
-            <Sparkles className="h-10 w-10 text-violet-300" aria-hidden="true" />
-            <h1 className="mt-5 text-2xl font-bold">No hay eventos con estos filtros</h1>
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-8 text-center text-[#f6f3ea]">
+            <Sparkles className="h-10 w-10 text-[#00c2d1]" aria-hidden="true" />
+            <h1 className="mt-5 text-2xl font-bold">
+              No hay eventos con estos filtros
+            </h1>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Prueba con otra combinación para seguir descubriendo conciertos.
+              Prueba con otra combinacion para encontrar algo que valga la pena vivir.
             </p>
             <Link
               href="/descubrir"
-              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-md bg-white px-4 text-sm font-bold text-slate-950"
+              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-md bg-[#00c2d1] px-4 text-sm font-black text-[#071018]"
             >
               <RotateCcw className="h-4 w-4" aria-hidden="true" />
               Limpiar filtros
@@ -74,49 +79,38 @@ export default async function DiscoverPage({
         )}
       </section>
 
-      <section className="hidden bg-slate-50 md:block">
-        <div className="mx-auto w-full max-w-7xl px-6 py-14 lg:px-8">
-          <p className="text-sm font-bold uppercase text-violet-700">Descubrir</p>
-          <h1 className="mt-2 text-4xl font-bold text-slate-950">
-            Una mezcla para encontrar tu próximo concierto
-          </h1>
-          <p className="mt-3 max-w-2xl text-slate-600">
-            Eventos populares, fechas cercanas, novedades y algunas sorpresas de la cartelera.
-          </p>
-          <Link
-            href="/#eventos"
-            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-md bg-violet-600 px-5 text-sm font-bold text-white transition hover:bg-violet-700"
-          >
-            <CalendarDays className="h-4 w-4" aria-hidden="true" />
-            Ver todos los eventos
-          </Link>
-        </div>
-      </section>
+      <section
+        className="hidden min-h-screen bg-[#071018] md:block"
+        aria-hidden="true"
+      />
     </main>
   );
 }
 
 function DiscoveryEndState() {
   return (
-    <div className="flex h-full snap-start snap-always flex-col items-center justify-center bg-slate-950 px-8 text-center text-white">
-      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/15 text-violet-300">
+    <div className="flex h-full snap-start snap-always flex-col items-center justify-center bg-[#071018] px-8 text-center text-[#f6f3ea]">
+      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-[#00c2d1]/40 bg-[#00c2d1]/15 text-[#00c2d1]">
         <Sparkles className="h-7 w-7" aria-hidden="true" />
       </span>
-      <h2 className="mt-6 text-3xl font-bold">Ya descubriste todo por ahora</h2>
+      <h2 className="mt-6 text-3xl font-bold">
+        Ya descubriste todo por ahora
+      </h2>
       <p className="mt-3 max-w-sm text-sm leading-6 text-slate-300">
-        La mezcla cambia con nuevos eventos y con lo que interesa a la comunidad.
+        La mezcla cambia cuando aparecen nuevas experiencias y cuando la
+        comunidad empieza a mirar hacia ellas.
       </p>
       <div className="mt-7 grid w-full max-w-xs gap-3">
         <Link
           href="/#eventos"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-bold text-slate-950"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#00c2d1] px-5 text-sm font-black text-[#071018]"
         >
           <CalendarDays className="h-4 w-4" aria-hidden="true" />
-          Ver todos los eventos
+          Ver experiencias
         </Link>
         <Link
           href="/descubrir"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-white/25 bg-white/10 px-5 text-sm font-bold text-white"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-white/20 bg-white/5 px-5 text-sm font-black text-[#f6f3ea]"
         >
           <RotateCcw className="h-4 w-4" aria-hidden="true" />
           Volver a empezar

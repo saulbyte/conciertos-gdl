@@ -66,7 +66,7 @@ function requestCatalog(url: string) {
         headers: {
           Accept: "application/json",
           "User-Agent":
-            "ConciertosGDL/1.0 (+https://conciertos-gdl.vercel.app; event indexer)",
+            "REVERA/1.0 (+https://revera-live.vercel.app; event indexer)",
         },
       },
       (response) => {

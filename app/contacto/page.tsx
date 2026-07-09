@@ -1,97 +1,161 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { AtSign, Info, ShieldCheck } from "lucide-react";
+import { AtSign, ExternalLink, Info, Link2, MapPin, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contacto",
   description:
-    "Contacta a Conciertos GDL para correcciones, dudas, colaboraciones o informacion sobre eventos.",
+    "Contacta a REVERA por Instagram para sugerir experiencias, corregir informacion o proponer fuentes.",
 };
+
+const instagramUrl = "https://www.instagram.com/conciertos.gdl/";
+const imageSrc = "/images/about-concert-scene.png";
 
 export default function ContactPage() {
   return (
-    <main className="bg-slate-50">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-bold uppercase text-violet-700">
-            Contacto
-          </p>
-          <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            Hablemos
-          </h1>
-          <p className="mt-5 text-lg leading-8 text-slate-600">
-            Si encontraste un dato incorrecto, quieres sugerir una fuente,
-            compartir un evento musical o proponer una colaboracion, puedes
-            escribirnos por Instagram.
-          </p>
+    <main className="bg-[#071018] text-[#f6f3ea]">
+      <section className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(420px,0.86fr)] lg:items-center">
+          <div className="max-w-2xl">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00c2d1]">
+              Contacto
+            </p>
+            <h1 className="mt-2 text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl">
+              Escribenos por Instagram
+            </h1>
+            <p className="mt-5 text-base leading-8 text-slate-300 sm:text-lg">
+              Si viste algo que vale la pena vivir, mandanos la fuente por
+              Instagram. Revisamos links oficiales, corregimos datos y
+              sumamos experiencias que no deberian perderse.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-11 items-center gap-2 rounded-md bg-[#00c2d1] px-4 text-sm font-black text-[#071018] transition hover:bg-[#33d4de]"
+              >
+                Abrir Instagram
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              </a>
+              <Link
+                href="/acerca-de"
+                className="inline-flex h-11 items-center rounded-md bg-white/[0.045] px-4 text-sm font-black text-[#f6f3ea] transition hover:bg-white/[0.07] hover:text-[#00c2d1]"
+              >
+                Acerca de REVERA
+              </Link>
+            </div>
+          </div>
+
+          <ContactVisual />
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-4xl gap-5 px-4 py-10 sm:px-6 lg:px-8">
-        <article className="rounded-lg border border-slate-200 bg-white p-6">
-          <div className="flex items-start gap-4">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
-              <AtSign className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="text-xl font-bold text-slate-950">Instagram</h2>
-              <p className="mt-2 leading-7 text-slate-600">
-                Nuestro canal principal de contacto por ahora es Instagram.
-              </p>
-              <a
-                href="https://www.instagram.com/conciertos.gdl/"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 inline-flex h-11 items-center rounded-md bg-violet-600 px-4 text-sm font-bold text-white transition hover:bg-violet-700"
-              >
-                @conciertos.gdl
-              </a>
-            </div>
+      <section className="border-t border-white/8">
+        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mb-5">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00c2d1]">
+              Que mandar
+            </p>
+            <h2 className="mt-1 text-2xl font-black text-[#f6f3ea]">
+              Ayuda a que nadie se lo pierda
+            </h2>
           </div>
-        </article>
 
-        <div className="grid gap-5 md:grid-cols-2">
-          <ContactNote
-            icon={Info}
-            title="Correcciones"
-            text="Si una fecha, recinto, enlace o artista aparece incorrecto, envianos el detalle y la fuente correcta para revisarlo."
-          />
-          <ContactNote
-            icon={ShieldCheck}
-            title="Eventos y fuentes"
-            text="Podemos revisar nuevas fuentes publicas de eventos musicales en Guadalajara y zona metropolitana."
-          />
+          <div className="grid gap-3 md:grid-cols-3">
+            <ContactRow
+              icon={Link2}
+              title="Link de origen"
+              text="La fuente oficial ayuda a validar rapido."
+            />
+            <ContactRow
+              icon={MapPin}
+              title="Artista, fecha y recinto"
+              text="Con esos datos ubicamos y comparamos la experiencia."
+            />
+            <ContactRow
+              icon={Info}
+              title="Correccion o fuente"
+              text="Manda el dato correcto y donde se publico."
+            />
+          </div>
         </div>
+      </section>
 
-        <p className="text-sm leading-6 text-slate-500">
-          Conciertos GDL no vende boletos ni gestiona accesos. Para dudas sobre
-          compras, reembolsos, cambios o disponibilidad, consulta directamente
-          el sitio oficial del evento.
-        </p>
-
-        <Link
-          href="/privacidad"
-          className="text-sm font-bold text-violet-700 hover:text-violet-900"
-        >
-          Ver politica de privacidad
-        </Link>
+      <section className="border-t border-white/8">
+        <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-8 sm:px-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:px-8">
+          <p className="max-w-3xl text-sm leading-7 text-slate-400">
+            REVERA no vende boletos ni gestiona accesos. Para compras,
+            reembolsos, cambios o disponibilidad, confirma siempre en la
+            fuente de origen.
+          </p>
+          <Link
+            href="/terminos"
+            className="inline-flex h-11 w-fit items-center rounded-md bg-white/[0.045] px-4 text-sm font-black text-[#f6f3ea] transition hover:bg-white/[0.07] hover:text-[#00c2d1]"
+          >
+            Terminos de uso
+          </Link>
+        </div>
       </section>
     </main>
   );
 }
 
-type ContactNoteProps = {
-  icon: typeof Info;
+function ContactVisual() {
+  return (
+    <div className="relative min-h-[330px] overflow-hidden rounded-lg bg-[#0b1d26] shadow-2xl shadow-black/30 sm:min-h-[430px]">
+      <Image
+        src={imageSrc}
+        alt="Concierto nocturno en Guadalajara"
+        width={1600}
+        height={1000}
+        priority
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#071018] via-[#071018]/45 to-[#071018]/10" />
+
+      <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-[#071018]/70 px-3 py-2 text-xs font-black text-[#f6f3ea] backdrop-blur">
+        <ShieldCheck className="h-4 w-4 text-[#00c2d1]" aria-hidden="true" />
+        Fuentes oficiales y públicas
+      </div>
+
+      <div className="absolute bottom-4 left-4 right-4 rounded-lg bg-[#071018]/88 p-4 backdrop-blur">
+        <div className="flex items-start gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#ff304f]/12 text-[#ff8a9b]">
+            <AtSign className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00c2d1]">
+              Instagram
+            </p>
+            <h2 className="mt-1 truncate text-2xl font-black text-[#f6f3ea]">
+              @conciertos.gdl
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Para publicaciones, correcciones y fuentes nuevas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ContactRowProps = {
+  icon: typeof Link2;
   title: string;
   text: string;
 };
 
-function ContactNote({ icon: Icon, title, text }: ContactNoteProps) {
+function ContactRow({ icon: Icon, title, text }: ContactRowProps) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5">
-      <Icon className="h-5 w-5 text-violet-700" aria-hidden="true" />
-      <h2 className="mt-3 text-lg font-bold text-slate-950">{title}</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+    <article className="flex gap-3 rounded-lg bg-white/[0.03] p-4">
+      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-[#00c2d1]" aria-hidden="true" />
+      <div>
+        <h3 className="text-base font-black text-[#f6f3ea]">{title}</h3>
+        <p className="mt-1 text-sm leading-6 text-slate-400">{text}</p>
+      </div>
     </article>
   );
 }

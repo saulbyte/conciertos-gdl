@@ -65,6 +65,6 @@ export async function POST(
   }
 
   return NextResponse.json({
-    message: `Listo, te avisaremos cuando haya conciertos nuevos de ${artist.name}.`,
+    message: `Listo, te avisaremos cuando encontremos una nueva fecha de ${artist.name}.`,
   });
 }

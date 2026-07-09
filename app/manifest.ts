@@ -2,15 +2,15 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Conciertos GDL",
-    short_name: "Conciertos GDL",
+    name: "REVERA",
+    short_name: "REVERA",
     description:
-      "Agenda de conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
+      "Descubre experiencias en vivo que vale la pena vivir en Guadalajara y su zona metropolitana.",
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#f8fafc",
-    theme_color: "#7c3aed",
+    background_color: "#071018",
+    theme_color: "#071018",
     lang: "es-MX",
     categories: ["entertainment", "music"],
     icons: [
@@ -27,8 +27,20 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "any",
       },
       {
-        src: "/icons/icon-512.png",
+        src: "/icons/icon-1024.png",
+        sizes: "1024x1024",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-maskable-512.png",
         sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/icons/icon-maskable-1024.png",
+        sizes: "1024x1024",
         type: "image/png",
         purpose: "maskable",
       },

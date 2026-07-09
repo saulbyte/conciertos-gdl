@@ -3,12 +3,9 @@
 import Link from "next/link";
 import {
   AtSign,
-  CalendarDays,
   Download,
   Info,
-  MapPin,
   Menu,
-  Music2,
   Share,
   X,
 } from "lucide-react";
@@ -20,9 +17,6 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const navigation = [
-  { href: "/#eventos", label: "Eventos", icon: CalendarDays },
-  { href: "/artistas", label: "Artistas", icon: Music2 },
-  { href: "/#filtros", label: "Recintos", icon: MapPin },
   { href: "/acerca-de", label: "Acerca de", icon: Info },
   { href: "/contacto", label: "Contacto", icon: AtSign },
 ];
@@ -96,7 +90,7 @@ export function MobileMenu() {
     <div className="md:hidden">
       <button
         type="button"
-        className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 text-slate-700 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600"
+        className="flex h-10 w-10 items-center justify-center rounded-md border border-white/12 bg-white/5 text-[#f6f3ea] transition hover:border-[#00c2d1]/60 hover:text-[#00c2d1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00c2d1]"
         aria-expanded={isOpen}
         aria-controls="mobile-navigation"
         aria-label={isOpen ? "Cerrar menu" : "Abrir menu"}
@@ -116,7 +110,7 @@ export function MobileMenu() {
       {isOpen ? (
         <div
           id="mobile-navigation"
-          className="absolute inset-x-0 top-full border-b border-slate-200 bg-white shadow-lg shadow-slate-950/8"
+          className="fixed inset-x-0 top-[calc(4.25rem+env(safe-area-inset-top))] z-[90] border-y border-white/10 bg-[#071018]/98 shadow-2xl shadow-black/40 backdrop-blur"
         >
           <nav
             aria-label="Navegacion movil"
@@ -126,10 +120,10 @@ export function MobileMenu() {
               <Link
                 key={href}
                 href={href}
-                className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
+                className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold text-slate-300 transition hover:bg-white/6 hover:text-[#00c2d1]"
                 onClick={() => setIsOpen(false)}
               >
-                <Icon className="h-5 w-5 text-violet-600" aria-hidden="true" />
+                <Icon className="h-5 w-5 text-[#00c2d1]" aria-hidden="true" />
                 {label}
               </Link>
             ))}
@@ -138,29 +132,29 @@ export function MobileMenu() {
               href="https://www.instagram.com/conciertos.gdl/"
               target="_blank"
               rel="noreferrer"
-              className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold text-slate-700 transition hover:bg-violet-50 hover:text-violet-700"
+              className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold text-slate-300 transition hover:bg-white/6 hover:text-[#00c2d1]"
               onClick={() => setIsOpen(false)}
             >
-              <AtSign className="h-5 w-5 text-violet-600" aria-hidden="true" />
+              <AtSign className="h-5 w-5 text-[#00c2d1]" aria-hidden="true" />
               Instagram
             </a>
 
-            <div className="my-1 border-t border-slate-100" />
+            <div className="my-1 border-t border-white/10" />
 
             <button
               type="button"
               disabled={isInstalled}
-              className="flex min-h-11 items-center gap-3 rounded-md px-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-violet-50 hover:text-violet-700 disabled:cursor-default disabled:text-emerald-700 disabled:hover:bg-emerald-50"
+              className="flex min-h-11 items-center gap-3 rounded-md px-3 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/6 hover:text-[#00c2d1] disabled:cursor-default disabled:text-[#00c2d1] disabled:hover:bg-white/6"
               onClick={handleInstall}
             >
-              <Download className="h-5 w-5 text-violet-600" aria-hidden="true" />
+              <Download className="h-5 w-5 text-[#00c2d1]" aria-hidden="true" />
               {isInstalled ? "App instalada" : "Instalar app"}
             </button>
 
             {installHelp ? (
-              <div className="mx-3 mb-2 flex gap-3 rounded-md border border-violet-200 bg-violet-50 p-3 text-sm leading-5 text-slate-700">
+              <div className="mx-3 mb-2 flex gap-3 rounded-md border border-[#00c2d1]/25 bg-[#00c2d1]/10 p-3 text-sm leading-5 text-slate-200">
                 <Share
-                  className="mt-0.5 h-5 w-5 shrink-0 text-violet-700"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-[#00c2d1]"
                   aria-hidden="true"
                 />
                 <p>

@@ -7,7 +7,7 @@ export async function fetchHtml(url: string, timeoutMs = DEFAULT_TIMEOUT_MS) {
         Accept: "text/html,application/xhtml+xml",
         "Accept-Language": "es-MX,es;q=0.9",
         "User-Agent":
-          "ConciertosGDL/1.0 (+https://conciertos-gdl.vercel.app; event indexer)",
+          "REVERA/1.0 (+https://revera-live.vercel.app; event indexer)",
       },
       signal: AbortSignal.timeout(timeoutMs),
     });

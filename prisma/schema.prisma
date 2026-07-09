@@ -16,6 +16,8 @@ enum EventSource {
   ARENA_GUADALAJARA
   ETICKET
   KINGTICKET
+  VIBRA_JALISCO
+  FEVER
 }
 
 enum AdmissionType {

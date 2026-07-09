@@ -36,7 +36,7 @@ export function Breadcrumbs({ items, variant = "light" }: BreadcrumbsProps) {
                   className={
                     variant === "dark"
                       ? "shrink-0 text-slate-300 transition hover:text-white"
-                      : "shrink-0 text-slate-500 transition hover:text-violet-700"
+                      : "shrink-0 text-slate-400 transition hover:text-[#00c2d1]"
                   }
                 >
                   {item.label}
@@ -46,7 +46,7 @@ export function Breadcrumbs({ items, variant = "light" }: BreadcrumbsProps) {
                   className={
                     variant === "dark"
                       ? "truncate text-white"
-                      : "truncate text-slate-950"
+                      : "truncate text-[#f6f3ea]"
                   }
                 >
                   {item.label}

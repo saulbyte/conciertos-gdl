@@ -33,7 +33,7 @@ export async function notifyArtistSubscribersOfNewEvent(
     return;
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conciertos-gdl.vercel.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revera-live.vercel.app";
   const eventUrl = `${appUrl.replace(/\/$/u, "")}/event/${event.id}`;
   const deliveredTo = new Set<string>();
 
@@ -100,11 +100,11 @@ async function sendArtistEventEmail({
     body: JSON.stringify({
       from,
       to: email,
-      subject: `${artistName} tiene nuevo concierto en Guadalajara`,
+      subject: `${artistName} tiene una nueva fecha en Guadalajara`,
       html: `
         <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.6;">
-          <p style="font-size: 14px; color: #6d28d9; font-weight: 700; text-transform: uppercase;">Conciertos GDL</p>
-          <h1 style="font-size: 24px; margin: 0 0 12px;">Nuevo concierto detectado</h1>
+          <p style="font-size: 14px; color: #ff3060; font-weight: 700; text-transform: uppercase;">REVERA</p>
+          <h1 style="font-size: 24px; margin: 0 0 12px;">Nueva fecha detectada</h1>
           <p>Encontramos una fecha nueva de <strong>${escapeHtml(artistName)}</strong>.</p>
           <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 18px 0;">
             <h2 style="font-size: 18px; margin: 0 0 8px;">${escapeHtml(eventTitle)}</h2>
@@ -113,7 +113,7 @@ async function sendArtistEventEmail({
           </div>
           <p>
             <a href="${eventUrl}" style="display: inline-block; background: #7c3aed; color: white; padding: 12px 18px; border-radius: 6px; text-decoration: none; font-weight: 700;">
-              Ver evento
+              Ver fuente
             </a>
           </p>
           <p style="font-size: 12px; color: #64748b;">Recibiste este aviso porque marcaste interes en este artista.</p>

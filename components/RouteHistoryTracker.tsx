@@ -3,7 +3,9 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-const ROUTE_STACK_KEY = "conciertos-gdl-route-stack";
+const ROUTE_STACK_KEY = "revera-route-stack";
+const PREVIOUS_BRAND_ROUTE_STACK_KEY = "la-cartelera-route-stack";
+const LEGACY_ROUTE_STACK_KEY = `${["conciertos", "gdl"].join("-")}-route-stack`;
 const MAX_STACK_LENGTH = 20;
 
 export function RouteHistoryTracker() {
@@ -31,7 +33,10 @@ export function RouteHistoryTracker() {
 }
 
 export function getInternalRouteStack() {
-  const rawStack = window.sessionStorage.getItem(ROUTE_STACK_KEY);
+  const rawStack =
+    window.sessionStorage.getItem(ROUTE_STACK_KEY) ??
+    window.sessionStorage.getItem(PREVIOUS_BRAND_ROUTE_STACK_KEY) ??
+    window.sessionStorage.getItem(LEGACY_ROUTE_STACK_KEY);
 
   if (!rawStack) {
     return [];

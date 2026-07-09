@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terminos de uso",
   description:
-    "Terminos generales de uso de Conciertos GDL como agenda informativa de eventos musicales.",
+    "Terminos generales de uso de REVERA como plataforma de descubrimiento de experiencias en vivo.",
 };
 
 export default function TermsPage() {
@@ -26,13 +26,13 @@ export default function TermsPage() {
       <section className="mx-auto grid w-full max-w-4xl gap-6 px-4 py-10 text-slate-700 sm:px-6 lg:px-8">
         <TermsSection title="Servicio informativo">
           <p>
-            Conciertos GDL es una agenda informativa de conciertos y eventos
-            musicales en Guadalajara y zona metropolitana. No somos boletera,
+            REVERA es una plataforma de descubrimiento de experiencias en vivo
+            en Guadalajara y zona metropolitana. No somos boletera,
             promotor, recinto ni vendedor de entradas.
           </p>
         </TermsSection>
 
-        <TermsSection title="Informacion de eventos">
+        <TermsSection title="Informacion de experiencias">
           <p>
             Trabajamos para mantener la informacion actualizada, pero fechas,
             horarios, recintos, precios, disponibilidad y enlaces pueden cambiar

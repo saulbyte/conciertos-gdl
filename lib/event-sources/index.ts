@@ -4,11 +4,13 @@ import type { EventSourceAdapter } from "@/lib/event-sources/types";
 import { arenaGuadalajaraAdapter } from "@/lib/event-sources/arena-guadalajara";
 import { c3StageAdapter } from "@/lib/event-sources/c3-stage";
 import { eticketAdapter } from "@/lib/event-sources/eticket";
+import { feverAdapter } from "@/lib/event-sources/fever";
 import { funTicketAdapter } from "@/lib/event-sources/funticket";
 import { foroIndependenciaAdapter } from "@/lib/event-sources/foro-independencia";
 import { kingTicketAdapter } from "@/lib/event-sources/kingticket";
 import { superboletosAdapter } from "@/lib/event-sources/superboletos";
 import { visitJaliscoAdapter } from "@/lib/event-sources/visit-jalisco";
+import { vibraJaliscoAdapter } from "@/lib/event-sources/vibra-jalisco";
 import { createTicketmasterAdapter } from "@/lib/ticketmaster";
 
 export function getEventSourceAdapters(): EventSourceAdapter[] {
@@ -17,10 +19,12 @@ export function getEventSourceAdapters(): EventSourceAdapter[] {
     arenaGuadalajaraAdapter,
     c3StageAdapter,
     eticketAdapter,
+    feverAdapter,
     foroIndependenciaAdapter,
     funTicketAdapter,
     kingTicketAdapter,
     visitJaliscoAdapter,
+    vibraJaliscoAdapter,
     superboletosAdapter,
   ];
 }

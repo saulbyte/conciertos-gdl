@@ -21,25 +21,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "Conciertos GDL",
+  applicationName: "REVERA",
   title: {
-    default: "Conciertos GDL",
-    template: "%s | Conciertos GDL",
+    default: "REVERA",
+    template: "%s | REVERA",
   },
   description:
-    "Descubre conciertos y eventos musicales en Guadalajara y su zona metropolitana.",
+    "Descubre experiencias en vivo que vale la pena vivir en Guadalajara y su zona metropolitana.",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "Conciertos GDL",
+    statusBarStyle: "black-translucent",
+    title: "REVERA",
   },
   icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/icons/apple-touch-icon.png",
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#7c3aed",
+  themeColor: "#071018",
 };
 
 export default function RootLayout({

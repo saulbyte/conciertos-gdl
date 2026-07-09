@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #071018;
+  --foreground: #f6f3ea;
 }
 
 @theme inline {
@@ -39,6 +39,10 @@ body {
   body:has([data-artists-page]) [data-back-to-top] {
     display: none;
   }
+
+  body:has([data-event-detail-page]) [data-site-header] {
+    display: none;
+  }
 }
 
 html {
@@ -46,8 +50,8 @@ html {
 }
 
 ::selection {
-  background: #ddd6fe;
-  color: #2e1065;
+  background: #00c2d1;
+  color: #071018;
 }
 
 button,
@@ -55,6 +59,180 @@ a,
 input,
 select,
 summary {
-  outline-color: #7c3aed;
+  outline-color: #00c2d1;
   outline-offset: 3px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.like-heart {
+  transform-origin: center;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+}
+
+.like-button:hover .like-heart {
+  transform: scale(1.12);
+}
+
+.like-button[data-just-liked="true"] .like-heart {
+  animation: like-pop 640ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  filter: drop-shadow(0 0 14px rgba(255, 48, 79, 0.55));
+}
+
+.like-burst {
+  pointer-events: none;
+  position: absolute;
+  inset: -8px;
+  z-index: -1;
+  opacity: 0;
+}
+
+.like-button[data-just-liked="true"] .like-burst {
+  animation: like-burst-fade 620ms ease-out;
+}
+
+.like-burst span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 5px;
+  width: 5px;
+  border-radius: 999px;
+  background: #ff304f;
+  transform: translate(-50%, -50%);
+}
+
+.like-burst span:nth-child(2),
+.like-burst span:nth-child(4) {
+  background: #00c2d1;
+}
+
+.like-button[data-just-liked="true"] .like-burst span:nth-child(1) {
+  animation: like-spark-1 620ms ease-out;
+}
+
+.like-button[data-just-liked="true"] .like-burst span:nth-child(2) {
+  animation: like-spark-2 620ms ease-out;
+}
+
+.like-button[data-just-liked="true"] .like-burst span:nth-child(3) {
+  animation: like-spark-3 620ms ease-out;
+}
+
+.like-button[data-just-liked="true"] .like-burst span:nth-child(4) {
+  animation: like-spark-4 620ms ease-out;
+}
+
+.filter-chip {
+  transform: translateZ(0);
+}
+
+.filter-chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.filter-chip[data-tone="cyan"]::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(0, 194, 209, 0.26), transparent 36%),
+    linear-gradient(135deg, rgba(0, 194, 209, 0.12), transparent 58%);
+}
+
+.filter-chip[data-tone="red"]::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 48, 79, 0.28), transparent 36%),
+    linear-gradient(135deg, rgba(255, 48, 79, 0.14), transparent 58%);
+}
+
+.filter-chip:hover,
+.filter-chip[aria-current="page"] {
+  transform: translateY(-1px);
+}
+
+.filter-chip:hover::before,
+.filter-chip[aria-current="page"]::before {
+  opacity: 1;
+}
+
+.filter-chip-icon {
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.filter-chip:hover .filter-chip-icon,
+.filter-chip[aria-current="page"] .filter-chip-icon {
+  transform: scale(1.08) rotate(-5deg);
+}
+
+.filter-chip-count {
+  border-radius: 999px;
+  background: rgba(246, 243, 234, 0.13);
+  padding: 0.125rem 0.45rem;
+  font-size: 0.65rem;
+  line-height: 1;
+  color: currentColor;
+}
+
+@keyframes like-pop {
+  0% {
+    transform: scale(1);
+  }
+  32% {
+    transform: scale(1.48) rotate(-8deg);
+  }
+  58% {
+    transform: scale(0.9) rotate(4deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes like-burst-fade {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes like-spark-1 {
+  to {
+    transform: translate(-32px, -28px) scale(0.15);
+  }
+}
+
+@keyframes like-spark-2 {
+  to {
+    transform: translate(28px, -30px) scale(0.15);
+  }
+}
+
+@keyframes like-spark-3 {
+  to {
+    transform: translate(-28px, 28px) scale(0.15);
+  }
+}
+
+@keyframes like-spark-4 {
+  to {
+    transform: translate(32px, 26px) scale(0.15);
+  }
 }

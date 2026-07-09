@@ -2,7 +2,8 @@
 
 ## Objetivo del MVP
 
-Demostrar que existe interés por una plataforma que centralice conciertos en Guadalajara.
+Demostrar que existe interes por una plataforma que ayude a descubrir
+experiencias en vivo que la gente podria perderse por informacion dispersa.
 
 ---
 

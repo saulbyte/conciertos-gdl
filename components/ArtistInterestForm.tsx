@@ -7,6 +7,7 @@ import { Bell, CheckCircle2, Mail } from "lucide-react";
 type ArtistInterestFormProps = {
   artistId: string;
   artistName: string;
+  compact?: boolean;
 };
 
 type Status = "idle" | "success" | "error";
@@ -14,6 +15,7 @@ type Status = "idle" | "success" | "error";
 export function ArtistInterestForm({
   artistId,
   artistName,
+  compact = false,
 }: ArtistInterestFormProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -58,43 +60,49 @@ export function ArtistInterestForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full min-w-0 rounded-lg border border-violet-200 bg-white p-4 shadow-sm shadow-violet-100/70"
+      id="avisos"
+      className="w-full min-w-0 rounded-lg bg-white/[0.045] p-4 shadow-sm shadow-black/20"
     >
       <div className="flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-violet-600 text-white">
-          <Bell className="h-5 w-5" aria-hidden="true" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#ff304f] text-white">
+          <Bell className="h-4 w-4" aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-base font-bold text-slate-950">
+          <h2 className="text-sm font-black text-[#f6f3ea] sm:text-base">
             Avisame por correo
           </h2>
-          <p className="mt-1 text-sm leading-5 text-slate-600">
-            Recibe una alerta cuando encontremos un concierto nuevo de{" "}
+          <p className="mt-1 text-xs leading-5 text-slate-400 sm:text-sm">
+            Recibe una alerta cuando encontremos una nueva fecha de{" "}
             {artistName} en Guadalajara.
           </p>
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+      <div
+        className={`mt-4 grid gap-3 ${
+          compact ? "" : "sm:grid-cols-[1fr_auto]"
+        }`}
+      >
         <label className="relative block">
           <span className="sr-only">Correo electronico</span>
           <Mail
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#00c2d1]"
             aria-hidden="true"
           />
           <input
+            data-artist-alert-input
             type="email"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="tu@email.com"
-            className="h-12 w-full rounded-md border border-slate-300 bg-white pl-9 pr-3 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+            className="h-11 w-full rounded-md border border-white/10 bg-[#071018]/70 pl-9 pr-3 text-sm font-medium text-[#f6f3ea] outline-none transition placeholder:text-slate-500 focus:border-[#00c2d1]/70 focus:ring-4 focus:ring-[#00c2d1]/10"
           />
         </label>
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-violet-600 px-5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700 disabled:cursor-wait disabled:bg-violet-400"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[#ff304f] px-5 text-sm font-black text-white shadow-lg shadow-black/30 transition hover:bg-[#ff5d74] disabled:cursor-wait disabled:bg-[#ff304f]/60"
         >
           {isPending ? "Guardando" : "Me interesa"}
         </button>
@@ -103,7 +111,7 @@ export function ArtistInterestForm({
       {message ? (
         <p
           className={`mt-3 flex items-start gap-2 text-sm font-medium ${
-            status === "success" ? "text-emerald-700" : "text-rose-700"
+            status === "success" ? "text-[#00c2d1]" : "text-[#ff8a9b]"
           }`}
         >
           {status === "success" ? (

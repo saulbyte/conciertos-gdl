@@ -49,7 +49,7 @@ export function SmartBackButton({
       className={
         variant === "dark"
           ? "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md px-1 text-base font-bold text-slate-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          : "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md px-1 text-base font-bold text-slate-600 transition hover:text-violet-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600"
+          : "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md px-1 text-base font-bold text-slate-400 transition hover:text-[#00c2d1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00c2d1]"
       }
     >
       <ArrowLeft className="h-5 w-5" aria-hidden="true" />
