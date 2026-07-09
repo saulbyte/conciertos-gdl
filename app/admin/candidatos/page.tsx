@@ -38,6 +38,8 @@ type CandidatesPageProps = {
     key?: string;
     status?: string;
     filter?: string;
+    error?: string;
+    notice?: string;
   }>;
 };
 
@@ -50,6 +52,8 @@ export default async function CandidatesPage({
   const key = typeof params.key === "string" ? params.key : "";
   const status = parseStatus(params.status);
   const filter = parseFilter(params.filter);
+  const error = typeof params.error === "string" ? params.error : "";
+  const notice = typeof params.notice === "string" ? params.notice : "";
 
   if (!isAuthorized(key)) {
     return <UnauthorizedPanel />;
@@ -108,6 +112,9 @@ export default async function CandidatesPage({
           </FilterLink>
         </nav>
 
+        {error ? <ReviewMessage tone="error">{error}</ReviewMessage> : null}
+        {notice ? <ReviewMessage tone="success">{notice}</ReviewMessage> : null}
+
         {candidates.length > 0 ? (
           <section className="grid gap-3">
             {candidates.map((candidate) => (
@@ -143,9 +150,24 @@ async function approveCandidate(formData: FormData) {
   const filter = getFormValue(formData, "filter") || "all";
 
   assertAuthorized(key);
-  await importEventCandidate(prisma, id);
+  try {
+    await importEventCandidate(prisma, id);
+  } catch (error) {
+    console.error("Candidate approval failed", error);
+    revalidatePath("/admin/candidatos");
+    redirect(
+      buildHref(key, status, filter, {
+        error: getApprovalErrorMessage(error),
+      }),
+    );
+  }
+
   revalidatePath("/admin/candidatos");
-  redirect(buildHref(key, status, filter));
+  redirect(
+    buildHref(key, status, filter, {
+      notice: "Candidato aprobado e importado al catalogo.",
+    }),
+  );
 }
 
 async function rejectCandidate(formData: FormData) {
@@ -157,9 +179,24 @@ async function rejectCandidate(formData: FormData) {
   const filter = getFormValue(formData, "filter") || "all";
 
   assertAuthorized(key);
-  await rejectEventCandidate(prisma, id);
+  try {
+    await rejectEventCandidate(prisma, id);
+  } catch (error) {
+    console.error("Candidate rejection failed", error);
+    revalidatePath("/admin/candidatos");
+    redirect(
+      buildHref(key, status, filter, {
+        error: "No se pudo rechazar el candidato. Recarga e intenta de nuevo.",
+      }),
+    );
+  }
+
   revalidatePath("/admin/candidatos");
-  redirect(buildHref(key, status, filter));
+  redirect(
+    buildHref(key, status, filter, {
+      notice: "Candidato rechazado.",
+    }),
+  );
 }
 
 async function getCandidates(
@@ -392,6 +429,26 @@ function FilterLink({
   );
 }
 
+function ReviewMessage({
+  tone,
+  children,
+}: {
+  tone: "error" | "success";
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`rounded-2xl px-4 py-3 text-sm font-bold ${
+        tone === "error"
+          ? "bg-[#ff304f]/12 text-[#ff9daf] ring-1 ring-[#ff304f]/25"
+          : "bg-[#00c2d1]/12 text-[#7df3f8] ring-1 ring-[#00c2d1]/25"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
 function Badge({
   tone,
   children,
@@ -466,11 +523,23 @@ function buildHref(
   key: string,
   status: EventCandidateStatus | string,
   filter: ReviewFilter | string,
+  message?: {
+    error?: string;
+    notice?: string;
+  },
 ) {
   const params = new URLSearchParams({ key, status });
 
   if (filter !== "all") {
     params.set("filter", filter);
+  }
+
+  if (message?.error) {
+    params.set("error", message.error);
+  }
+
+  if (message?.notice) {
+    params.set("notice", message.notice);
   }
 
   return `/admin/candidatos?${params.toString()}`;
@@ -508,4 +577,18 @@ function safeHost(url: string) {
   } catch {
     return "Fuente externa";
   }
+}
+
+function getApprovalErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    if (/duplicado|duplicate|existente/iu.test(error.message)) {
+      return "No se aprobo: parece duplicado de un evento existente. Lo mande a rechazados para proteger el catalogo.";
+    }
+
+    if (/fecha|artista/iu.test(error.message)) {
+      return "No se aprobo: falta fecha o artista claro.";
+    }
+  }
+
+  return "No se pudo aprobar el candidato. Revisa la fuente e intenta de nuevo.";
 }
