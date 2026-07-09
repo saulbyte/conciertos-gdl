@@ -35,7 +35,11 @@ export async function discoverEventCandidates(
 
       const candidate = await extractCandidateFromResult(result);
 
-      if (!candidate || (await eventAlreadyExists(prisma, candidate))) {
+      if (
+        !candidate ||
+        isPastCandidate(candidate) ||
+        (await eventAlreadyExists(prisma, candidate))
+      ) {
         skipped += 1;
         continue;
       }
@@ -91,6 +95,25 @@ export async function discoverEventCandidates(
     updated,
     skipped,
   };
+}
+
+function isPastCandidate(candidate: CandidateInput) {
+  if (!candidate.eventDate) {
+    return false;
+  }
+
+  return candidate.eventDate < startOfMexicoCityDay(new Date());
+}
+
+export function startOfMexicoCityDay(date: Date) {
+  const dateKey = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(date);
+
+  return new Date(`${dateKey}T00:00:00-06:00`);
 }
 
 export async function listEventCandidates(

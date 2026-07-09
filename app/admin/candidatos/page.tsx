@@ -19,6 +19,7 @@ import { prisma } from "@/lib/prisma";
 import {
   importEventCandidate,
   rejectEventCandidate,
+  startOfMexicoCityDay,
 } from "@/lib/discovery/candidates";
 import { formatEventDate } from "@/lib/format";
 
@@ -165,19 +166,26 @@ async function getCandidates(
   status: EventCandidateStatus,
   filter: ReviewFilter,
 ) {
+  const today = startOfMexicoCityDay(new Date());
+  const pendingDateGuard =
+    status === EventCandidateStatus.PENDING
+      ? [{ OR: [{ eventDate: null }, { eventDate: { gte: today } }] }]
+      : [];
+  const filterGuards =
+    filter === "missing"
+      ? [{ OR: [{ eventDate: null }, { venueName: null }] }]
+      : [];
   const where = {
     status,
+    ...(pendingDateGuard.length || filterGuards.length
+      ? { AND: [...pendingDateGuard, ...filterGuards] }
+      : {}),
     ...(filter === "high" ? { confidence: { gte: 85 } } : {}),
     ...(filter === "free" ? { admissionType: AdmissionType.FREE } : {}),
     ...(filter === "complete"
       ? {
-          eventDate: { not: null },
+          eventDate: { gte: today },
           venueName: { not: null },
-        }
-      : {}),
-    ...(filter === "missing"
-      ? {
-          OR: [{ eventDate: null }, { venueName: null }],
         }
       : {}),
   };
