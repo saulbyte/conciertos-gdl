@@ -18,12 +18,19 @@ enum EventSource {
   KINGTICKET
   VIBRA_JALISCO
   FEVER
+  DISCOVERED
 }
 
 enum AdmissionType {
   FREE
   PAID
   UNKNOWN
+}
+
+enum EventCandidateStatus {
+  PENDING
+  REJECTED
+  IMPORTED
 }
 
 model Venue {
@@ -68,6 +75,31 @@ model Event {
   @@index([venueId])
   @@index([source])
   @@index([admissionType])
+}
+
+model EventCandidate {
+  id              String               @id @default(cuid())
+  title           String
+  description     String?
+  eventDate       DateTime?
+  imageUrl        String?
+  sourceUrl       String
+  sourceName      String?
+  venueName       String?
+  city            String?
+  admissionType   AdmissionType        @default(UNKNOWN)
+  confidence      Int                  @default(0)
+  status          EventCandidateStatus @default(PENDING)
+  rawText         String?
+  importedEventId String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  reviewedAt      DateTime?
+
+  @@unique([sourceUrl, title])
+  @@index([status])
+  @@index([createdAt])
+  @@index([eventDate])
 }
 
 model EventLike {

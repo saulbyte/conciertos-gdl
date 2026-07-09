@@ -29,6 +29,7 @@ Actualizar eventos y publicar codigo son operaciones diferentes:
 | Operacion | Modifica | Requiere despliegue |
 | --- | --- | --- |
 | `npm run sync:events` | Datos en Neon | No |
+| `npm run discover:events` | Candidatos en Neon | No |
 | Editar componentes o servicios | Codigo | Si |
 | Agregar una migracion Prisma | Esquema de Neon | Si |
 | Cambiar variables de Vercel | Configuracion | Se recomienda |
@@ -50,6 +51,7 @@ Necesitas:
 3. Un archivo `.env.local` con `DATABASE_URL`, `TICKETMASTER_API_KEY` y
    `SYNC_SECRET` validos.
 4. Conexion a internet.
+5. Opcional para descubrimiento: `TAVILY_API_KEY`.
 
 Nunca compartas ni subas `.env.local` al repositorio. Para confirmar que existen
 las variables sin mostrar sus valores, ejecuta:
@@ -141,6 +143,46 @@ comandos individuales mientras investigas Ticketmaster.
 
 Todos los comandos son repetibles. Volver a ejecutarlos no crea copias del mismo
 evento porque cada registro se identifica por fuente e identificador externo.
+
+## Descubrir eventos fuera de fuentes fijas
+
+REVERA tambien puede buscar paginas candidatas en internet. Esto no publica
+eventos automaticamente: solamente llena una bandeja de revision para evitar
+meter informacion dudosa al catalogo.
+
+Configura `TAVILY_API_KEY` en `.env.local` para usar el buscador. Puedes
+personalizar las busquedas con `DISCOVERY_QUERIES`, separando cada consulta con
+`|`.
+
+Ejecuta:
+
+```powershell
+npm run discover:events
+```
+
+El resultado indica cuantas paginas se buscaron, cuantas pudieron extraerse y
+cuantos candidatos se crearon o actualizaron.
+
+Para revisar candidatos pendientes:
+
+```powershell
+npm run candidates:list
+```
+
+Para importar un candidato al catalogo:
+
+```powershell
+npm run candidates:import -- ID_DEL_CANDIDATO
+```
+
+Para descartarlo:
+
+```powershell
+npm run candidates:reject -- ID_DEL_CANDIDATO
+```
+
+Un candidato solo puede importarse si el extractor encontro fecha y recinto. Si
+no los encontro, debe revisarse manualmente antes de publicarlo.
 
 ## Ejecutar desde el endpoint de produccion
 
@@ -343,6 +385,8 @@ Produccion necesita estas variables:
 | `DATABASE_URL` | Conexion PostgreSQL de Neon | Si |
 | `TICKETMASTER_API_KEY` | Consulta de Ticketmaster | Si |
 | `SYNC_SECRET` | Proteccion de `/api/sync` | Si |
+| `TAVILY_API_KEY` | Busqueda de paginas candidatas | No |
+| `DISCOVERY_QUERIES` | Consultas custom separadas por `|` | No |
 | `SUPERBOLETOS_CATALOG_URL` | Sobrescribir el catalogo publico | No |
 
 La forma mas clara de configurarlas es desde el panel de Vercel:
@@ -504,6 +548,7 @@ Foro Independencia: fetched / created / updated / duplicates
 Visit Jalisco: fetched / created / updated / duplicates
 Superboletos: fetched / created / updated / duplicates
 Fever: fetched / created / updated / duplicates
+Candidatos descubiertos: created / updated / skipped
 Eventos comprobados en la pagina:
 Errores u observaciones:
 ```
