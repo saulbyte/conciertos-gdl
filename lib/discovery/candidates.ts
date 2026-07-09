@@ -5,6 +5,7 @@ import type {
   DiscoveryResult,
 } from "@/lib/discovery/types";
 import {
+  getDiscoverySeedResults,
   getDiscoveryQueries,
   searchDiscoveryCandidates,
 } from "@/lib/discovery/search";
@@ -65,6 +66,7 @@ export async function discoverEventCandidates(
         },
         create: candidate,
         update: {
+          artistName: candidate.artistName,
           description: candidate.description,
           eventDate: candidate.eventDate,
           imageUrl: candidate.imageUrl,
@@ -84,6 +86,71 @@ export async function discoverEventCandidates(
       } else {
         created += 1;
       }
+    }
+  }
+
+  const seedResults = await getDiscoverySeedResults();
+  searchResults += seedResults.length;
+
+  for (const result of seedResults) {
+    if (seenUrls.has(result.url)) {
+      skipped += 1;
+      continue;
+    }
+
+    seenUrls.add(result.url);
+
+    const candidate = await extractCandidateFromResult(result);
+
+    if (
+      !candidate ||
+      isPastCandidate(candidate) ||
+      (await eventAlreadyExists(prisma, candidate))
+    ) {
+      skipped += 1;
+      continue;
+    }
+
+    extracted += 1;
+
+    const existing = await prisma.eventCandidate.findUnique({
+      where: {
+        sourceUrl_title: {
+          sourceUrl: candidate.sourceUrl,
+          title: candidate.title,
+        },
+      },
+      select: { id: true },
+    });
+
+    await prisma.eventCandidate.upsert({
+      where: {
+        sourceUrl_title: {
+          sourceUrl: candidate.sourceUrl,
+          title: candidate.title,
+        },
+      },
+      create: candidate,
+      update: {
+        artistName: candidate.artistName,
+        description: candidate.description,
+        eventDate: candidate.eventDate,
+        imageUrl: candidate.imageUrl,
+        sourceName: candidate.sourceName,
+        venueName: candidate.venueName,
+        city: candidate.city,
+        admissionType: candidate.admissionType,
+        confidence: candidate.confidence,
+        rawText: candidate.rawText,
+        status: EventCandidateStatus.PENDING,
+        reviewedAt: null,
+      },
+    });
+
+    if (existing) {
+      updated += 1;
+    } else {
+      created += 1;
     }
   }
 
@@ -127,6 +194,7 @@ export async function listEventCandidates(
     select: {
       id: true,
       title: true,
+      artistName: true,
       status: true,
       confidence: true,
       eventDate: true,
@@ -157,14 +225,15 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
     throw new Error(`No existe el candidato ${id}.`);
   }
 
-  if (!candidate.eventDate || !candidate.venueName) {
+  if (!candidate.eventDate || !candidate.artistName) {
     throw new Error(
-      "El candidato necesita fecha y recinto antes de importarse al catalogo.",
+      "El candidato necesita fecha y artista antes de importarse al catalogo.",
     );
   }
 
   const duplicate = await findExistingEventDuplicate(prisma, {
     title: candidate.title,
+    artistName: candidate.artistName,
     description: candidate.description,
     eventDate: candidate.eventDate,
     imageUrl: candidate.imageUrl,
@@ -193,12 +262,12 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
   const venue = await prisma.venue.upsert({
     where: {
       name_city: {
-        name: candidate.venueName,
+        name: candidate.venueName ?? "Por confirmar",
         city: candidate.city ?? "Guadalajara",
       },
     },
     create: {
-      name: candidate.venueName,
+      name: candidate.venueName ?? "Por confirmar",
       city: candidate.city ?? "Guadalajara",
     },
     update: {},
@@ -231,6 +300,26 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
       admissionType: candidate.admissionType,
       venueId: venue.id,
     },
+  });
+
+  const artist = await prisma.artist.upsert({
+    where: { name: candidate.artistName },
+    create: { name: candidate.artistName, imageUrl: candidate.imageUrl },
+    update: candidate.imageUrl ? { imageUrl: candidate.imageUrl } : {},
+  });
+
+  await prisma.eventArtist.upsert({
+    where: {
+      eventId_artistId: {
+        eventId: event.id,
+        artistId: artist.id,
+      },
+    },
+    create: {
+      eventId: event.id,
+      artistId: artist.id,
+    },
+    update: {},
   });
 
   await prisma.eventCandidate.update({
@@ -295,7 +384,7 @@ async function findExistingEventDuplicate(
     },
   });
 
-  const title = normalizeTitle(candidate.title);
+  const title = normalizeTitle(candidate.artistName ?? candidate.title);
   const venue = normalizeName(candidate.venueName ?? "");
   const city = normalizeName(candidate.city ?? "");
   const dateKey = getMexicoCityDateKey(candidate.eventDate);

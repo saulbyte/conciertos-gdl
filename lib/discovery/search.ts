@@ -1,4 +1,5 @@
 import type { SearchResult } from "@/lib/discovery/types";
+import { fetchHtml } from "@/lib/event-sources/http";
 
 const TAVILY_SEARCH_URL = "https://api.tavily.com/search";
 
@@ -12,6 +13,10 @@ const DEFAULT_QUERIES = [
   "site:zapopan.gob.mx concierto festival musica",
   "site:fiestasdeoctubre.jalisco.gob.mx concierto Guadalajara",
   "Golden Ganga Guadalajara gratis Auditorio Benito Juarez",
+];
+
+const DEFAULT_SEED_URLS = [
+  "https://www.songkick.com/es/metro-areas/31015-mexico-guadalajara",
 ];
 
 type TavilyResponse = {
@@ -29,6 +34,27 @@ export function getDiscoveryQueries() {
     .filter(Boolean);
 
   return customQueries?.length ? customQueries : DEFAULT_QUERIES;
+}
+
+export function getDiscoverySeedUrls() {
+  const customSeeds = process.env.DISCOVERY_SEED_URLS?.split("|")
+    .map((url) => url.trim())
+    .filter(Boolean);
+
+  return customSeeds?.length ? customSeeds : DEFAULT_SEED_URLS;
+}
+
+export async function getDiscoverySeedResults(): Promise<SearchResult[]> {
+  const results: SearchResult[] = [];
+
+  for (const seedUrl of getDiscoverySeedUrls()) {
+    const html = await fetchHtml(seedUrl, 30_000);
+    const links = parseCandidateLinks(html, seedUrl);
+
+    results.push(...links);
+  }
+
+  return [...new Map(results.map((result) => [result.url, result])).values()];
 }
 
 export async function searchDiscoveryCandidates(
@@ -83,4 +109,21 @@ function normalizeUrl(url: string) {
   parsed.hash = "";
 
   return parsed.toString();
+}
+
+function parseCandidateLinks(html: string, seedUrl: string): SearchResult[] {
+  const baseUrl = new URL(seedUrl);
+  const matches = [...html.matchAll(/href="([^"]*\/concerts\/\d+[^"]*)"/giu)];
+
+  return [...new Set(matches.map((match) => match[1]))].map((href) => {
+    const url = new URL(href, baseUrl.origin);
+    url.hash = "";
+
+    return {
+      title: "Songkick Guadalajara",
+      url: url.toString().split("?")[0],
+      content: null,
+      score: null,
+    };
+  });
 }

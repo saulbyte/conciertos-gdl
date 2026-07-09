@@ -152,7 +152,8 @@ meter informacion dudosa al catalogo.
 
 Configura `TAVILY_API_KEY` en `.env.local` para usar el buscador. Puedes
 personalizar las busquedas con `DISCOVERY_QUERIES`, separando cada consulta con
-`|`.
+`|`. El radar tambien revisa fuentes semilla como Songkick Guadalajara; puedes
+sobrescribirlas con `DISCOVERY_SEED_URLS`, tambien separadas por `|`.
 
 Ejecuta:
 
@@ -181,8 +182,9 @@ Para descartarlo:
 npm run candidates:reject -- ID_DEL_CANDIDATO
 ```
 
-Un candidato solo puede importarse si el extractor encontro fecha y recinto. Si
-no los encontro, debe revisarse manualmente antes de publicarlo.
+Un candidato solo se guarda si el extractor encontro fecha futura y artista
+concreto. El recinto puede quedar pendiente como `Por confirmar`, pero no se
+deben aprobar candidatos donde el artista o la fecha no sean claros.
 
 ## Ejecutar desde el endpoint de produccion
 
@@ -387,6 +389,7 @@ Produccion necesita estas variables:
 | `SYNC_SECRET` | Proteccion de `/api/sync` | Si |
 | `TAVILY_API_KEY` | Busqueda de paginas candidatas | No |
 | `DISCOVERY_QUERIES` | Consultas custom separadas por `|` | No |
+| `DISCOVERY_SEED_URLS` | Paginas semilla para extraer links candidatos | No |
 | `SUPERBOLETOS_CATALOG_URL` | Sobrescribir el catalogo publico | No |
 
 La forma mas clara de configurarlas es desde el panel de Vercel:

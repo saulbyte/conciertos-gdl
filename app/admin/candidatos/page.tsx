@@ -169,12 +169,10 @@ async function getCandidates(
   const today = startOfMexicoCityDay(new Date());
   const pendingDateGuard =
     status === EventCandidateStatus.PENDING
-      ? [{ OR: [{ eventDate: null }, { eventDate: { gte: today } }] }]
+      ? [{ eventDate: { gte: today }, artistName: { not: null } }]
       : [];
   const filterGuards =
-    filter === "missing"
-      ? [{ OR: [{ eventDate: null }, { venueName: null }] }]
-      : [];
+    filter === "missing" ? [{ venueName: null }] : [];
   const where = {
     status,
     ...(pendingDateGuard.length || filterGuards.length
@@ -185,7 +183,7 @@ async function getCandidates(
     ...(filter === "complete"
       ? {
           eventDate: { gte: today },
-          venueName: { not: null },
+          artistName: { not: null },
         }
       : {}),
   };
@@ -223,7 +221,7 @@ function CandidateCard({
   status: EventCandidateStatus;
   filter: ReviewFilter;
 }) {
-  const ready = Boolean(candidate.eventDate && candidate.venueName);
+  const ready = Boolean(candidate.eventDate && candidate.artistName);
   const sourceHost = safeHost(candidate.sourceUrl);
 
   return (
@@ -243,6 +241,9 @@ function CandidateCard({
         <h2 className="text-lg font-black leading-tight md:text-xl">
           {candidate.title}
         </h2>
+        <p className="mt-1 text-sm font-black text-[#00c2d1]">
+          {candidate.artistName ?? "Sin artista claro"}
+        </p>
 
         {candidate.description ? (
           <p className="mt-2 line-clamp-2 max-w-3xl text-sm leading-6 text-slate-400">

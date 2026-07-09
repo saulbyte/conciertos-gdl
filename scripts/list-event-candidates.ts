@@ -40,6 +40,7 @@ async function main() {
         candidate.id,
         `[${candidate.confidence}]`,
         candidate.eventDate?.toISOString().slice(0, 10) ?? "sin fecha",
+        candidate.artistName ?? "sin artista",
         candidate.venueName ?? "sin recinto",
         candidate.city ?? "sin ciudad",
         candidate.title,

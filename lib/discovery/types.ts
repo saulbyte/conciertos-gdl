@@ -9,6 +9,7 @@ export type SearchResult = {
 
 export type CandidateInput = {
   title: string;
+  artistName: string;
   description: string | null;
   eventDate: Date | null;
   imageUrl: string | null;
@@ -24,6 +25,7 @@ export type CandidateInput = {
 export type CandidateSummary = {
   id: string;
   title: string;
+  artistName: string | null;
   status: EventCandidateStatus;
   confidence: number;
   eventDate: Date | null;

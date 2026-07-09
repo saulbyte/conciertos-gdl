@@ -69,6 +69,10 @@ export function extractCandidateFromHtml(
   html: string,
   result: SearchResult,
 ): CandidateInput | null {
+  if (isListingPageUrl(result.url)) {
+    return null;
+  }
+
   const $ = load(html);
   const structuredEvent = extractStructuredEvent(html);
   const title = cleanText(
@@ -96,6 +100,7 @@ export function extractCandidateFromHtml(
     return null;
   }
 
+  const artistName = structuredEvent?.artistName ?? extractArtistName(title);
   const eventDate = structuredEvent?.eventDate ?? extractDate(html, rawText);
   const venueName = structuredEvent?.venueName ?? extractVenue(rawText);
   const city = structuredEvent?.city ?? inferCity(rawText);
@@ -111,14 +116,18 @@ export function extractCandidateFromHtml(
     admissionType,
     imageUrl,
     url: result.url,
+    artistName,
   });
 
-  if (confidence < 55) {
+  if (!eventDate || !isConcreteArtistName(artistName) || confidence < 75) {
     return null;
   }
 
+  const confirmedArtistName = artistName;
+
   return {
     title,
+    artistName: confirmedArtistName,
     description,
     eventDate,
     imageUrl,
@@ -151,6 +160,7 @@ function extractStructuredEvent(html: string) {
     const location = isRecord(event.location) ? event.location : null;
     const address = isRecord(location?.address) ? location.address : null;
     const eventDate = parseDate(stringValue(event.startDate));
+    const artistName = extractPerformerName(event.performer);
 
     return {
       title:
@@ -158,6 +168,7 @@ function extractStructuredEvent(html: string) {
         cleanText(stringValue(event.headline)) ||
         null,
       eventDate,
+      artistName,
       imageUrl: imageValue(event.image),
       venueName: cleanText(stringValue(location?.name)) || null,
       city:
@@ -222,6 +233,61 @@ function imageValue(value: unknown) {
   return null;
 }
 
+function extractPerformerName(value: unknown) {
+  if (Array.isArray(value)) {
+    return extractPerformerName(value[0]);
+  }
+
+  if (isRecord(value)) {
+    return cleanText(stringValue(value.name)) || null;
+  }
+
+  return null;
+}
+
+function extractArtistName(title: string) {
+  const cleaned = cleanText(title)
+    .replace(/^boletos\s+(?:para\s+)?/iu, "")
+    .replace(/^concierto\s+(?:de\s+)?/iu, "");
+  const ticketMatch = cleaned.match(/^(.+?)\s+(?:en vivo|entradas|boletos)/iu)?.[1];
+  const concertMatch = cleaned.match(/(?:concierto|presentacion|presentación)\s+de\s+(.+?)(?:\s+en|\s+gratis|$)/iu)?.[1];
+  const orchestraMatch = cleaned.match(/(orquesta\s+metropolitana\s+de\s+guadalajara)/iu)?.[1];
+  const beforeAt = cleanText(cleaned.split("@")[0]);
+  const hasAtPattern = /@/.test(cleaned);
+  const beforeVenue = cleanText(
+    beforeAt.split(
+      /\s+(?:en|at)\s+(?:auditorio|foro|teatro|arena|estadio|c3|baramericas|anexo|palcco)\b/iu,
+    )[0],
+  );
+
+  return (
+    cleanText(orchestraMatch) ||
+    cleanText(concertMatch) ||
+    cleanText(ticketMatch) ||
+    (hasAtPattern ? beforeVenue || beforeAt : null)
+  );
+}
+
+function isConcreteArtistName(value: string | null): value is string {
+  if (!value) {
+    return false;
+  }
+
+  const normalized = normalizeText(value);
+
+  if (normalized.length < 2 || normalized.length > 80) {
+    return false;
+  }
+
+  return !/(agenda|cartelera|categoria|eventos|festival de musica|gobierno|instagram|facebook|tiktok|zona 3)/u.test(
+    normalized,
+  );
+}
+
+function isListingPageUrl(url: string) {
+  return /songkick\.com\/(?:es\/)?metro-areas\//iu.test(url);
+}
+
 function looksLikeMusicEvent(normalized: string) {
   const includesMusic = MUSIC_TERMS.some((term) =>
     normalized.includes(normalizeText(term)),
@@ -245,19 +311,24 @@ function scoreCandidate(input: {
   admissionType: AdmissionType;
   imageUrl: string | null;
   url: string;
+  artistName: string | null;
 }) {
-  let score = 20;
+  let score = 10;
 
   if (MUSIC_TERMS.some((term) => input.normalized.includes(normalizeText(term)))) {
-    score += 25;
+    score += 15;
+  }
+
+  if (isConcreteArtistName(input.artistName)) {
+    score += 30;
   }
 
   if (input.eventDate) {
-    score += 20;
+    score += 25;
   }
 
   if (input.venueName) {
-    score += 15;
+    score += 10;
   }
 
   if (input.city) {

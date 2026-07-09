@@ -80,6 +80,7 @@ model Event {
 model EventCandidate {
   id              String               @id @default(cuid())
   title           String
+  artistName      String?
   description     String?
   eventDate       DateTime?
   imageUrl        String?
