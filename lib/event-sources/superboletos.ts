@@ -66,7 +66,7 @@ function requestCatalog(url: string) {
         headers: {
           Accept: "application/json",
           "User-Agent":
-            "REVERA/1.0 (+https://revera.vercel.app; event indexer)",
+            "REVERA/1.0 (+https://revera-beta13.vercel.app; event indexer)",
         },
       },
       (response) => {

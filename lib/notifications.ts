@@ -33,7 +33,7 @@ export async function notifyArtistSubscribersOfNewEvent(
     return;
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revera.vercel.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://revera-beta13.vercel.app";
   const eventUrl = `${appUrl.replace(/\/$/u, "")}/event/${event.id}`;
   const deliveredTo = new Set<string>();
 
