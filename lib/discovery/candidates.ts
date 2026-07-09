@@ -196,22 +196,101 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
 }
 
 async function eventAlreadyExists(prisma: PrismaClient, candidate: CandidateInput) {
-  if (
-    await prisma.event.findFirst({
-      where: {
-        OR: [
-          { sourceUrl: candidate.sourceUrl },
-          {
-            title: candidate.title,
-            eventDate: candidate.eventDate ?? undefined,
-          },
-        ],
-      },
-      select: { id: true },
-    })
-  ) {
+  if (await findExistingEventDuplicate(prisma, candidate)) {
     return true;
   }
 
   return false;
+}
+
+async function findExistingEventDuplicate(
+  prisma: PrismaClient,
+  candidate: CandidateInput,
+) {
+  const exactSource = await prisma.event.findFirst({
+    where: { sourceUrl: candidate.sourceUrl },
+    select: { id: true },
+  });
+
+  if (exactSource) {
+    return exactSource;
+  }
+
+  if (!candidate.eventDate) {
+    return null;
+  }
+
+  const windowStart = new Date(candidate.eventDate);
+  windowStart.setUTCDate(windowStart.getUTCDate() - 1);
+  const windowEnd = new Date(candidate.eventDate);
+  windowEnd.setUTCDate(windowEnd.getUTCDate() + 2);
+
+  const candidates = await prisma.event.findMany({
+    where: {
+      eventDate: {
+        gte: windowStart,
+        lt: windowEnd,
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      eventDate: true,
+      venue: {
+        select: {
+          name: true,
+          city: true,
+        },
+      },
+    },
+  });
+
+  const title = normalizeTitle(candidate.title);
+  const venue = normalizeName(candidate.venueName ?? "");
+  const city = normalizeName(candidate.city ?? "");
+  const dateKey = getMexicoCityDateKey(candidate.eventDate);
+
+  return candidates.find((event) => {
+    const eventTitle = normalizeTitle(event.title);
+    const eventVenue = normalizeName(event.venue.name);
+    const eventCity = normalizeName(event.venue.city);
+    const sameDate = getMexicoCityDateKey(event.eventDate) === dateKey;
+    const sameVenue =
+      venue.length > 0 &&
+      (eventVenue === venue || eventVenue.includes(venue) || venue.includes(eventVenue));
+    const sameCity =
+      city.length === 0 ||
+      eventCity === city ||
+      eventCity.includes(city) ||
+      city.includes(eventCity);
+    const sameTitle =
+      eventTitle === title ||
+      eventTitle.includes(title) ||
+      title.includes(eventTitle);
+
+    return sameDate && sameVenue && sameCity && sameTitle;
+  }) ?? null;
+}
+
+function normalizeTitle(value: string) {
+  return normalizeName(value.split("@")[0] ?? value);
+}
+
+function normalizeName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " y ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function getMexicoCityDateKey(date: Date) {
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(date);
 }
