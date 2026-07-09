@@ -78,7 +78,7 @@ async function fetchArenaEventsByCategory(categoryId: number) {
     headers: {
       Accept: "application/json",
       "User-Agent":
-        "REVERA/1.0 (+https://revera-beta13.vercel.app; event indexer)",
+        "REVERA/1.0 (+https://revera-live.vercel.app; event indexer)",
     },
     signal: AbortSignal.timeout(30_000),
   });

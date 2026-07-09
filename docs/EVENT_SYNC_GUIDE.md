@@ -35,7 +35,7 @@ Actualizar eventos y publicar codigo son operaciones diferentes:
 
 La URL publica principal es:
 
-https://revera-beta13.vercel.app
+https://revera-live.vercel.app
 
 Los scripts escriben directamente en la base de datos Neon configurada en
 `DATABASE_URL`. Con la configuracion actual, ejecutar los comandos desde este
@@ -111,12 +111,12 @@ revisa si la fuente cambio, bloqueo la consulta o dejo de responder.
 
 Al terminar, abre:
 
-https://revera-beta13.vercel.app
+https://revera-live.vercel.app
 
 Busca uno o dos eventos recientes. Tambien puedes consultar la API publica:
 
 ```powershell
-Invoke-RestMethod "https://revera-beta13.vercel.app/api/events?q=TINI"
+Invoke-RestMethod "https://revera-live.vercel.app/api/events?q=TINI"
 ```
 
 La actualizacion de datos no requiere desplegar Vercel, ejecutar un build ni
@@ -153,7 +153,7 @@ $secret = [System.Net.NetworkCredential]::new("", $secureSecret).Password
 
 Invoke-RestMethod `
   -Method Post `
-  -Uri "https://revera-beta13.vercel.app/api/sync" `
+  -Uri "https://revera-live.vercel.app/api/sync" `
   -Headers @{ "x-sync-secret" = $secret }
 
 Remove-Variable secret
@@ -291,7 +291,7 @@ npx vercel --prod --yes
 Espera hasta ver que el despliegue esta `READY` y que el alias fue asignado a:
 
 ```text
-https://revera-beta13.vercel.app
+https://revera-live.vercel.app
 ```
 
 Durante el despliegue, Vercel ejecuta `npm run vercel-build`, que a su vez hace:
@@ -328,7 +328,7 @@ nombre por accidente. Despues ejecuta el despliegue productivo normal.
 6. Consulta la API:
 
 ```powershell
-Invoke-RestMethod "https://revera-beta13.vercel.app/api/events?q=Cristian"
+Invoke-RestMethod "https://revera-live.vercel.app/api/events?q=Cristian"
 ```
 
 Si Vercel marca el despliegue como correcto pero la pagina falla, revisa los logs
