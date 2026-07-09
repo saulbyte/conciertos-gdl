@@ -140,6 +140,33 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
     );
   }
 
+  const duplicate = await findExistingEventDuplicate(prisma, {
+    title: candidate.title,
+    description: candidate.description,
+    eventDate: candidate.eventDate,
+    imageUrl: candidate.imageUrl,
+    sourceUrl: candidate.sourceUrl,
+    sourceName: candidate.sourceName,
+    venueName: candidate.venueName,
+    city: candidate.city,
+    admissionType: candidate.admissionType,
+    confidence: candidate.confidence,
+    rawText: candidate.rawText,
+  });
+
+  if (duplicate) {
+    await prisma.eventCandidate.update({
+      where: { id },
+      data: {
+        status: EventCandidateStatus.REJECTED,
+        reviewedAt: new Date(),
+      },
+    });
+    throw new Error(
+      "Este candidato parece duplicado de un evento existente y fue rechazado.",
+    );
+  }
+
   const venue = await prisma.venue.upsert({
     where: {
       name_city: {
