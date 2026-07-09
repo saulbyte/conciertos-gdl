@@ -13,6 +13,7 @@ Las fuentes integradas son:
 - Foro Independencia
 - Visit Jalisco
 - Superboletos
+- Fever
 
 ## Mapa del ambiente productivo
 
@@ -21,7 +22,7 @@ La aplicacion utiliza cuatro piezas principales:
 - Git y el directorio local contienen el codigo fuente.
 - Vercel construye y publica la aplicacion Next.js.
 - Neon aloja la base de datos PostgreSQL.
-- Ticketmaster, C3 Stage, Foro Independencia, Visit Jalisco y Superboletos proporcionan eventos.
+- Ticketmaster, C3 Stage, Foro Independencia, Visit Jalisco, Superboletos y Fever proporcionan eventos.
 
 Actualizar eventos y publicar codigo son operaciones diferentes:
 
@@ -34,7 +35,7 @@ Actualizar eventos y publicar codigo son operaciones diferentes:
 
 La URL publica principal es:
 
-https://conciertos-gdl.vercel.app
+https://revera.vercel.app
 
 Los scripts escriben directamente en la base de datos Neon configurada en
 `DATABASE_URL`. Con la configuracion actual, ejecutar los comandos desde este
@@ -81,6 +82,7 @@ El proceso consulta las fuentes en este orden:
 3. Foro Independencia
 4. Visit Jalisco
 5. Superboletos
+6. Fever
 
 Es normal que tarde varios minutos. Ticketmaster suele ser la fuente mas lenta.
 No cierres la terminal hasta recuperar el prompt de PowerShell.
@@ -109,12 +111,12 @@ revisa si la fuente cambio, bloqueo la consulta o dejo de responder.
 
 Al terminar, abre:
 
-https://conciertos-gdl.vercel.app
+https://revera.vercel.app
 
 Busca uno o dos eventos recientes. Tambien puedes consultar la API publica:
 
 ```powershell
-Invoke-RestMethod "https://conciertos-gdl.vercel.app/api/events?q=TINI"
+Invoke-RestMethod "https://revera.vercel.app/api/events?q=TINI"
 ```
 
 La actualizacion de datos no requiere desplegar Vercel, ejecutar un build ni
@@ -130,10 +132,11 @@ npm run sync:c3-stage
 npm run sync:foro-independencia
 npm run sync:visit-jalisco
 npm run sync:superboletos
+npm run sync:fever
 ```
 
 Si la sincronizacion completa falla, las fuentes posteriores no se ejecutan. Por
-ejemplo, si Ticketmaster falla, ejecuta Visit Jalisco y Superboletos con sus
+ejemplo, si Ticketmaster falla, ejecuta Visit Jalisco, Superboletos y Fever con sus
 comandos individuales mientras investigas Ticketmaster.
 
 Todos los comandos son repetibles. Volver a ejecutarlos no crea copias del mismo
@@ -150,7 +153,7 @@ $secret = [System.Net.NetworkCredential]::new("", $secureSecret).Password
 
 Invoke-RestMethod `
   -Method Post `
-  -Uri "https://conciertos-gdl.vercel.app/api/sync" `
+  -Uri "https://revera.vercel.app/api/sync" `
   -Headers @{ "x-sync-secret" = $secret }
 
 Remove-Variable secret
@@ -183,7 +186,7 @@ Para cada evento valido:
 La cobertura actual se limita a conciertos de Guadalajara y su zona
 metropolitana. Ticketmaster usa un radio geografico; C3 Stage y Foro
 Independencia consultan directamente las carteleras oficiales de los recintos;
-Visit Jalisco y Superboletos
+Visit Jalisco, Superboletos y Fever
 aplican filtros de ciudad y contenido musical.
 
 ## Limitaciones actuales
@@ -218,7 +221,7 @@ No reemplaces la URL sin confirmar primero a que base apunta.
 - `403` puede indicar un bloqueo temporal o un cambio del proveedor.
 - No repitas el comando continuamente; espera unos minutos y prueba una vez mas.
 
-### C3 Stage, Foro Independencia, Visit Jalisco o Superboletos devuelve cero
+### C3 Stage, Foro Independencia, Visit Jalisco, Superboletos o Fever devuelve cero
 
 Abre la pagina oficial para confirmar que su cartelera este disponible. Si hay
 eventos visibles pero el script obtiene cero, probablemente cambio la estructura
@@ -288,7 +291,7 @@ npx vercel --prod --yes
 Espera hasta ver que el despliegue esta `READY` y que el alias fue asignado a:
 
 ```text
-https://conciertos-gdl.vercel.app
+https://revera.vercel.app
 ```
 
 Durante el despliegue, Vercel ejecuta `npm run vercel-build`, que a su vez hace:
@@ -325,7 +328,7 @@ nombre por accidente. Despues ejecuta el despliegue productivo normal.
 6. Consulta la API:
 
 ```powershell
-Invoke-RestMethod "https://conciertos-gdl.vercel.app/api/events?q=Cristian"
+Invoke-RestMethod "https://revera.vercel.app/api/events?q=Cristian"
 ```
 
 Si Vercel marca el despliegue como correcto pero la pagina falla, revisa los logs
@@ -344,7 +347,7 @@ Produccion necesita estas variables:
 
 La forma mas clara de configurarlas es desde el panel de Vercel:
 
-1. Abre el proyecto `conciertos-gdl`.
+1. Abre el proyecto `revera`.
 2. Entra a `Settings` y despues `Environment Variables`.
 3. Agrega cada variable para el ambiente `Production`.
 4. Marca claves y secretos como sensibles.
@@ -370,7 +373,7 @@ panel de Vercel.
 
 Para activarlo:
 
-1. Abre el proyecto `conciertos-gdl` en Vercel.
+1. Abre el proyecto `revera` en Vercel.
 2. Selecciona `Analytics` en la barra lateral.
 3. Presiona `Enable` en la parte superior.
 4. Publica o vuelve a desplegar la aplicacion.
@@ -500,6 +503,7 @@ C3 Stage: fetched / created / updated / duplicates
 Foro Independencia: fetched / created / updated / duplicates
 Visit Jalisco: fetched / created / updated / duplicates
 Superboletos: fetched / created / updated / duplicates
+Fever: fetched / created / updated / duplicates
 Eventos comprobados en la pagina:
 Errores u observaciones:
 ```

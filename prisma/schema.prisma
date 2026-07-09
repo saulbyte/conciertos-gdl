@@ -17,6 +17,7 @@ enum EventSource {
   ETICKET
   KINGTICKET
   VIBRA_JALISCO
+  FEVER
 }
 
 enum AdmissionType {

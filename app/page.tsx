@@ -280,6 +280,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 "Arena Guadalajara",
                 "C3 Stage",
                 "eTicket",
+                "Fever",
                 "Foro Independencia",
                 "FunTicket",
                 "KingTicket",

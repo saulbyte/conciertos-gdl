@@ -61,6 +61,7 @@ export function formatSourceName(source: string) {
     ETICKET: "eTicket",
     KINGTICKET: "KingTicket",
     VIBRA_JALISCO: "Vibra Jalisco",
+    FEVER: "Fever",
   };
 
   return labels[source] ?? source;

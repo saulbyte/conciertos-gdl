@@ -78,7 +78,7 @@ async function fetchArenaEventsByCategory(categoryId: number) {
     headers: {
       Accept: "application/json",
       "User-Agent":
-        "ConciertosGDL/1.0 (+https://conciertos-gdl.vercel.app; event indexer)",
+        "REVERA/1.0 (+https://revera.vercel.app; event indexer)",
     },
     signal: AbortSignal.timeout(30_000),
   });
