@@ -15,6 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { AdmissionType, EventCandidateStatus } from "@prisma/client";
+import { EventArtwork } from "@/components/EventArtwork";
 import { prisma } from "@/lib/prisma";
 import {
   importEventCandidate,
@@ -262,7 +263,17 @@ function CandidateCard({
   const sourceHost = safeHost(candidate.sourceUrl);
 
   return (
-    <article className="grid gap-4 rounded-3xl border border-white/10 bg-white/[0.035] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.18)] md:grid-cols-[1fr_auto] md:p-5">
+    <article className="grid gap-4 rounded-3xl border border-white/10 bg-white/[0.035] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.18)] md:grid-cols-[156px_minmax(0,1fr)_auto] md:p-5">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#0b1d26] md:aspect-auto md:h-full md:min-h-40">
+        <EventArtwork
+          src={candidate.imageUrl}
+          alt={candidate.title}
+          className="h-full w-full object-cover"
+          iconClassName="h-10 w-10"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#071018]/50 via-transparent to-transparent" />
+      </div>
+
       <div className="min-w-0">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <Badge tone={candidate.confidence >= 85 ? "cyan" : "muted"}>

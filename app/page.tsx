@@ -6,6 +6,7 @@ import {
   TicketCheck,
 } from "lucide-react";
 import { HorizontalScroller } from "@/components/HorizontalScroller";
+import { EventArtwork } from "@/components/EventArtwork";
 import { HomeEventCard } from "@/components/HomeEventCard";
 import { HomeSearchPanel } from "@/components/HomeSearchPanel";
 import { getArtists } from "@/lib/artists";
@@ -137,19 +138,12 @@ export default async function Home({ searchParams }: HomeProps) {
                     className="group grid w-20 shrink-0 justify-items-center gap-2 text-center"
                   >
                     <span className="relative h-16 w-16 overflow-hidden rounded-full border border-white/20 bg-[#0b1d26] transition group-hover:border-[#00c2d1]">
-                      {artist.imageUrl || artist.fallbackImageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={artist.imageUrl ?? artist.fallbackImageUrl ?? ""}
-                          alt=""
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <span className="flex h-full w-full items-center justify-center text-xl font-black text-[#00c2d1]">
-                          {artist.name.slice(0, 1)}
-                        </span>
-                      )}
+                      <EventArtwork
+                        src={artist.imageUrl ?? artist.fallbackImageUrl}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        iconClassName="h-7 w-7"
+                      />
                     </span>
                     <span className="line-clamp-1 w-full text-xs font-bold text-slate-300 transition group-hover:text-white">
                       {artist.name}
