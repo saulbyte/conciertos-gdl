@@ -25,6 +25,7 @@
     "sync:kingticket": "tsx scripts/sync-kingticket.ts",
     "sync:vibra-jalisco": "tsx scripts/sync-vibra-jalisco.ts",
     "normalize:discovered-events": "tsx scripts/normalize-discovered-events.ts",
+    "dedupe:candidates": "tsx scripts/dedupe-event-candidates.ts",
     "discover:events": "tsx scripts/discover-events.ts",
     "candidates:list": "tsx scripts/list-event-candidates.ts",
     "candidates:import": "tsx scripts/import-event-candidate.ts",

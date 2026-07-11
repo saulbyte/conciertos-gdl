@@ -10,6 +10,7 @@ import {
   searchDiscoveryCandidates,
 } from "@/lib/discovery/search";
 import { extractCandidateFromResult } from "@/lib/discovery/extractor";
+import { findExistingEventDuplicate } from "@/lib/discovery/dedupe";
 import { normalizeDiscoveredEventData } from "@/lib/discovery/normalize";
 
 export async function discoverEventCandidates(
@@ -37,11 +38,12 @@ export async function discoverEventCandidates(
 
       const candidate = await extractCandidateFromResult(result);
 
-      if (
-        !candidate ||
-        isPastCandidate(candidate) ||
-        (await eventAlreadyExists(prisma, candidate))
-      ) {
+      if (!candidate || isPastCandidate(candidate)) {
+        skipped += 1;
+        continue;
+      }
+
+      if (await rejectExistingPendingDuplicate(prisma, candidate)) {
         skipped += 1;
         continue;
       }
@@ -103,11 +105,12 @@ export async function discoverEventCandidates(
 
     const candidate = await extractCandidateFromResult(result);
 
-    if (
-      !candidate ||
-      isPastCandidate(candidate) ||
-      (await eventAlreadyExists(prisma, candidate))
-    ) {
+    if (!candidate || isPastCandidate(candidate)) {
+      skipped += 1;
+      continue;
+    }
+
+    if (await rejectExistingPendingDuplicate(prisma, candidate)) {
       skipped += 1;
       continue;
     }
@@ -343,102 +346,27 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
   return event;
 }
 
-async function eventAlreadyExists(prisma: PrismaClient, candidate: CandidateInput) {
-  if (await findExistingEventDuplicate(prisma, candidate)) {
-    return true;
-  }
-
-  return false;
-}
-
-async function findExistingEventDuplicate(
+async function rejectExistingPendingDuplicate(
   prisma: PrismaClient,
   candidate: CandidateInput,
 ) {
-  const exactSource = await prisma.event.findFirst({
-    where: { sourceUrl: candidate.sourceUrl },
-    select: { id: true },
-  });
+  const duplicate = await findExistingEventDuplicate(prisma, candidate);
 
-  if (exactSource) {
-    return exactSource;
+  if (!duplicate) {
+    return false;
   }
 
-  if (!candidate.eventDate) {
-    return null;
-  }
-
-  const windowStart = new Date(candidate.eventDate);
-  windowStart.setUTCDate(windowStart.getUTCDate() - 1);
-  const windowEnd = new Date(candidate.eventDate);
-  windowEnd.setUTCDate(windowEnd.getUTCDate() + 2);
-
-  const candidates = await prisma.event.findMany({
+  await prisma.eventCandidate.updateMany({
     where: {
-      eventDate: {
-        gte: windowStart,
-        lt: windowEnd,
-      },
+      sourceUrl: candidate.sourceUrl,
+      title: candidate.title,
+      status: EventCandidateStatus.PENDING,
     },
-    select: {
-      id: true,
-      title: true,
-      eventDate: true,
-      venue: {
-        select: {
-          name: true,
-          city: true,
-        },
-      },
+    data: {
+      status: EventCandidateStatus.REJECTED,
+      reviewedAt: new Date(),
     },
   });
 
-  const title = normalizeTitle(candidate.artistName ?? candidate.title);
-  const venue = normalizeName(candidate.venueName ?? "");
-  const city = normalizeName(candidate.city ?? "");
-  const dateKey = getMexicoCityDateKey(candidate.eventDate);
-
-  return candidates.find((event) => {
-    const eventTitle = normalizeTitle(event.title);
-    const eventVenue = normalizeName(event.venue.name);
-    const eventCity = normalizeName(event.venue.city);
-    const sameDate = getMexicoCityDateKey(event.eventDate) === dateKey;
-    const sameVenue =
-      venue.length > 0 &&
-      (eventVenue === venue || eventVenue.includes(venue) || venue.includes(eventVenue));
-    const sameCity =
-      city.length === 0 ||
-      eventCity === city ||
-      eventCity.includes(city) ||
-      city.includes(eventCity);
-    const sameTitle =
-      eventTitle === title ||
-      eventTitle.includes(title) ||
-      title.includes(eventTitle);
-
-    return sameDate && sameVenue && sameCity && sameTitle;
-  }) ?? null;
-}
-
-function normalizeTitle(value: string) {
-  return normalizeName(value.split("@")[0] ?? value);
-}
-
-function normalizeName(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/&/g, " y ")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-function getMexicoCityDateKey(date: Date) {
-  return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "America/Mexico_City",
-  }).format(date);
+  return true;
 }
