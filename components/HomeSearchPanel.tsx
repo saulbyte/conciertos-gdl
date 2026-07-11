@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { EventArtwork } from "@/components/EventArtwork";
 
 type SearchArtist = {
   id: string;
@@ -219,16 +220,20 @@ function ResultRow({
           <MapPin className="h-5 w-5" aria-hidden="true" />
         </span>
       ) : imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <EventArtwork
           src={imageUrl}
           alt=""
           className="h-11 w-11 rounded-full object-cover"
-          loading="lazy"
+          iconClassName="h-5 w-5"
         />
       ) : (
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.08] text-sm font-black text-[#f6f3ea]">
-          {title.slice(0, 1)}
+        <span className="h-11 w-11 overflow-hidden rounded-full">
+          <EventArtwork
+            src={null}
+            alt=""
+            className="h-full w-full object-cover"
+            iconClassName="h-5 w-5"
+          />
         </span>
       )}
       <div className="min-w-0">
