@@ -30,11 +30,19 @@ type TicketmasterEvent = {
   pleaseNote?: string;
   url?: string;
   images?: TicketmasterImage[];
+  priceRanges?: Array<{
+    min?: number;
+    max?: number;
+    currency?: string;
+  }>;
   dates?: {
     start?: {
       dateTime?: string;
       localDate?: string;
       localTime?: string;
+    };
+    status?: {
+      code?: string;
     };
   };
   _embedded?: {
@@ -142,11 +150,38 @@ function normalizeTicketmasterEvent(
     eventDate,
     imageUrl: selectBestImage(event.images),
     sourceUrl: event.url ?? null,
+    ...normalizePriceRange(event.priceRanges),
+    availabilityStatus: event.dates?.status?.code ?? null,
     venue: {
       name: venue.name,
       city: venue.city?.name ?? "Guadalajara",
     },
     artists: normalizeArtists(event._embedded?.attractions),
+  };
+}
+
+function normalizePriceRange(priceRanges: TicketmasterEvent["priceRanges"] = []) {
+  const ranges = priceRanges.filter(
+    (range) =>
+      typeof range.min === "number" ||
+      typeof range.max === "number",
+  );
+
+  if (ranges.length === 0) {
+    return {};
+  }
+
+  const mins = ranges
+    .map((range) => range.min)
+    .filter((value): value is number => typeof value === "number");
+  const maxes = ranges
+    .map((range) => range.max)
+    .filter((value): value is number => typeof value === "number");
+
+  return {
+    priceMin: mins.length > 0 ? Math.min(...mins) : null,
+    priceMax: maxes.length > 0 ? Math.max(...maxes) : null,
+    currency: ranges.find((range) => range.currency)?.currency ?? null,
   };
 }
 

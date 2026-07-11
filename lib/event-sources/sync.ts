@@ -1,11 +1,24 @@
-import type { EventSource, PrismaClient } from "@prisma/client";
+import {
+  EventObservationType,
+  Prisma,
+  type EventSource,
+  type PrismaClient,
+} from "@prisma/client";
 import type {
   EventSourceAdapter,
   EventSourceSyncResult,
   ExternalEvent,
 } from "@/lib/event-sources/types";
 import { classifyAdmission } from "@/lib/event-sources/admission";
+import { recordSourceObservation } from "@/lib/event-observations";
 import { notifyArtistSubscribersOfNewEvent } from "@/lib/notifications";
+
+type EventEnrichmentData = {
+  priceMin: Prisma.Decimal | null;
+  priceMax: Prisma.Decimal | null;
+  currency: string | null;
+  availabilityStatus: string | null;
+};
 
 export async function syncEventSource(
   prisma: PrismaClient,
@@ -15,6 +28,7 @@ export async function syncEventSource(
   let created = 0;
   let updated = 0;
   let duplicates = 0;
+  let observed = 0;
 
   for (const event of events) {
     const existing = await prisma.event.findUnique({
@@ -44,16 +58,38 @@ export async function syncEventSource(
           });
         }
 
+        await recordSourceObservation(prisma, {
+          eventId: duplicate.id,
+          source: adapter.source,
+          type: EventObservationType.SOURCE_DUPLICATE,
+          event,
+          duplicateEventId: duplicate.id,
+        });
+        observed += 1;
         duplicates += 1;
         continue;
       }
     }
 
     if (existing) {
-      await persistEvent(prisma, adapter.source, event);
+      const updatedEvent = await persistEvent(prisma, adapter.source, event);
+      await recordSourceObservation(prisma, {
+        eventId: updatedEvent.id,
+        source: adapter.source,
+        type: EventObservationType.SOURCE_UPDATED,
+        event,
+      });
+      observed += 1;
       updated += 1;
     } else {
       const createdEvent = await persistEvent(prisma, adapter.source, event);
+      await recordSourceObservation(prisma, {
+        eventId: createdEvent.id,
+        source: adapter.source,
+        type: EventObservationType.SOURCE_CREATED,
+        event,
+      });
+      observed += 1;
       await notifyArtistSubscribersOfNewEvent(prisma, createdEvent.id);
       created += 1;
     }
@@ -65,6 +101,7 @@ export async function syncEventSource(
     created,
     updated,
     duplicates,
+    observed,
   };
 }
 
@@ -97,6 +134,7 @@ async function persistEvent(
       return { artistId: artist.id };
     }),
   );
+  const enrichmentData = buildEventEnrichmentData(event);
 
   return prisma.event.upsert({
     where: {
@@ -114,6 +152,8 @@ async function persistEvent(
       source,
       sourceUrl: event.sourceUrl,
       admissionType,
+      ...enrichmentData,
+      lastObservedAt: new Date(),
       venueId: venue.id,
       artists: {
         create: artistConnections,
@@ -126,6 +166,8 @@ async function persistEvent(
       imageUrl: event.imageUrl,
       sourceUrl: event.sourceUrl,
       admissionType,
+      ...enrichmentData,
+      lastObservedAt: new Date(),
       venueId: venue.id,
       artists: {
         deleteMany: {},
@@ -133,6 +175,21 @@ async function persistEvent(
       },
     },
   });
+}
+
+function buildEventEnrichmentData(event: ExternalEvent): EventEnrichmentData {
+  return {
+    priceMin: toDecimal(event.priceMin),
+    priceMax: toDecimal(event.priceMax),
+    currency: event.currency ?? null,
+    availabilityStatus: event.availabilityStatus ?? null,
+  };
+}
+
+function toDecimal(value?: number | null) {
+  return typeof value === "number" && Number.isFinite(value)
+    ? new Prisma.Decimal(value)
+    : null;
 }
 
 async function findCrossSourceDuplicate(

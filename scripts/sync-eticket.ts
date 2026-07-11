@@ -12,7 +12,7 @@ async function main() {
     const result = await syncEticketEvents(prisma);
 
     console.log(
-      `eTicket sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}.`,
+      `eTicket sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}. Observed: ${result.observed}.`,
     );
   } finally {
     await prisma.$disconnect();

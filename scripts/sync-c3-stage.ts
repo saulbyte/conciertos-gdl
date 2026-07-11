@@ -12,7 +12,7 @@ async function main() {
     const result = await syncC3StageEvents(prisma);
 
     console.log(
-      `C3 Stage sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}.`,
+      `C3 Stage sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}. Observed: ${result.observed}.`,
     );
   } finally {
     await prisma.$disconnect();

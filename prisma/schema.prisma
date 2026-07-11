@@ -33,6 +33,16 @@ enum EventCandidateStatus {
   IMPORTED
 }
 
+enum EventObservationType {
+  SOURCE_CREATED
+  SOURCE_UPDATED
+  SOURCE_DUPLICATE
+  CANDIDATE_CREATED
+  CANDIDATE_UPDATED
+  CANDIDATE_REJECTED_DUPLICATE
+  CANDIDATE_IMPORTED
+}
+
 model Venue {
   id        String   @id @default(cuid())
   name      String
@@ -54,27 +64,34 @@ model Artist {
 }
 
 model Event {
-  id            String        @id @default(cuid())
-  externalId    String
-  title         String
-  description   String?
-  eventDate     DateTime
-  imageUrl      String?
-  source        EventSource
-  sourceUrl     String?
-  admissionType AdmissionType @default(UNKNOWN)
-  venueId       String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  venue         Venue         @relation(fields: [venueId], references: [id])
-  artists       EventArtist[]
-  likes         EventLike[]
+  id                 String             @id @default(cuid())
+  externalId         String
+  title              String
+  description        String?
+  eventDate          DateTime
+  imageUrl           String?
+  source             EventSource
+  sourceUrl          String?
+  admissionType      AdmissionType      @default(UNKNOWN)
+  priceMin           Decimal?           @db.Decimal(10, 2)
+  priceMax           Decimal?           @db.Decimal(10, 2)
+  currency           String?
+  availabilityStatus String?
+  lastObservedAt     DateTime?
+  venueId            String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  venue              Venue              @relation(fields: [venueId], references: [id])
+  artists            EventArtist[]
+  likes              EventLike[]
+  observations       EventObservation[]
 
   @@unique([source, externalId])
   @@index([eventDate])
   @@index([venueId])
   @@index([source])
   @@index([admissionType])
+  @@index([lastObservedAt])
 }
 
 model EventCandidate {
@@ -96,9 +113,40 @@ model EventCandidate {
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
   reviewedAt      DateTime?
+  observations    EventObservation[]
 
   @@unique([sourceUrl, title])
   @@index([status])
+  @@index([createdAt])
+  @@index([eventDate])
+}
+
+model EventObservation {
+  id                 String               @id @default(cuid())
+  eventId            String?
+  candidateId        String?
+  source             EventSource
+  type               EventObservationType
+  title              String?
+  artistName         String?
+  venueName          String?
+  city               String?
+  eventDate          DateTime?
+  sourceUrl          String?
+  priceMin           Decimal?             @db.Decimal(10, 2)
+  priceMax           Decimal?             @db.Decimal(10, 2)
+  currency           String?
+  availabilityStatus String?
+  confidence         Int?
+  metadata           Json?
+  createdAt          DateTime             @default(now())
+  event              Event?               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  candidate          EventCandidate?      @relation(fields: [candidateId], references: [id], onDelete: SetNull)
+
+  @@index([eventId])
+  @@index([candidateId])
+  @@index([source])
+  @@index([type])
   @@index([createdAt])
   @@index([eventDate])
 }

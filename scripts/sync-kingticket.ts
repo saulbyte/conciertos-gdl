@@ -12,7 +12,7 @@ async function main() {
     const result = await syncKingTicketEvents(prisma);
 
     console.log(
-      `KingTicket sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}.`,
+      `KingTicket sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}. Observed: ${result.observed}.`,
     );
   } finally {
     await prisma.$disconnect();

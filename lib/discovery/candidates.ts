@@ -1,4 +1,9 @@
-import { EventCandidateStatus, EventSource, type PrismaClient } from "@prisma/client";
+import {
+  EventCandidateStatus,
+  EventObservationType,
+  EventSource,
+  type PrismaClient,
+} from "@prisma/client";
 import type {
   CandidateInput,
   CandidateSummary,
@@ -12,6 +17,7 @@ import {
 import { extractCandidateFromResult } from "@/lib/discovery/extractor";
 import { findExistingEventDuplicate } from "@/lib/discovery/dedupe";
 import { normalizeDiscoveredEventData } from "@/lib/discovery/normalize";
+import { recordCandidateObservation } from "@/lib/event-observations";
 
 export async function discoverEventCandidates(
   prisma: PrismaClient,
@@ -60,7 +66,7 @@ export async function discoverEventCandidates(
         select: { id: true },
       });
 
-      await prisma.eventCandidate.upsert({
+      const storedCandidate = await prisma.eventCandidate.upsert({
         where: {
           sourceUrl_title: {
             sourceUrl: candidate.sourceUrl,
@@ -82,6 +88,13 @@ export async function discoverEventCandidates(
           status: EventCandidateStatus.PENDING,
           reviewedAt: null,
         },
+      });
+      await recordCandidateObservation(prisma, {
+        candidateId: storedCandidate.id,
+        type: existing
+          ? EventObservationType.CANDIDATE_UPDATED
+          : EventObservationType.CANDIDATE_CREATED,
+        candidate,
       });
 
       if (existing) {
@@ -127,7 +140,7 @@ export async function discoverEventCandidates(
       select: { id: true },
     });
 
-    await prisma.eventCandidate.upsert({
+    const storedCandidate = await prisma.eventCandidate.upsert({
       where: {
         sourceUrl_title: {
           sourceUrl: candidate.sourceUrl,
@@ -149,6 +162,13 @@ export async function discoverEventCandidates(
         status: EventCandidateStatus.PENDING,
         reviewedAt: null,
       },
+    });
+    await recordCandidateObservation(prisma, {
+      candidateId: storedCandidate.id,
+      type: existing
+        ? EventObservationType.CANDIDATE_UPDATED
+        : EventObservationType.CANDIDATE_CREATED,
+      candidate,
     });
 
     if (existing) {
@@ -266,6 +286,25 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
         reviewedAt: new Date(),
       },
     });
+    await recordCandidateObservation(prisma, {
+      candidateId: candidate.id,
+      importedEventId: duplicate.id,
+      type: EventObservationType.CANDIDATE_REJECTED_DUPLICATE,
+      candidate: {
+        title: normalized.title,
+        artistName: normalized.artistName,
+        description: candidate.description,
+        eventDate: candidate.eventDate,
+        imageUrl: candidate.imageUrl,
+        sourceUrl: candidate.sourceUrl,
+        sourceName: candidate.sourceName,
+        venueName: candidate.venueName,
+        city: candidate.city,
+        admissionType: candidate.admissionType,
+        confidence: candidate.confidence,
+        rawText: candidate.rawText,
+      },
+    });
     throw new Error(
       "Este candidato parece duplicado de un evento existente y fue rechazado.",
     );
@@ -342,6 +381,25 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
       reviewedAt: new Date(),
     },
   });
+  await recordCandidateObservation(prisma, {
+    candidateId: candidate.id,
+    importedEventId: event.id,
+    type: EventObservationType.CANDIDATE_IMPORTED,
+    candidate: {
+      title: normalized.title,
+      artistName: normalized.artistName,
+      description: candidate.description,
+      eventDate: candidate.eventDate,
+      imageUrl: candidate.imageUrl,
+      sourceUrl: candidate.sourceUrl,
+      sourceName: candidate.sourceName,
+      venueName: candidate.venueName,
+      city: candidate.city,
+      admissionType: candidate.admissionType,
+      confidence: candidate.confidence,
+      rawText: candidate.rawText,
+    },
+  });
 
   return event;
 }
@@ -356,7 +414,7 @@ async function rejectExistingPendingDuplicate(
     return false;
   }
 
-  await prisma.eventCandidate.updateMany({
+  const updated = await prisma.eventCandidate.updateMany({
     where: {
       sourceUrl: candidate.sourceUrl,
       title: candidate.title,
@@ -367,6 +425,13 @@ async function rejectExistingPendingDuplicate(
       reviewedAt: new Date(),
     },
   });
+
+  if (updated.count > 0) {
+    await recordCandidateObservation(prisma, {
+      type: EventObservationType.CANDIDATE_REJECTED_DUPLICATE,
+      candidate,
+    });
+  }
 
   return true;
 }
