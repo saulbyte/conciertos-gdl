@@ -23,7 +23,10 @@ export function EventArtwork({
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const [fallbackHasError, setFallbackHasError] = useState(false);
 
-  const imageSrc = !src || failedSrc === src ? GENERIC_EVENT_IMAGE : src;
+  const imageSrc =
+    !src || failedSrc === src || isUnsuitableArtwork(src)
+      ? GENERIC_EVENT_IMAGE
+      : src;
 
   if (fallbackHasError) {
     return (
@@ -59,4 +62,8 @@ export function EventArtwork({
 
     setFailedSrc(imageSrc);
   }
+}
+
+function isUnsuitableArtwork(src: string) {
+  return src.includes("images.sk-static.com/images/media/profile_images/");
 }
