@@ -7,6 +7,10 @@ export type ExternalEvent = {
   eventDate: Date;
   imageUrl: string | null;
   sourceUrl: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  currency?: string | null;
+  availabilityStatus?: string | null;
   venue: {
     name: string;
     city: string;
@@ -33,4 +37,5 @@ export type EventSourceSyncResult = {
   created: number;
   updated: number;
   duplicates: number;
+  observed: number;
 };

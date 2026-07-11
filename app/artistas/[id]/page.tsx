@@ -4,7 +4,6 @@ import {
   Bell,
   CalendarDays,
   Heart,
-  Music2,
   Search,
 } from "lucide-react";
 import { ArtistInterestForm } from "@/components/ArtistInterestForm";
@@ -94,16 +93,12 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
           <div className="mt-4 grid min-w-0 gap-5 md:grid-cols-[220px_minmax(0,1fr)_320px] lg:grid-cols-[240px_minmax(0,1fr)_360px] lg:items-start">
             <div className="relative mx-auto md:mx-0">
               <span className="flex h-40 w-40 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/[0.28] bg-[#0b1d26] text-[#00c2d1] shadow-lg shadow-black/30 md:h-48 md:w-48">
-                  {avatarUrl ? (
-                    <EventArtwork
-                      src={avatarUrl}
-                      alt={artist.name}
-                      className="h-full w-full object-cover"
-                      iconClassName="h-12 w-12"
-                    />
-                  ) : (
-                    <Music2 className="h-12 w-12" aria-hidden="true" />
-                  )}
+                  <EventArtwork
+                    src={avatarUrl}
+                    alt={artist.name}
+                    className="h-full w-full object-cover"
+                    iconClassName="h-12 w-12"
+                  />
                 </span>
               <div className="absolute right-0 top-5 md:hidden">
                 <EventShareButton
@@ -278,16 +273,12 @@ function RecommendedArtistCard({ artist }: { artist: ArtistListItem }) {
       className="w-28 shrink-0 text-center sm:w-32"
     >
       <span className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-white/[0.18] bg-[#0b1d26] text-[#00c2d1] sm:h-24 sm:w-24">
-        {imageUrl ? (
-          <EventArtwork
-            src={imageUrl}
-            alt={artist.name}
-            className="h-full w-full object-cover"
-            iconClassName="h-8 w-8"
-          />
-        ) : (
-          <Music2 className="h-8 w-8" aria-hidden="true" />
-        )}
+        <EventArtwork
+          src={imageUrl}
+          alt={artist.name}
+          className="h-full w-full object-cover"
+          iconClassName="h-8 w-8"
+        />
       </span>
       <span className="mt-2 block truncate text-sm font-bold text-[#f6f3ea]">
         {artist.name}

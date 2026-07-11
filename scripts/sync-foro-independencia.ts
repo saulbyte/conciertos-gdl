@@ -12,7 +12,7 @@ async function main() {
     const result = await syncForoIndependenciaEvents(prisma);
 
     console.log(
-      `Foro Independencia sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}.`,
+      `Foro Independencia sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}. Observed: ${result.observed}.`,
     );
   } finally {
     await prisma.$disconnect();

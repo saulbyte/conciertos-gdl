@@ -13,7 +13,7 @@ async function main() {
 
     for (const result of results) {
       console.log(
-        `${result.source} sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}.`,
+        `${result.source} sync complete. Fetched: ${result.fetched}. Created: ${result.created}. Updated: ${result.updated}. Duplicates: ${result.duplicates}. Observed: ${result.observed}.`,
       );
     }
   } finally {

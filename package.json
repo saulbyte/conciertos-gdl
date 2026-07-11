@@ -23,7 +23,14 @@
     "sync:eticket": "tsx scripts/sync-eticket.ts",
     "sync:fever": "tsx scripts/sync-fever.ts",
     "sync:kingticket": "tsx scripts/sync-kingticket.ts",
-    "sync:vibra-jalisco": "tsx scripts/sync-vibra-jalisco.ts"
+    "sync:vibra-jalisco": "tsx scripts/sync-vibra-jalisco.ts",
+    "normalize:discovered-events": "tsx scripts/normalize-discovered-events.ts",
+    "dedupe:candidates": "tsx scripts/dedupe-event-candidates.ts",
+    "observations:list": "tsx scripts/list-event-observations.ts",
+    "discover:events": "tsx scripts/discover-events.ts",
+    "candidates:list": "tsx scripts/list-event-candidates.ts",
+    "candidates:import": "tsx scripts/import-event-candidate.ts",
+    "candidates:reject": "tsx scripts/reject-event-candidate.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

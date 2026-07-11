@@ -6,7 +6,6 @@ import {
   Clock3,
   Flame,
   ListMusic,
-  Music2,
   Search,
   SlidersHorizontal,
 } from "lucide-react";
@@ -141,18 +140,12 @@ function FeaturedArtist({
       className="group grid w-20 shrink-0 justify-items-center gap-2 text-center"
     >
       <span className="relative h-16 w-16 overflow-hidden rounded-full border border-white/20 bg-[#0b1d26] transition group-hover:border-[#00c2d1]">
-        {avatarUrl ? (
-          <EventArtwork
-            src={avatarUrl}
-            alt=""
-            className="h-full w-full object-cover"
-            iconClassName="h-7 w-7"
-          />
-        ) : (
-          <span className="flex h-full w-full items-center justify-center text-xl font-black text-[#00c2d1]">
-            {artist.name.slice(0, 1)}
-          </span>
-        )}
+        <EventArtwork
+          src={avatarUrl}
+          alt=""
+          className="h-full w-full object-cover"
+          iconClassName="h-7 w-7"
+        />
       </span>
       <span className="line-clamp-1 w-full text-xs font-bold text-slate-300 transition group-hover:text-white">
         {artist.name}
@@ -274,16 +267,12 @@ function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>
     >
       <div className="flex min-w-0 flex-col items-center">
         <span className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-[#0b1d26] text-[#00c2d1] ring-1 ring-white/[0.18] md:h-20 md:w-20">
-            {avatarUrl ? (
-              <EventArtwork
-                src={avatarUrl}
-                alt=""
-                className="h-full w-full object-cover"
-                iconClassName="h-8 w-8"
-              />
-            ) : (
-              <Music2 className="h-8 w-8" aria-hidden="true" />
-            )}
+            <EventArtwork
+              src={avatarUrl}
+              alt=""
+              className="h-full w-full object-cover"
+              iconClassName="h-8 w-8"
+            />
           </span>
       </div>
 
