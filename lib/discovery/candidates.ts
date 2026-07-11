@@ -10,6 +10,7 @@ import {
   searchDiscoveryCandidates,
 } from "@/lib/discovery/search";
 import { extractCandidateFromResult } from "@/lib/discovery/extractor";
+import { normalizeDiscoveredEventData } from "@/lib/discovery/normalize";
 
 export async function discoverEventCandidates(
   prisma: PrismaClient,
@@ -231,9 +232,17 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
     );
   }
 
+  const normalized = normalizeDiscoveredEventData(candidate);
+
+  if (!normalized.artistName) {
+    throw new Error(
+      "El candidato necesita un artista reconocible antes de importarse al catalogo.",
+    );
+  }
+
   const duplicate = await findExistingEventDuplicate(prisma, {
-    title: candidate.title,
-    artistName: candidate.artistName,
+    title: normalized.title,
+    artistName: normalized.artistName,
     description: candidate.description,
     eventDate: candidate.eventDate,
     imageUrl: candidate.imageUrl,
@@ -282,7 +291,7 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
     },
     create: {
       externalId: candidate.id,
-      title: candidate.title,
+      title: normalized.title,
       description: candidate.description,
       eventDate: candidate.eventDate,
       imageUrl: candidate.imageUrl,
@@ -292,7 +301,7 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
       venueId: venue.id,
     },
     update: {
-      title: candidate.title,
+      title: normalized.title,
       description: candidate.description,
       eventDate: candidate.eventDate,
       imageUrl: candidate.imageUrl,
@@ -303,8 +312,8 @@ export async function importEventCandidate(prisma: PrismaClient, id: string) {
   });
 
   const artist = await prisma.artist.upsert({
-    where: { name: candidate.artistName },
-    create: { name: candidate.artistName, imageUrl: candidate.imageUrl },
+    where: { name: normalized.artistName },
+    create: { name: normalized.artistName, imageUrl: candidate.imageUrl },
     update: candidate.imageUrl ? { imageUrl: candidate.imageUrl } : {},
   });
 
