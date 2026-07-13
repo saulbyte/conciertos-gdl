@@ -25,8 +25,12 @@ const FREE_PATTERNS = [
   /\bgratuit[oa]s?\b/iu,
 ];
 
-const PRICE_PATTERN =
-  /(?:(mxn|m\.n\.|pesos|usd)\s*)?\$?\s*(\d{1,3}(?:[,.]\d{3})*(?:[,.]\d{2})?|\d{2,6})(?:\s*(mxn|m\.n\.|pesos|usd))?/giu;
+const AMOUNT_SOURCE =
+  String.raw`(?:\d{1,3}(?:[,.]\d{3})+(?:[,.]\d{2})?|\d{2,6}(?:[,.]\d{2})?)`;
+const PRICE_PATTERN = new RegExp(
+  String.raw`(?:(mxn|m\.n\.|pesos|usd)\s*\$?\s*(${AMOUNT_SOURCE})(?!\d)|\$\s*(${AMOUNT_SOURCE})(?!\d)(?:\s*(mxn|m\.n\.|pesos|usd))?|(${AMOUNT_SOURCE})(?!\d)\s*(mxn|m\.n\.|pesos|usd))`,
+  "giu",
+);
 const PRICE_CONTEXT_PATTERN =
   /\b(?:boleto|boletos|entrada|entradas|cover|general|preventa|vip|desde|costo|precio|ticket|tickets|admis[ií]on)\b/iu;
 
@@ -101,14 +105,14 @@ function extractTextPrices(text: string) {
   let currency: string | null = null;
 
   for (const match of text.matchAll(PRICE_PATTERN)) {
-    const amount = parseAmount(match[2]);
+    const amount = parseAmount(match[2] || match[3] || match[5]);
 
-    if (amount === null || amount < 20 || amount > 100_000) {
+    if (amount === null || amount < 50 || amount > 20_000) {
       continue;
     }
 
     prices.push(amount);
-    currency = normalizeCurrency(match[1] || match[3] || currency);
+    currency = normalizeCurrency(match[1] || match[4] || match[6] || currency);
   }
 
   return { prices, currency };
