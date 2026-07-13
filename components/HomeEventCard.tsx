@@ -5,6 +5,7 @@ import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
 import {
   formatDateBadge,
+  formatEventPrice,
   formatEventTime,
   formatSourceName,
 } from "@/lib/format";
@@ -18,6 +19,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
   const date = formatDateBadge(event.eventDate);
   const artists = event.artists.map(({ artist }) => artist.name).join(", ");
   const recentlyAdded = isRecentlyAdded(event.createdAt);
+  const priceLabel = formatEventPrice(event);
 
   if (compact) {
     return (
@@ -66,6 +68,8 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
           {recentlyAdded ? <NewPill small /> : null}
           {event.admissionType === "FREE" ? (
             <FreePill />
+          ) : priceLabel ? (
+            <PricePill label={priceLabel} />
           ) : (
             <span className="rounded-md border border-white/10 bg-[#071018]/60 px-2 py-1 text-[10px] font-black text-slate-300">
               {formatSourceName(event.source)}
@@ -88,6 +92,9 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
         <div className="absolute left-3 top-3 flex flex-col gap-2">
           <DateBadge day={date.day} month={date.month} />
           {event.admissionType === "FREE" ? <FreePill /> : null}
+          {event.admissionType !== "FREE" && priceLabel ? (
+            <PricePill label={priceLabel} />
+          ) : null}
           {event.isPopular ? <PopularPill /> : null}
         </div>
       </Link>
@@ -161,6 +168,15 @@ function FreePill() {
     <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#00c2d1] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.24)]">
       <TicketCheck className="h-3 w-3" aria-hidden="true" />
       Gratis
+    </span>
+  );
+}
+
+function PricePill({ label }: { label: string }) {
+  return (
+    <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#f6f3ea] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(246,243,234,0.16)]">
+      <TicketCheck className="h-3 w-3" aria-hidden="true" />
+      {label}
     </span>
   );
 }

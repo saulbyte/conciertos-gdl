@@ -98,6 +98,9 @@ function createEvent(
     eventDate,
     imageUrl,
     sourceUrl: SOURCE_URL,
+    priceMin: 0,
+    priceMax: 0,
+    currency: "MXN",
     venue: VENUE,
     artists: parseArtists(lineup),
   };

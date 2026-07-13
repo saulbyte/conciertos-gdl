@@ -1,6 +1,7 @@
 import { EventSource, type PrismaClient } from "@prisma/client";
 import { load } from "cheerio";
 import { fetchHtml } from "@/lib/event-sources/http";
+import { extractPricing } from "@/lib/event-sources/pricing";
 import { syncEventSource } from "@/lib/event-sources/sync";
 import type {
   EventSourceAdapter,
@@ -105,6 +106,9 @@ async function fetchC3EventDetail(
       )?.[1] ||
       extractLabelValue($(".event-time").first().text(), "Hora");
     const eventDate = parseLocalDateTime(candidate.date, displayTime);
+    const pricing = extractPricing({
+      text: `${candidate.title} ${description ?? ""} ${$("body").text()}`,
+    });
 
     if (!eventDate) {
       return null;
@@ -117,6 +121,9 @@ async function fetchC3EventDetail(
       eventDate,
       imageUrl: candidate.imageUrl,
       sourceUrl: candidate.sourceUrl,
+      priceMin: pricing.priceMin ?? null,
+      priceMax: pricing.priceMax ?? null,
+      currency: pricing.currency ?? null,
       venue: {
         name: candidate.venue,
         city: candidate.city,

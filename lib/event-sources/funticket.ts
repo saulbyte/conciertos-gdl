@@ -1,6 +1,7 @@
 import { EventSource, type PrismaClient } from "@prisma/client";
 import { load } from "cheerio";
 import { fetchHtml } from "@/lib/event-sources/http";
+import { extractPricing } from "@/lib/event-sources/pricing";
 import { syncEventSource } from "@/lib/event-sources/sync";
 import type {
   EventSourceAdapter,
@@ -52,6 +53,9 @@ type FunTicketDetail = {
   venue: string;
   city: string;
   imageUrl: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  currency?: string | null;
 };
 
 export const funTicketAdapter: EventSourceAdapter = {
@@ -124,6 +128,9 @@ async function fetchFunTicketDetail(
       eventDate,
       imageUrl: detail.imageUrl,
       sourceUrl: candidate.sourceUrl,
+      priceMin: detail.priceMin,
+      priceMax: detail.priceMax,
+      currency: detail.currency,
       venue: {
         name: detail.venue,
         city: detail.city,
@@ -148,6 +155,7 @@ export function parseFunTicketDetail(html: string): FunTicketDetail | null {
   const imageUrl =
     cleanText($("meta[property='og:image']").attr("content")) || null;
   const bodyText = cleanText($("body").text());
+  const pricing = extractPricing({ text: `${description} ${bodyText}` });
   const rawDetailTitle = getTitleFromDescription(description);
   const dateFromDescription = description.match(
     /Evento\s+(?:el|:)\s*(\d{1,2}\s+de\s+[a-záéíóúñ]+\.?\s+\d{4})/iu,
@@ -175,6 +183,9 @@ export function parseFunTicketDetail(html: string): FunTicketDetail | null {
     venue,
     city: inferCity(bodyText, description),
     imageUrl,
+    priceMin: pricing.priceMin ?? null,
+    priceMax: pricing.priceMax ?? null,
+    currency: pricing.currency ?? null,
   };
 }
 

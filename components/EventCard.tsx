@@ -5,6 +5,7 @@ import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
 import {
   formatDateBadge,
+  formatEventPrice,
   formatEventTime,
   formatSourceName,
 } from "@/lib/format";
@@ -17,6 +18,7 @@ type EventCardProps = {
 export function EventCard({ event, variant = "default" }: EventCardProps) {
   const artists = event.artists.map(({ artist }) => artist.name).join(", ");
   const date = formatDateBadge(event.eventDate);
+  const priceLabel = formatEventPrice(event);
 
   if (variant === "compact") {
     return (
@@ -44,6 +46,11 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
                 <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#00c2d1] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_14px_rgba(0,194,209,0.22)]">
                   <TicketCheck className="h-3 w-3" aria-hidden="true" />
                   Gratis
+                </span>
+              ) : priceLabel ? (
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#f6f3ea] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018]">
+                  <TicketCheck className="h-3 w-3" aria-hidden="true" />
+                  {priceLabel}
                 </span>
               ) : null}
             </div>
@@ -95,6 +102,11 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#00c2d1] px-3 py-1 text-[11px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.24)]">
                 <TicketCheck className="h-3.5 w-3.5" aria-hidden="true" />
                 Gratis
+              </span>
+            ) : priceLabel ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f6f3ea] px-3 py-1 text-[11px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(246,243,234,0.16)]">
+                <TicketCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                {priceLabel}
               </span>
             ) : null}
             {event.isPopular ? (

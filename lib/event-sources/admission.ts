@@ -1,31 +1,16 @@
 import { AdmissionType } from "@prisma/client";
-
-const FREE_DESCRIPTION_PATTERNS = [
-  /\bconcierto gratuito\b/,
-  /\bevento gratuito\b/,
-  /\bentrada libre\b/,
-  /\bacceso libre\b/,
-  /\bentrada gratuita\b/,
-  /\bacceso gratuito\b/,
-  /\bsin costo\b/,
-  /\btotalmente gratis\b/,
-];
+import { extractPricing } from "@/lib/event-sources/pricing";
 
 export function classifyAdmission(
   title: string,
   description: string | null,
 ): AdmissionType {
-  const normalizedTitle = normalizeText(title);
-  const normalizedDescription = normalizeText(description ?? "");
+  const pricing = extractPricing({
+    text: normalizeText(`${title} ${description ?? ""}`),
+  });
 
-  if (
-    /\bgratis\b/.test(normalizedTitle) ||
-    /\bgratuit[oa]s?\b/.test(normalizedTitle) ||
-    FREE_DESCRIPTION_PATTERNS.some((pattern) =>
-      pattern.test(normalizedDescription),
-    )
-  ) {
-    return AdmissionType.FREE;
+  if (pricing.admissionType) {
+    return pricing.admissionType;
   }
 
   return AdmissionType.UNKNOWN;

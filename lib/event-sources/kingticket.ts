@@ -1,5 +1,6 @@
 import { EventSource, type PrismaClient } from "@prisma/client";
 import { load } from "cheerio";
+import { extractPricing } from "@/lib/event-sources/pricing";
 import { syncEventSource } from "@/lib/event-sources/sync";
 import type {
   EventSourceAdapter,
@@ -68,6 +69,10 @@ type KingTicketProduct = {
   permalink?: string;
   short_description?: string;
   description?: string;
+  price?: string;
+  regular_price?: string;
+  sale_price?: string;
+  price_html?: string;
   images?: { src?: string }[];
 };
 
@@ -149,6 +154,15 @@ function mapProductToEvent(product: KingTicketProduct): ExternalEvent | null {
   const description = htmlToText(
     [product.short_description, product.description].filter(Boolean).join(" "),
   );
+  const pricing = extractPricing({
+    structured: {
+      offers: {
+        price: product.price || product.sale_price || product.regular_price,
+        priceCurrency: "MXN",
+      },
+    },
+    text: `${name} ${description} ${htmlToText(product.price_html)}`,
+  });
 
   return {
     externalId: String(product.id),
@@ -157,6 +171,9 @@ function mapProductToEvent(product: KingTicketProduct): ExternalEvent | null {
     eventDate: parsed.eventDate,
     imageUrl,
     sourceUrl: product.permalink ?? null,
+    priceMin: pricing.priceMin ?? null,
+    priceMax: pricing.priceMax ?? null,
+    currency: pricing.currency ?? null,
     venue: {
       name: parsed.venue,
       city: parsed.city,

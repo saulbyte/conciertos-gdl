@@ -1,5 +1,6 @@
 import { EventSource, type PrismaClient } from "@prisma/client";
 import { load } from "cheerio";
+import { extractPricing } from "@/lib/event-sources/pricing";
 import { syncEventSource } from "@/lib/event-sources/sync";
 import type {
   EventSourceAdapter,
@@ -103,14 +104,22 @@ export function parseEticketDetail(
 
   const performerName = cleanText(jsonLd.performer?.name);
   const performerImage = cleanText(jsonLd.performer?.image);
+  const description = cleanText(jsonLd.description) || null;
+  const pricing = extractPricing({
+    structured: jsonLd,
+    text: `${title} ${description ?? ""} ${$("body").text()}`,
+  });
 
   return {
     externalId,
     title,
-    description: cleanText(jsonLd.description) || null,
+    description,
     eventDate,
     imageUrl: cleanText(jsonLd.image) || null,
     sourceUrl: cleanText(jsonLd.url) || fallbackUrl,
+    priceMin: pricing.priceMin ?? null,
+    priceMax: pricing.priceMax ?? null,
+    currency: pricing.currency ?? null,
     venue: {
       name: venueName,
       city,

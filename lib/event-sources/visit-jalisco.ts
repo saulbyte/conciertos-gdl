@@ -1,6 +1,7 @@
 import { EventSource, type PrismaClient } from "@prisma/client";
 import { load, type CheerioAPI } from "cheerio";
 import { fetchHtml } from "@/lib/event-sources/http";
+import { extractPricing } from "@/lib/event-sources/pricing";
 import { syncEventSource } from "@/lib/event-sources/sync";
 import type {
   EventSourceAdapter,
@@ -140,6 +141,7 @@ async function fetchEventDetail(
     }
 
     const city = inferMetroCity(`${title} ${venue} ${searchableText}`);
+    const pricing = extractPricing({ text: `${searchableText} ${$("body").text()}` });
 
     if (!city) {
       return null;
@@ -158,6 +160,9 @@ async function fetchEventDetail(
             .attr("src"),
         ) ?? candidate.imageUrl,
       sourceUrl: candidate.sourceUrl,
+      priceMin: pricing.priceMin ?? null,
+      priceMax: pricing.priceMax ?? null,
+      currency: pricing.currency ?? null,
       venue: {
         name: venue,
         city,

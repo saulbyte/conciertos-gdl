@@ -49,12 +49,22 @@ export async function syncEventSource(
       );
 
       if (duplicate) {
+        const admissionType = classifyEventAdmission(event);
+        const enrichmentData = buildEventEnrichmentData(event);
+
         if (
-          classifyAdmission(event.title, event.description) === "FREE"
+          admissionType === "FREE" ||
+          enrichmentData.priceMin ||
+          enrichmentData.priceMax ||
+          enrichmentData.availabilityStatus
         ) {
           await prisma.event.update({
             where: { id: duplicate.id },
-            data: { admissionType: "FREE" },
+            data: {
+              ...(admissionType === "FREE" ? { admissionType } : {}),
+              ...enrichmentData,
+              lastObservedAt: new Date(),
+            },
           });
         }
 
@@ -110,7 +120,7 @@ async function persistEvent(
   source: EventSource,
   event: ExternalEvent,
 ) {
-  const admissionType = classifyAdmission(event.title, event.description);
+  const admissionType = classifyEventAdmission(event);
   const venue = await prisma.venue.upsert({
     where: {
       name_city: event.venue,
@@ -184,6 +194,21 @@ function buildEventEnrichmentData(event: ExternalEvent): EventEnrichmentData {
     currency: event.currency ?? null,
     availabilityStatus: event.availabilityStatus ?? null,
   };
+}
+
+function classifyEventAdmission(event: ExternalEvent) {
+  if (event.priceMin === 0 || event.priceMax === 0) {
+    return "FREE";
+  }
+
+  if (
+    typeof event.priceMin === "number" && event.priceMin > 0 ||
+    typeof event.priceMax === "number" && event.priceMax > 0
+  ) {
+    return "PAID";
+  }
+
+  return classifyAdmission(event.title, event.description);
 }
 
 function toDecimal(value?: number | null) {

@@ -68,6 +68,9 @@ export async function recordCandidateObservation(
       city: input.candidate.city,
       eventDate: input.candidate.eventDate,
       sourceUrl: input.candidate.sourceUrl,
+      priceMin: toDecimal(input.candidate.priceMin),
+      priceMax: toDecimal(input.candidate.priceMax),
+      currency: input.candidate.currency ?? null,
       confidence: input.candidate.confidence,
       metadata: {
         sourceName: input.candidate.sourceName ?? null,
@@ -89,7 +92,11 @@ function getPrimaryArtistName(artists: ExternalEvent["artists"]) {
   return typeof first === "string" ? first : first.name;
 }
 
-function toDecimal(value?: number | null): Prisma.Decimal | null {
+function toDecimal(value?: number | Prisma.Decimal | null): Prisma.Decimal | null {
+  if (value instanceof Prisma.Decimal) {
+    return value;
+  }
+
   return typeof value === "number" && Number.isFinite(value)
     ? new Prisma.Decimal(value)
     : null;

@@ -2,6 +2,7 @@ import { AdmissionType } from "@prisma/client";
 import { load } from "cheerio";
 import { classifyAdmission } from "@/lib/event-sources/admission";
 import { fetchHtml } from "@/lib/event-sources/http";
+import { extractPricing } from "@/lib/event-sources/pricing";
 import type { CandidateInput, SearchResult } from "@/lib/discovery/types";
 
 const MUSIC_TERMS = [
@@ -104,10 +105,13 @@ export function extractCandidateFromHtml(
   const eventDate = structuredEvent?.eventDate ?? extractDate(html, rawText);
   const venueName = structuredEvent?.venueName ?? extractVenue(rawText);
   const city = structuredEvent?.city ?? inferCity(rawText);
-  const admissionType = classifyAdmission(
-    title,
-    `${description ?? ""} ${rawText}`,
-  );
+  const pricing = extractPricing({
+    structured: structuredEvent?.rawEvent,
+    text: `${title} ${description ?? ""} ${rawText}`,
+  });
+  const admissionType =
+    pricing.admissionType ??
+    classifyAdmission(title, `${description ?? ""} ${rawText}`);
   const confidence = scoreCandidate({
     normalized,
     eventDate,
@@ -117,6 +121,11 @@ export function extractCandidateFromHtml(
     imageUrl,
     url: result.url,
     artistName,
+    hasPricing: Boolean(
+      pricing.priceMin !== undefined ||
+        pricing.priceMax !== undefined ||
+        pricing.admissionType,
+    ),
   });
 
   if (!eventDate || !isConcreteArtistName(artistName) || confidence < 75) {
@@ -136,6 +145,9 @@ export function extractCandidateFromHtml(
     venueName,
     city,
     admissionType,
+    priceMin: pricing.priceMin ?? null,
+    priceMax: pricing.priceMax ?? null,
+    currency: pricing.currency ?? null,
     confidence,
     rawText,
   };
@@ -175,6 +187,7 @@ function extractStructuredEvent(html: string) {
         cleanText(stringValue(address?.addressLocality)) ||
         cleanText(stringValue(address?.addressRegion)) ||
         null,
+      rawEvent: event,
     };
   }
 
@@ -312,6 +325,7 @@ function scoreCandidate(input: {
   imageUrl: string | null;
   url: string;
   artistName: string | null;
+  hasPricing: boolean;
 }) {
   let score = 10;
 
@@ -340,6 +354,10 @@ function scoreCandidate(input: {
   }
 
   if (input.imageUrl) {
+    score += 5;
+  }
+
+  if (input.hasPricing) {
     score += 5;
   }
 

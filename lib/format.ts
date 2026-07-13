@@ -67,3 +67,58 @@ export function formatSourceName(source: string) {
 
   return labels[source] ?? source;
 }
+
+export function formatEventPrice(event: {
+  admissionType?: string | null;
+  currency?: string | null;
+  priceMin?: unknown;
+  priceMax?: unknown;
+}) {
+  if (event.admissionType === "FREE") {
+    return "Gratis";
+  }
+
+  const currency = event.currency ?? "MXN";
+  const min = decimalToNumber(event.priceMin);
+  const max = decimalToNumber(event.priceMax);
+
+  if (min !== null && max !== null && min !== max) {
+    return `${formatMoney(min, currency)} - ${formatMoney(max, currency)}`;
+  }
+
+  if (min !== null) {
+    return `Desde ${formatMoney(min, currency)}`;
+  }
+
+  if (max !== null) {
+    return `Hasta ${formatMoney(max, currency)}`;
+  }
+
+  return null;
+}
+
+function decimalToNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "object" && value && "toNumber" in value) {
+    const amount = (value as { toNumber: () => number }).toNumber();
+    return Number.isFinite(amount) ? amount : null;
+  }
+
+  if (typeof value === "string") {
+    const amount = Number(value);
+    return Number.isFinite(amount) ? amount : null;
+  }
+
+  return null;
+}
+
+function formatMoney(value: number, currency: string) {
+  return new Intl.NumberFormat("es-MX", {
+    currency,
+    maximumFractionDigits: 0,
+    style: "currency",
+  }).format(value);
+}

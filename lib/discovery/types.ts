@@ -1,4 +1,6 @@
-import type { AdmissionType, EventCandidateStatus } from "@prisma/client";
+import type { AdmissionType, EventCandidateStatus, Prisma } from "@prisma/client";
+
+export type CandidatePriceValue = number | Prisma.Decimal | null;
 
 export type SearchResult = {
   title: string;
@@ -18,6 +20,9 @@ export type CandidateInput = {
   venueName: string | null;
   city: string | null;
   admissionType: AdmissionType;
+  priceMin?: CandidatePriceValue;
+  priceMax?: CandidatePriceValue;
+  currency?: string | null;
   confidence: number;
   rawText: string | null;
 };
@@ -31,6 +36,9 @@ export type CandidateSummary = {
   eventDate: Date | null;
   venueName: string | null;
   city: string | null;
+  priceMin?: unknown;
+  priceMax?: unknown;
+  currency?: string | null;
   sourceName: string | null;
   sourceUrl: string;
 };

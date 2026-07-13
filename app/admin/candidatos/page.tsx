@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   CalendarDays,
   Check,
+  DollarSign,
   ExternalLink,
   Eye,
   MapPin,
@@ -282,6 +283,9 @@ function CandidateCard({
           {candidate.admissionType === AdmissionType.FREE ? (
             <Badge tone="red">Gratis</Badge>
           ) : null}
+          {hasPrice(candidate) ? (
+            <Badge tone="cyan">{formatPriceRange(candidate)}</Badge>
+          ) : null}
           {!ready ? <Badge tone="warning">Falta dato</Badge> : null}
           <Badge tone="muted">{candidate.status}</Badge>
         </div>
@@ -310,6 +314,9 @@ function CandidateCard({
           </Info>
           <Info icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />} label="Ciudad">
             {candidate.city ?? "Sin ciudad"}
+          </Info>
+          <Info icon={<DollarSign className="h-4 w-4" aria-hidden="true" />} label="Precio">
+            {hasPrice(candidate) ? formatPriceRange(candidate) : "Sin precio"}
           </Info>
           <Info icon={<Ticket className="h-4 w-4" aria-hidden="true" />} label="Fuente">
             {candidate.sourceName ?? sourceHost}
@@ -588,6 +595,38 @@ function safeHost(url: string) {
   } catch {
     return "Fuente externa";
   }
+}
+
+function hasPrice(candidate: CandidateWithEvent) {
+  return candidate.priceMin !== null || candidate.priceMax !== null;
+}
+
+function formatPriceRange(candidate: CandidateWithEvent) {
+  const currency = candidate.currency ?? "MXN";
+  const min = candidate.priceMin ? Number(candidate.priceMin) : null;
+  const max = candidate.priceMax ? Number(candidate.priceMax) : null;
+
+  if (min !== null && max !== null && min !== max) {
+    return `${formatMoney(min, currency)} - ${formatMoney(max, currency)}`;
+  }
+
+  if (min !== null) {
+    return `Desde ${formatMoney(min, currency)}`;
+  }
+
+  if (max !== null) {
+    return `Hasta ${formatMoney(max, currency)}`;
+  }
+
+  return "Sin precio";
+}
+
+function formatMoney(value: number, currency: string) {
+  return new Intl.NumberFormat("es-MX", {
+    currency,
+    maximumFractionDigits: 0,
+    style: "currency",
+  }).format(value);
 }
 
 function getApprovalErrorMessage(error: unknown) {

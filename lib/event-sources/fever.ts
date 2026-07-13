@@ -1,6 +1,7 @@
 import { EventSource, type PrismaClient } from "@prisma/client";
 import { load } from "cheerio";
 import { fetchHtml } from "@/lib/event-sources/http";
+import { extractPricing } from "@/lib/event-sources/pricing";
 import { syncEventSource } from "@/lib/event-sources/sync";
 import type {
   EventSourceAdapter,
@@ -46,6 +47,9 @@ type FeverDetail = {
   venueName: string;
   city: string;
   dates: Date[];
+  priceMin?: number | null;
+  priceMax?: number | null;
+  currency?: string | null;
 };
 
 export const feverAdapter: EventSourceAdapter = {
@@ -76,6 +80,9 @@ export async function fetchFeverEvents(): Promise<ExternalEvent[]> {
           eventDate: date,
           imageUrl: detail.imageUrl,
           sourceUrl: detail.sourceUrl,
+          priceMin: detail.priceMin,
+          priceMax: detail.priceMax,
+          currency: detail.currency,
           venue: {
             name: detail.venueName,
             city: detail.city,
@@ -137,6 +144,10 @@ export function parseFeverDetail(
     null;
   const decodedHtml = decodeEmbeddedText(html);
   const searchableText = `${description ?? ""} ${decodedHtml}`;
+  const pricing = extractPricing({
+    structured: product,
+    text: searchableText,
+  });
   const venueName = extractVenueName(product, searchableText);
   const city = inferCity(product, searchableText);
   const dates = extractSessionDates(html);
@@ -154,6 +165,9 @@ export function parseFeverDetail(
     venueName,
     city,
     dates,
+    priceMin: pricing.priceMin ?? null,
+    priceMax: pricing.priceMax ?? null,
+    currency: pricing.currency ?? null,
   };
 }
 

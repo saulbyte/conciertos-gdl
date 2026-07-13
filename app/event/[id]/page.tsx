@@ -21,6 +21,7 @@ import { getEventById, getRelatedEvents } from "@/lib/events";
 import {
   formatDateBadge,
   formatEventDate,
+  formatEventPrice,
   formatEventTime,
   formatSourceName,
 } from "@/lib/format";
@@ -45,6 +46,7 @@ export default async function EventPage({ params }: EventPageProps) {
   const artists = event.artists.map(({ artist }) => artist);
   const date = formatDateBadge(event.eventDate);
   const eventTime = formatEventTime(event.eventDate, event.source);
+  const priceLabel = formatEventPrice(event);
 
   return (
     <main data-event-detail-page className="bg-[#071018] text-[#f6f3ea]">
@@ -94,6 +96,11 @@ export default async function EventPage({ params }: EventPageProps) {
                   <TicketCheck className="h-3 w-3" aria-hidden="true" />
                   Gratis
                 </span>
+              ) : priceLabel ? (
+                <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#f6f3ea] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(246,243,234,0.18)]">
+                  <TicketCheck className="h-3 w-3" aria-hidden="true" />
+                  {priceLabel}
+                </span>
               ) : null}
             </div>
             <div className="absolute right-3 top-3 flex items-center gap-3 md:hidden">
@@ -120,6 +127,11 @@ export default async function EventPage({ params }: EventPageProps) {
                   <TicketCheck className="h-4 w-4" aria-hidden="true" />
                   Entrada gratis
                 </p>
+              ) : priceLabel ? (
+                <p className="inline-flex items-center gap-1.5 rounded-full bg-[#f6f3ea] px-3 py-1.5 text-xs font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(246,243,234,0.16)]">
+                  <TicketCheck className="h-4 w-4" aria-hidden="true" />
+                  {priceLabel}
+                </p>
               ) : null}
             </div>
             <h1 className="mt-4 text-3xl font-black leading-[1.08] text-[#f6f3ea] sm:text-4xl lg:text-5xl">
@@ -144,8 +156,8 @@ export default async function EventPage({ params }: EventPageProps) {
                 />
                 <QuickFact
                   icon={TicketCheck}
-                  label="Fuente"
-                  value={formatSourceName(event.source)}
+                  label={priceLabel ? "Precio" : "Fuente"}
+                  value={priceLabel ?? formatSourceName(event.source)}
                 />
               </div>
             </div>

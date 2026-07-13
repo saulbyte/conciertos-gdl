@@ -43,6 +43,7 @@ async function main() {
         candidate.artistName ?? "sin artista",
         candidate.venueName ?? "sin recinto",
         candidate.city ?? "sin ciudad",
+        formatCandidatePrice(candidate),
         candidate.title,
         candidate.sourceUrl,
       ].join(" | "));
@@ -56,3 +57,27 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+function formatCandidatePrice(candidate: {
+  priceMin?: unknown;
+  priceMax?: unknown;
+  currency?: string | null;
+}) {
+  const min = candidate.priceMin ? Number(candidate.priceMin) : null;
+  const max = candidate.priceMax ? Number(candidate.priceMax) : null;
+  const currency = candidate.currency ?? "MXN";
+
+  if (min !== null && max !== null && min !== max) {
+    return `${min}-${max} ${currency}`;
+  }
+
+  if (min !== null) {
+    return `desde ${min} ${currency}`;
+  }
+
+  if (max !== null) {
+    return `hasta ${max} ${currency}`;
+  }
+
+  return "sin precio";
+}

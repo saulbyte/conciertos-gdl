@@ -106,6 +106,9 @@ model EventCandidate {
   venueName       String?
   city            String?
   admissionType   AdmissionType        @default(UNKNOWN)
+  priceMin        Decimal?             @db.Decimal(10, 2)
+  priceMax        Decimal?             @db.Decimal(10, 2)
+  currency        String?
   confidence      Int                  @default(0)
   status          EventCandidateStatus @default(PENDING)
   rawText         String?
