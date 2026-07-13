@@ -21,6 +21,25 @@ type TicketmasterVenue = {
 type TicketmasterAttraction = {
   name?: string;
   images?: TicketmasterImage[];
+  classifications?: TicketmasterClassification[];
+};
+
+type TicketmasterClassification = {
+  segment?: {
+    name?: string;
+  };
+  genre?: {
+    name?: string;
+  };
+  subGenre?: {
+    name?: string;
+  };
+  type?: {
+    name?: string;
+  };
+  subType?: {
+    name?: string;
+  };
 };
 
 type TicketmasterEvent = {
@@ -35,6 +54,7 @@ type TicketmasterEvent = {
     max?: number;
     currency?: string;
   }>;
+  classifications?: TicketmasterClassification[];
   dates?: {
     start?: {
       dateTime?: string;
@@ -152,12 +172,50 @@ function normalizeTicketmasterEvent(
     sourceUrl: event.url ?? null,
     ...normalizePriceRange(event.priceRanges),
     availabilityStatus: event.dates?.status?.code ?? null,
+    tags: normalizeTicketmasterTags(event),
     venue: {
       name: venue.name,
       city: venue.city?.name ?? "Guadalajara",
     },
     artists: normalizeArtists(event._embedded?.attractions),
   };
+}
+
+function normalizeTicketmasterTags(event: TicketmasterEvent) {
+  const classifications = [
+    ...(event.classifications ?? []),
+    ...(event._embedded?.attractions ?? []).flatMap(
+      (attraction) => attraction.classifications ?? [],
+    ),
+  ];
+  const tags = new Map<string, { name: string; confidence: number }>();
+
+  for (const classification of classifications) {
+    for (const [name, confidence] of [
+      [classification.genre?.name, 88],
+      [classification.subGenre?.name, 82],
+      [classification.type?.name, 70],
+      [classification.subType?.name, 66],
+      [classification.segment?.name, 58],
+    ] as Array<[string | undefined, number]>) {
+      if (!name || /^undefined$/iu.test(name)) {
+        continue;
+      }
+
+      const key = name.toLowerCase();
+      const existing = tags.get(key);
+
+      if (!existing || confidence > existing.confidence) {
+        tags.set(key, { name, confidence });
+      }
+    }
+  }
+
+  return [...tags.values()].map((tag) => ({
+    name: tag.name,
+    confidence: tag.confidence,
+    source: "ticketmaster-classification",
+  }));
 }
 
 function normalizePriceRange(priceRanges: TicketmasterEvent["priceRanges"] = []) {

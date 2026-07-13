@@ -11,6 +11,7 @@ export type ExternalEvent = {
   priceMax?: number | null;
   currency?: string | null;
   availabilityStatus?: string | null;
+  tags?: ExternalEventTag[];
   venue: {
     name: string;
     city: string;
@@ -24,6 +25,13 @@ export type ExternalArtist =
       name: string;
       imageUrl?: string | null;
     };
+
+export type ExternalEventTag = {
+  name: string;
+  kind?: "GENRE" | "FORMAT" | "SIGNAL";
+  confidence?: number;
+  source?: string;
+};
 
 export type EventSourceAdapter = {
   name: string;

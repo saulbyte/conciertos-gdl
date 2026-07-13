@@ -12,6 +12,7 @@ import type {
 import { classifyAdmission } from "@/lib/event-sources/admission";
 import { sanitizePriceRange } from "@/lib/event-sources/pricing";
 import { recordSourceObservation } from "@/lib/event-observations";
+import { persistEventTags } from "@/lib/event-tags";
 import { notifyArtistSubscribersOfNewEvent } from "@/lib/notifications";
 
 type EventEnrichmentData = {
@@ -147,7 +148,7 @@ async function persistEvent(
   );
   const enrichmentData = buildEventEnrichmentData(event);
 
-  return prisma.event.upsert({
+  const savedEvent = await prisma.event.upsert({
     where: {
       source_externalId: {
         source,
@@ -186,6 +187,15 @@ async function persistEvent(
       },
     },
   });
+
+  await persistEventTags(prisma, {
+    eventId: savedEvent.id,
+    artistIds: artistConnections.map((connection) => connection.artistId),
+    source,
+    event,
+  });
+
+  return savedEvent;
 }
 
 function buildEventEnrichmentData(event: ExternalEvent): EventEnrichmentData {

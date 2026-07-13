@@ -43,6 +43,12 @@ enum EventObservationType {
   CANDIDATE_IMPORTED
 }
 
+enum TagKind {
+  GENRE
+  FORMAT
+  SIGNAL
+}
+
 model Venue {
   id        String   @id @default(cuid())
   name      String
@@ -61,6 +67,7 @@ model Artist {
   createdAt     DateTime             @default(now())
   events        EventArtist[]
   subscriptions ArtistSubscription[]
+  tags          ArtistTag[]
 }
 
 model Event {
@@ -85,6 +92,7 @@ model Event {
   artists            EventArtist[]
   likes              EventLike[]
   observations       EventObservation[]
+  tags               EventTag[]
 
   @@unique([source, externalId])
   @@index([eventDate])
@@ -92,6 +100,47 @@ model Event {
   @@index([source])
   @@index([admissionType])
   @@index([lastObservedAt])
+}
+
+model Tag {
+  id        String      @id @default(cuid())
+  slug      String
+  name      String
+  kind      TagKind
+  createdAt DateTime    @default(now())
+  events    EventTag[]
+  artists   ArtistTag[]
+
+  @@unique([slug, kind])
+  @@index([kind])
+}
+
+model EventTag {
+  eventId    String
+  tagId      String
+  confidence Int      @default(60)
+  source     String?
+  createdAt  DateTime @default(now())
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, tagId])
+  @@index([tagId])
+  @@index([confidence])
+}
+
+model ArtistTag {
+  artistId   String
+  tagId      String
+  confidence Int      @default(60)
+  source     String?
+  createdAt  DateTime @default(now())
+  artist     Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([artistId, tagId])
+  @@index([tagId])
+  @@index([confidence])
 }
 
 model EventCandidate {
