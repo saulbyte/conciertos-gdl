@@ -626,6 +626,14 @@ function getDiscoveryRails({
   const intimateVenueEvents = upcomingEvents.filter((event) =>
     isIntimateVenue(event.venue.name),
   );
+  const pricedEvents = upcomingEvents
+    .filter(hasDetectedPaidPrice)
+    .sort(
+      (left, right) =>
+        getMinimumPrice(left) - getMinimumPrice(right) ||
+        left.eventDate.getTime() - right.eventDate.getTime(),
+    );
+  const accessibleEvents = pricedEvents.filter((event) => getMinimumPrice(event) <= 500);
   const popularEvents = [...upcomingEvents]
     .filter((event) => event.likeCount > 0)
     .sort(
@@ -660,6 +668,20 @@ function getDiscoveryRails({
       description: "Planes sin costo cuando la fuente lo indica. Perfectos para salir sin pensarlo demasiado.",
       href: "/?view=all&admission=free#eventos",
       events: freeEvents,
+    },
+    {
+      id: "accessible",
+      title: "Planes accesibles",
+      description: "Cuando Revera detecta precio, seÃ±alamos opciones que no requieren gastar tanto.",
+      href: "/?view=all#eventos",
+      events: accessibleEvents,
+    },
+    {
+      id: "priced",
+      title: "Con precio detectado",
+      description: "Informacion encontrada en la fuente. Usala como referencia y confirma antes de comprar.",
+      href: "/?view=all#eventos",
+      events: pricedEvents,
     },
     {
       id: "unexpected",
@@ -716,7 +738,7 @@ function getDiscoveryRails({
     });
   }
 
-  return rails.filter((rail) => rail.events.length > 0);
+  return rails.filter((rail) => rail.events.length >= minimumRailSize(rail.id));
 }
 
 function getTopVenueSections(events: Awaited<ReturnType<typeof getEvents>>) {
@@ -791,11 +813,49 @@ function buildDailyDiscoveryMix(events: HomeEventList) {
     .slice(0, 12);
 }
 
+function minimumRailSize(railId: string) {
+  if (railId === "accessible" || railId === "priced") {
+    return 3;
+  }
+
+  return 1;
+}
+
+function hasDetectedPaidPrice(event: HomeEventList[number]) {
+  return event.admissionType !== "FREE" && getMinimumPrice(event) < Number.POSITIVE_INFINITY;
+}
+
+function getMinimumPrice(event: HomeEventList[number]) {
+  const min = priceToNumber(event.priceMin);
+  const max = priceToNumber(event.priceMax);
+
+  return Math.min(min ?? Number.POSITIVE_INFINITY, max ?? Number.POSITIVE_INFINITY);
+}
+
+function priceToNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "object" && value && "toNumber" in value) {
+    const amount = (value as { toNumber: () => number }).toNumber();
+    return Number.isFinite(amount) ? amount : null;
+  }
+
+  if (typeof value === "string") {
+    const amount = Number(value);
+    return Number.isFinite(amount) ? amount : null;
+  }
+
+  return null;
+}
+
 function discoveryScore(event: HomeEventList[number], seed: string) {
   let score = 0;
 
   if (event.createdAt >= daysAgo(14)) score += 35;
   if (event.admissionType === "FREE") score += 25;
+  if (hasDetectedPaidPrice(event) && getMinimumPrice(event) <= 500) score += 14;
   if (["DISCOVERED", "VISIT_JALISCO", "VIBRA_JALISCO"].includes(event.source)) {
     score += 20;
   }

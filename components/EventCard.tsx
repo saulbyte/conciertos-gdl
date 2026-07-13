@@ -47,11 +47,6 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
                   <TicketCheck className="h-3 w-3" aria-hidden="true" />
                   Gratis
                 </span>
-              ) : priceLabel ? (
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#f6f3ea] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018]">
-                  <TicketCheck className="h-3 w-3" aria-hidden="true" />
-                  {priceLabel}
-                </span>
               ) : null}
             </div>
             <h2 className="mt-1.5 line-clamp-2 text-sm font-black leading-5 text-[#f6f3ea] transition group-hover:text-[#00c2d1]">
@@ -73,6 +68,9 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
                   {formatEventTime(event.eventDate, event.source)}
                 </span>
               </p>
+              {event.admissionType !== "FREE" && priceLabel ? (
+                <p className="font-black text-[#f6f3ea]">{priceLabel}</p>
+              ) : null}
             </div>
           </div>
         </Link>
@@ -102,11 +100,6 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#00c2d1] px-3 py-1 text-[11px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.24)]">
                 <TicketCheck className="h-3.5 w-3.5" aria-hidden="true" />
                 Gratis
-              </span>
-            ) : priceLabel ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f6f3ea] px-3 py-1 text-[11px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(246,243,234,0.16)]">
-                <TicketCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                {priceLabel}
               </span>
             ) : null}
             {event.isPopular ? (
@@ -139,6 +132,9 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
         </div>
 
         <div className="mt-4 grid gap-2 text-sm text-slate-400">
+          {event.admissionType !== "FREE" && priceLabel ? (
+            <p className="font-black text-[#f6f3ea]">{priceLabel}</p>
+          ) : null}
           <p className="flex min-w-0 items-center gap-2">
             <MapPin className="h-4 w-4 shrink-0 text-[#00c2d1]" aria-hidden="true" />
             <span className="truncate">{event.venue.name}</span>

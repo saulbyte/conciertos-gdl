@@ -221,7 +221,9 @@ export default async function EventPage({ params }: EventPageProps) {
             <p className="mt-3 text-xs leading-5 text-slate-500">
               {event.admissionType === "FREE"
                 ? "Confirma requisitos de acceso y disponibilidad en el sitio de origen."
-                : "La disponibilidad y venta dependen del sitio de origen."}
+                : priceLabel
+                  ? "Precio detectado por Revera como referencia. Confirma disponibilidad, cargos y cambios en la fuente oficial."
+                  : "La disponibilidad y venta dependen del sitio de origen."}
             </p>
           </div>
         </div>
