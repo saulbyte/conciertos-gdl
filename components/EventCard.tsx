@@ -5,7 +5,6 @@ import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
 import {
   formatDateBadge,
-  formatEventPrice,
   formatEventTime,
   formatSourceName,
 } from "@/lib/format";
@@ -18,7 +17,6 @@ type EventCardProps = {
 export function EventCard({ event, variant = "default" }: EventCardProps) {
   const artists = event.artists.map(({ artist }) => artist.name).join(", ");
   const date = formatDateBadge(event.eventDate);
-  const priceLabel = formatEventPrice(event);
 
   if (variant === "compact") {
     return (
@@ -68,9 +66,6 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
                   {formatEventTime(event.eventDate, event.source)}
                 </span>
               </p>
-              {event.admissionType !== "FREE" && priceLabel ? (
-                <p className="font-black text-[#f6f3ea]">{priceLabel}</p>
-              ) : null}
             </div>
           </div>
         </Link>
@@ -132,9 +127,6 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
         </div>
 
         <div className="mt-4 grid gap-2 text-sm text-slate-400">
-          {event.admissionType !== "FREE" && priceLabel ? (
-            <p className="font-black text-[#f6f3ea]">{priceLabel}</p>
-          ) : null}
           <p className="flex min-w-0 items-center gap-2">
             <MapPin className="h-4 w-4 shrink-0 text-[#00c2d1]" aria-hidden="true" />
             <span className="truncate">{event.venue.name}</span>

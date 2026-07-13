@@ -10,6 +10,7 @@ import type {
   ExternalEvent,
 } from "@/lib/event-sources/types";
 import { classifyAdmission } from "@/lib/event-sources/admission";
+import { sanitizePriceRange } from "@/lib/event-sources/pricing";
 import { recordSourceObservation } from "@/lib/event-observations";
 import { notifyArtistSubscribersOfNewEvent } from "@/lib/notifications";
 
@@ -188,23 +189,32 @@ async function persistEvent(
 }
 
 function buildEventEnrichmentData(event: ExternalEvent): EventEnrichmentData {
+  const pricing = sanitizePriceRange({
+    priceMin: event.priceMin,
+    priceMax: event.priceMax,
+    currency: event.currency,
+  });
+
   return {
-    priceMin: toDecimal(event.priceMin),
-    priceMax: toDecimal(event.priceMax),
-    currency: event.currency ?? null,
+    priceMin: toDecimal(pricing.priceMin),
+    priceMax: toDecimal(pricing.priceMax),
+    currency: pricing.currency ?? null,
     availabilityStatus: event.availabilityStatus ?? null,
   };
 }
 
 function classifyEventAdmission(event: ExternalEvent) {
-  if (event.priceMin === 0 || event.priceMax === 0) {
+  const pricing = sanitizePriceRange({
+    priceMin: event.priceMin,
+    priceMax: event.priceMax,
+    currency: event.currency,
+  });
+
+  if (pricing.admissionType === "FREE") {
     return "FREE";
   }
 
-  if (
-    typeof event.priceMin === "number" && event.priceMin > 0 ||
-    typeof event.priceMax === "number" && event.priceMax > 0
-  ) {
+  if (pricing.admissionType === "PAID") {
     return "PAID";
   }
 

@@ -5,6 +5,12 @@ type PricingInput = {
   text?: string | null;
 };
 
+type PriceRangeInput = {
+  priceMin?: number | null;
+  priceMax?: number | null;
+  currency?: string | null;
+};
+
 export type ExtractedPricing = {
   admissionType?: AdmissionType;
   priceMin?: number | null;
@@ -38,7 +44,7 @@ export function extractPricing(input: PricingInput): ExtractedPricing {
   const structuredPrices = extractStructuredPrices(input.structured);
   const text = normalizeWhitespace(input.text ?? "");
   const textPrices = extractTextPrices(text);
-  const prices = [...structuredPrices.prices, ...textPrices.prices];
+  const prices = sanitizePrices([...structuredPrices.prices, ...textPrices.prices]);
   const currency = structuredPrices.currency ?? textPrices.currency ?? null;
 
   if (FREE_PATTERNS.some((pattern) => pattern.test(text))) {
@@ -67,6 +73,38 @@ export function classifyAdmissionFromPricing(
   description: string | null,
 ) {
   return extractPricing({ text: `${title} ${description ?? ""}` }).admissionType;
+}
+
+export function sanitizePriceRange(input: PriceRangeInput): ExtractedPricing {
+  const rawPrices = [input.priceMin, input.priceMax].filter(
+    (value): value is number => typeof value === "number" && Number.isFinite(value),
+  );
+
+  if (rawPrices.includes(0)) {
+    return {
+      admissionType: AdmissionType.FREE,
+      priceMin: 0,
+      priceMax: 0,
+      currency: normalizeCurrency(input.currency) ?? "MXN",
+    };
+  }
+
+  const prices = sanitizePrices(rawPrices);
+
+  if (prices.length === 0) {
+    return {
+      priceMin: null,
+      priceMax: null,
+      currency: null,
+    };
+  }
+
+  return {
+    admissionType: AdmissionType.PAID,
+    priceMin: Math.min(...prices),
+    priceMax: Math.max(...prices),
+    currency: normalizeCurrency(input.currency) ?? "MXN",
+  };
 }
 
 function extractStructuredPrices(value: unknown) {
@@ -116,6 +154,13 @@ function extractTextPrices(text: string) {
   }
 
   return { prices, currency };
+}
+
+function sanitizePrices(values: number[]) {
+  return values
+    .filter((value) => Number.isFinite(value))
+    .map((value) => Math.round(value * 100) / 100)
+    .filter((value) => value >= 50 && value <= 20_000);
 }
 
 function parseAmount(value: string) {

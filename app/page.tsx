@@ -672,16 +672,9 @@ function getDiscoveryRails({
     {
       id: "accessible",
       title: "Planes accesibles",
-      description: "Cuando Revera detecta precio, seÃ±alamos opciones que no requieren gastar tanto.",
+      description: "Opciones que Revera detecta como mas ligeras para salir sin convertir el plan en una decision pesada.",
       href: "/?view=all#eventos",
       events: accessibleEvents,
-    },
-    {
-      id: "priced",
-      title: "Con precio detectado",
-      description: "Informacion encontrada en la fuente. Usala como referencia y confirma antes de comprar.",
-      href: "/?view=all#eventos",
-      events: pricedEvents,
     },
     {
       id: "unexpected",
@@ -814,7 +807,7 @@ function buildDailyDiscoveryMix(events: HomeEventList) {
 }
 
 function minimumRailSize(railId: string) {
-  if (railId === "accessible" || railId === "priced") {
+  if (railId === "accessible") {
     return 3;
   }
 
