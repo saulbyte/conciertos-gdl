@@ -76,25 +76,18 @@ export default async function Home({ searchParams }: HomeProps) {
       filters.when === "weekend",
   );
   const isAllView = filters.view === "all" || hasFilters;
-  const popularEvents = [...allEvents]
-    .sort(
-      (left, right) =>
-        right.likeCount - left.likeCount ||
-        left.eventDate.getTime() - right.eventDate.getTime(),
-    )
-    .slice(0, 8);
-  const featuredEvents = popularEvents.some((event) => event.likeCount > 0)
-    ? popularEvents
-    : allEvents.slice(4, 12);
   const activeEvents = applyEventSort(hasFilters ? events : allEvents, filters.sort);
   const artistsPlayingThisMonth = artists
     .filter((artist) => artist.nextEvent && isWithinNextMonths(artist.nextEvent.eventDate, 2))
     .slice(0, 12);
-  const todayEvents = allEvents.filter((event) => isToday(event.eventDate));
-  const monthEvents = allEvents
-    .filter((event) => isThisMonth(event.eventDate) && !isToday(event.eventDate))
-    .slice(0, 8);
   const venueSections = getTopVenueSections(allEvents);
+  const discoveryRails = getDiscoveryRails({
+    allEvents,
+    freeEvents,
+    recentlyAddedEvents,
+    venueSections,
+    weekendEvents,
+  });
 
   return (
     <main
@@ -210,53 +203,17 @@ export default async function Home({ searchParams }: HomeProps) {
           />
         ) : (
           <>
-            <EventRail
-              title="Hoy toca"
-              href="/?view=all#eventos"
-              events={todayEvents}
-              compactOnMobile
-            />
-
-            <EventRail
-              title="Este mes"
-              href="/?view=all#eventos"
-              events={monthEvents}
-              compactOnMobile
-            />
-
-            <EventRail
-              title="Recien descubiertos"
-              href="/?view=all#eventos"
-              events={recentlyAddedEvents}
-              itemLimit={10}
-            />
-
-            <EventRail
-              title="Vale la pena mirar"
-              href="/descubrir"
-              events={featuredEvents}
-            />
-
-            {venueSections.map((section) => (
+            {discoveryRails.map((section) => (
               <EventRail
-                key={section.venue.id}
-                title={section.venue.name}
-                href={`/?view=all&venue=${section.venue.id}#eventos`}
+                key={section.id}
+                title={section.title}
+                description={section.description}
+                href={section.href}
                 events={section.events}
+                compactOnMobile={section.compactOnMobile}
+                itemLimit={section.itemLimit}
               />
             ))}
-
-            <EventRail
-              title="Gratis esta semana"
-              href="/?view=all&admission=free#eventos"
-              events={freeEvents.slice(0, 8)}
-            />
-
-            <EventRail
-              title="Este fin"
-              href="/?view=all&when=weekend#eventos"
-              events={weekendEvents.slice(0, 8)}
-            />
           </>
         )}
       </section>
@@ -326,12 +283,14 @@ export default async function Home({ searchParams }: HomeProps) {
 
 function EventRail({
   title,
+  description,
   href,
   events,
   compactOnMobile = false,
   itemLimit = 8,
 }: {
   title: string;
+  description?: string;
   href: string;
   events: Awaited<ReturnType<typeof getEvents>>;
   compactOnMobile?: boolean;
@@ -344,12 +303,19 @@ function EventRail({
   return (
     <section className="py-5">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
-          {title}
-        </h2>
+        <div className="min-w-0">
+          <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
+            {title}
+          </h2>
+          {description ? (
+            <p className="mt-1 max-w-2xl text-xs font-semibold leading-5 text-slate-400 sm:text-sm">
+              {description}
+            </p>
+          ) : null}
+        </div>
         <Link
           href={href}
-          className="text-xs font-bold text-[#00c2d1] transition hover:text-white"
+          className="shrink-0 text-xs font-bold text-[#00c2d1] transition hover:text-white"
         >
           Ver todos
         </Link>
@@ -626,6 +592,133 @@ function applyEventSort(
   return events;
 }
 
+type HomeEventList = Awaited<ReturnType<typeof getEvents>>;
+type DiscoveryRail = {
+  id: string;
+  title: string;
+  description: string;
+  href: string;
+  events: HomeEventList;
+  compactOnMobile?: boolean;
+  itemLimit?: number;
+};
+
+function getDiscoveryRails({
+  allEvents,
+  freeEvents,
+  recentlyAddedEvents,
+  venueSections,
+  weekendEvents,
+}: {
+  allEvents: HomeEventList;
+  freeEvents: HomeEventList;
+  recentlyAddedEvents: HomeEventList;
+  venueSections: ReturnType<typeof getTopVenueSections>;
+  weekendEvents: HomeEventList;
+}) {
+  const upcomingEvents = allEvents.filter((event) => event.eventDate >= startOfToday());
+  const discoverySourceEvents = upcomingEvents.filter((event) =>
+    ["DISCOVERED", "VISIT_JALISCO", "VIBRA_JALISCO"].includes(event.source),
+  );
+  const bigStageEvents = upcomingEvents.filter((event) =>
+    isBigStage(event.venue.name),
+  );
+  const intimateVenueEvents = upcomingEvents.filter((event) =>
+    isIntimateVenue(event.venue.name),
+  );
+  const popularEvents = [...upcomingEvents]
+    .filter((event) => event.likeCount > 0)
+    .sort(
+      (left, right) =>
+        right.likeCount - left.likeCount ||
+        left.eventDate.getTime() - right.eventDate.getTime(),
+    );
+  const thisMonthEvents = upcomingEvents
+    .filter((event) => isThisMonth(event.eventDate))
+    .sort((left, right) => left.eventDate.getTime() - right.eventDate.getTime());
+  const surpriseEvents = buildDailyDiscoveryMix(upcomingEvents);
+  const rails: DiscoveryRail[] = [
+    {
+      id: "new-finds",
+      title: "Acaban de aparecer",
+      description: "Lo ultimo que entro al radar de Revera antes de que se pierda entre tantas fuentes.",
+      href: "/?view=all#eventos",
+      events: recentlyAddedEvents,
+      itemLimit: 10,
+    },
+    {
+      id: "weekend",
+      title: "Para decidir este fin",
+      description: "Fechas cercanas para convertir el fin de semana en algo que si recuerdes.",
+      href: "/?view=all&when=weekend#eventos",
+      events: weekendEvents,
+      compactOnMobile: true,
+    },
+    {
+      id: "free",
+      title: "Gratis que vale revisar",
+      description: "Planes sin costo cuando la fuente lo indica. Perfectos para salir sin pensarlo demasiado.",
+      href: "/?view=all&admission=free#eventos",
+      events: freeEvents,
+    },
+    {
+      id: "unexpected",
+      title: "No sabias que venian",
+      description: "Eventos detectados fuera de las boleteras mas obvias: fuentes publicas, locales y hallazgos del radar.",
+      href: "/?view=all#eventos",
+      events: discoverySourceEvents,
+    },
+    {
+      id: "popular",
+      title: "La ciudad ya los esta mirando",
+      description: "Experiencias con señales de interes dentro de Revera.",
+      href: "/?view=all&sort=popular#eventos",
+      events: popularEvents,
+    },
+    {
+      id: "big-stages",
+      title: "Grandes escenarios",
+      description: "Arena, auditorios y estadios: fechas grandes para cuando quieres algo mas producido.",
+      href: "/?view=all#eventos",
+      events: bigStageEvents,
+    },
+    {
+      id: "small-rooms",
+      title: "Para una noche mas cerca",
+      description: "Recintos donde la experiencia se siente mas directa: menos distancia, mas descubrimiento.",
+      href: "/?view=all#eventos",
+      events: intimateVenueEvents,
+    },
+    {
+      id: "this-month",
+      title: "Antes de que termine el mes",
+      description: "Lo que todavia puedes alcanzar sin irte demasiado lejos en el calendario.",
+      href: "/?view=all#eventos",
+      events: thisMonthEvents,
+      compactOnMobile: true,
+    },
+    {
+      id: "surprise",
+      title: "Dale cinco minutos",
+      description: "Una mezcla diaria para encontrar algo que no estabas buscando.",
+      href: "/?view=all#eventos",
+      events: surpriseEvents,
+    },
+  ];
+
+  for (const section of venueSections) {
+    rails.push({
+      id: `venue-${section.venue.id}`,
+      title: `${section.venue.name} tiene movimiento`,
+      description: "Un recinto activo suele decir mucho de lo que esta pasando en la ciudad.",
+      href: `/?view=all&venue=${section.venue.id}#eventos`,
+      events: section.events,
+    });
+  }
+
+  return rails.filter((rail) => rail.events.length > 0);
+}
+
 function getTopVenueSections(events: Awaited<ReturnType<typeof getEvents>>) {
   const now = new Date();
   const todayKey = getMexicoCityDateKey(now);
@@ -684,6 +777,77 @@ function getTopVenueSections(events: Awaited<ReturnType<typeof getEvents>>) {
     }));
 }
 
+function buildDailyDiscoveryMix(events: HomeEventList) {
+  const dailySeed = getMexicoCityDateKey(new Date());
+
+  return [...events]
+    .filter((event) => event.eventDate >= startOfToday())
+    .sort((left, right) => {
+      const leftScore = discoveryScore(left, dailySeed);
+      const rightScore = discoveryScore(right, dailySeed);
+
+      return rightScore - leftScore || left.eventDate.getTime() - right.eventDate.getTime();
+    })
+    .slice(0, 12);
+}
+
+function discoveryScore(event: HomeEventList[number], seed: string) {
+  let score = 0;
+
+  if (event.createdAt >= daysAgo(14)) score += 35;
+  if (event.admissionType === "FREE") score += 25;
+  if (["DISCOVERED", "VISIT_JALISCO", "VIBRA_JALISCO"].includes(event.source)) {
+    score += 20;
+  }
+  if (isIntimateVenue(event.venue.name)) score += 12;
+  if (isWithinNextDays(event.eventDate, 21)) score += 10;
+  if (event.likeCount > 0) score += Math.min(event.likeCount * 3, 18);
+
+  return score + dailyOrder(event.id, seed);
+}
+
+function isBigStage(venueName: string) {
+  return /arena|auditorio|estadio|telmex|vfg|palcco|teatro diana/iu.test(
+    venueName,
+  );
+}
+
+function isIntimateVenue(venueName: string) {
+  return /c3|foro|bar|casa|centro cultural|semillero|anexo|independencia|rojo|ley/iu.test(
+    venueName,
+  );
+}
+
+function isWithinNextDays(date: Date, days: number) {
+  const today = startOfToday();
+  const end = new Date(today);
+  end.setDate(today.getDate() + days);
+
+  return date >= today && date <= end;
+}
+
+function daysAgo(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+
+  return date;
+}
+
+function startOfToday() {
+  return new Date(`${getMexicoCityDateKey(new Date())}T00:00:00-06:00`);
+}
+
+function dailyOrder(value: string, seed: string) {
+  let hash = 0;
+  const input = `${seed}:${value}`;
+
+  for (let index = 0; index < input.length; index += 1) {
+    hash = (hash * 31 + input.charCodeAt(index)) % 997;
+  }
+
+  return hash / 997;
+}
+
 function isThisMonth(date: Date) {
   const now = new Date();
   const formatter = new Intl.DateTimeFormat("en-US", {
@@ -712,10 +876,6 @@ function getMexicoCityDateKey(date: Date) {
     day: "2-digit",
     timeZone: "America/Mexico_City",
   }).format(date);
-}
-
-function isToday(date: Date) {
-  return getMexicoCityDateKey(date) === getMexicoCityDateKey(new Date());
 }
 
 function toSearchArtist(artist: Awaited<ReturnType<typeof getArtists>>[number]) {
