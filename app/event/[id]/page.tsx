@@ -21,8 +21,8 @@ import { getEventById, getRelatedEvents } from "@/lib/events";
 import {
   formatDateBadge,
   formatEventDate,
+  formatEventSourceName,
   formatEventTime,
-  formatSourceName,
 } from "@/lib/format";
 
 type EventPageProps = {
@@ -45,6 +45,7 @@ export default async function EventPage({ params }: EventPageProps) {
   const artists = event.artists.map(({ artist }) => artist);
   const date = formatDateBadge(event.eventDate);
   const eventTime = formatEventTime(event.eventDate, event.source);
+  const sourceName = formatEventSourceName(event);
 
   return (
     <main data-event-detail-page className="bg-[#071018] text-[#f6f3ea]">
@@ -113,7 +114,7 @@ export default async function EventPage({ params }: EventPageProps) {
           <div className="min-w-0 py-1">
             <div className="flex flex-wrap items-center gap-2">
               <p className="inline-flex rounded-md bg-white/[0.08] px-3 py-1.5 text-xs font-black text-slate-300">
-                {formatSourceName(event.source)}
+                {sourceName}
               </p>
               {event.admissionType === "FREE" ? (
                 <p className="inline-flex items-center gap-1.5 rounded-full bg-[#00c2d1] px-3 py-1.5 text-xs font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.2)]">
@@ -145,7 +146,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 <QuickFact
                   icon={TicketCheck}
                   label="Fuente"
-                  value={formatSourceName(event.source)}
+                  value={sourceName}
                 />
               </div>
             </div>

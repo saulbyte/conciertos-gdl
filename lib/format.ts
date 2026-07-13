@@ -62,10 +62,21 @@ export function formatSourceName(source: string) {
     KINGTICKET: "KingTicket",
     VIBRA_JALISCO: "Vibra Jalisco",
     FEVER: "Fever",
-    DISCOVERED: "REVERA",
+    DISCOVERED: "Fuente externa",
   };
 
   return labels[source] ?? source;
+}
+
+export function formatEventSourceName(event: {
+  source: string;
+  sourceUrl?: string | null;
+}) {
+  if (event.source !== "DISCOVERED") {
+    return formatSourceName(event.source);
+  }
+
+  return formatSourceHost(event.sourceUrl) ?? "Fuente externa";
 }
 
 export function formatEventPrice(event: {
@@ -121,4 +132,44 @@ function formatMoney(value: number, currency: string) {
     maximumFractionDigits: 0,
     style: "currency",
   }).format(value);
+}
+
+function formatSourceHost(sourceUrl?: string | null) {
+  if (!sourceUrl) {
+    return null;
+  }
+
+  try {
+    const hostname = new URL(sourceUrl).hostname
+      .replace(/^www\./iu, "")
+      .replace(/^m\./iu, "");
+    const knownHosts: Record<string, string> = {
+      "facebook.com": "Facebook",
+      "instagram.com": "Instagram",
+      "songkick.com": "Songkick",
+      "feverup.com": "Fever",
+      "visitjalisco.mx": "Visit Jalisco",
+      "c3stage.com": "C3 Stage",
+      "funticket.mx": "FunTicket",
+      "kingticketboletos.com": "KingTicket",
+      "ticketmaster.com.mx": "Ticketmaster",
+      "eticket.mx": "eTicket",
+    };
+
+    if (knownHosts[hostname]) {
+      return knownHosts[hostname];
+    }
+
+    const [name] = hostname.split(".");
+
+    return name
+      ? name
+          .split(/[-_]/u)
+          .filter(Boolean)
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(" ")
+      : null;
+  } catch {
+    return null;
+  }
 }

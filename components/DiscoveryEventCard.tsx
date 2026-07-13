@@ -4,7 +4,7 @@ import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
 import { EventShareButton } from "@/components/EventShareButton";
 import type { DiscoveryEvent } from "@/lib/events";
-import { formatEventTime, formatSourceName } from "@/lib/format";
+import { formatEventSourceName, formatEventTime } from "@/lib/format";
 
 type DiscoveryEventCardProps = {
   event: DiscoveryEvent;
@@ -25,6 +25,7 @@ export function DiscoveryEventCard({
     timeZone: "America/Mexico_City",
   }).format(event.eventDate);
   const recentlyAdded = isRecentlyAdded(event.createdAt);
+  const sourceName = formatEventSourceName(event);
 
   return (
     <article
@@ -102,7 +103,7 @@ export function DiscoveryEventCard({
             <Clock3 className="h-4 w-4 shrink-0 text-[#00c2d1]" aria-hidden="true" />
             {formatEventTime(event.eventDate, event.source)}
             <span aria-hidden="true">·</span>
-            <span className="truncate">{formatSourceName(event.source)}</span>
+            <span className="truncate">{sourceName}</span>
           </p>
         </div>
 

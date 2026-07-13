@@ -5,8 +5,8 @@ import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
 import {
   formatDateBadge,
+  formatEventSourceName,
   formatEventTime,
-  formatSourceName,
 } from "@/lib/format";
 
 type HomeEventCardProps = {
@@ -18,6 +18,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
   const date = formatDateBadge(event.eventDate);
   const artists = event.artists.map(({ artist }) => artist.name).join(", ");
   const recentlyAdded = isRecentlyAdded(event.createdAt);
+  const sourceName = formatEventSourceName(event);
 
   if (compact) {
     return (
@@ -68,7 +69,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
             <FreePill />
           ) : (
             <span className="rounded-md border border-white/10 bg-[#071018]/60 px-2 py-1 text-[10px] font-black text-slate-300">
-              {formatSourceName(event.source)}
+              {sourceName}
             </span>
           )}
         </div>
@@ -102,7 +103,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
       <div className="flex min-h-40 flex-1 flex-col p-3.5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-md border border-white/10 px-2 py-1 text-[10px] font-black text-slate-300">
-            {formatSourceName(event.source)}
+            {sourceName}
           </span>
           {recentlyAdded ? <NewPill /> : null}
         </div>

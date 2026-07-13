@@ -5,8 +5,8 @@ import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
 import {
   formatDateBadge,
+  formatEventSourceName,
   formatEventTime,
-  formatSourceName,
 } from "@/lib/format";
 
 type EventCardProps = {
@@ -17,6 +17,7 @@ type EventCardProps = {
 export function EventCard({ event, variant = "default" }: EventCardProps) {
   const artists = event.artists.map(({ artist }) => artist.name).join(", ");
   const date = formatDateBadge(event.eventDate);
+  const sourceName = formatEventSourceName(event);
 
   if (variant === "compact") {
     return (
@@ -38,7 +39,7 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
           <div className="min-w-0 p-3">
             <div className="flex min-w-0 items-center gap-1.5">
               <span className="truncate rounded bg-white/[0.08] px-2 py-0.5 text-[10px] font-bold text-slate-300">
-                {formatSourceName(event.source)}
+                {sourceName}
               </span>
               {event.admissionType === "FREE" ? (
                 <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#00c2d1] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_14px_rgba(0,194,209,0.22)]">
@@ -89,7 +90,7 @@ export function EventCard({ event, variant = "default" }: EventCardProps) {
         <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
           <div className="flex flex-col items-start gap-2">
             <span className="rounded-md bg-[#071018]/80 px-2.5 py-1 text-[11px] font-bold text-slate-200 shadow-sm backdrop-blur">
-              {formatSourceName(event.source)}
+              {sourceName}
             </span>
             {event.admissionType === "FREE" ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#00c2d1] px-3 py-1 text-[11px] font-black uppercase tracking-[0.02em] text-[#071018] shadow-[0_0_18px_rgba(0,194,209,0.24)]">
