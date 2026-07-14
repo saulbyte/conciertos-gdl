@@ -85,13 +85,13 @@ function PersonalizedRailSection({
   events: PersonalizedRailEvent[];
 }) {
   return (
-    <section className="py-5">
+    <section className="py-5 max-md:flex max-md:min-h-[calc(100svh-8rem)] max-md:snap-start max-md:snap-always max-md:scroll-mt-20 max-md:flex-col max-md:justify-start max-md:pt-3">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
             {rail.title}
           </h2>
-          <p className="mt-1 max-w-2xl text-xs font-semibold leading-5 text-slate-400 sm:text-sm">
+          <p className="mt-1 hidden max-w-2xl text-xs font-semibold leading-5 text-slate-400 sm:block sm:text-sm">
             {rail.description}
           </p>
         </div>
@@ -103,17 +103,31 @@ function PersonalizedRailSection({
         </Link>
       </div>
 
-      <HorizontalScroller
-        label={rail.title}
-        className="-mx-4 sm:-mx-6 lg:mx-0"
-        contentClassName="flex snap-x gap-3 px-4 pb-2 sm:px-6 lg:px-10"
-      >
-        {events.map((event) => (
-          <div key={event.id} className="w-64 shrink-0 snap-start lg:w-72">
-            <PersonalizedEventCard event={event} />
-          </div>
-        ))}
-      </HorizontalScroller>
+      <div className="md:hidden">
+        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-4">
+          {events.map((event) => (
+            <div
+              key={event.id}
+              className="w-[82vw] max-w-[340px] shrink-0 snap-center"
+            >
+              <PersonalizedEventCard event={event} />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="max-md:hidden">
+        <HorizontalScroller
+          label={rail.title}
+          className="-mx-4 sm:-mx-6 lg:mx-0"
+          contentClassName="flex snap-x gap-3 px-4 pb-2 sm:px-6 lg:px-10"
+        >
+          {events.map((event) => (
+            <div key={event.id} className="w-64 shrink-0 snap-start lg:w-72">
+              <PersonalizedEventCard event={event} />
+            </div>
+          ))}
+        </HorizontalScroller>
+      </div>
     </section>
   );
 }

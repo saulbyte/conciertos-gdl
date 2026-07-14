@@ -19,6 +19,25 @@ body {
 }
 
 @media (max-width: 767px) {
+  html:has([data-mobile-discovery-feed]) {
+    scroll-padding-top: 5rem;
+    scroll-snap-type: y mandatory;
+  }
+
+  body:has([data-mobile-discovery-feed]) {
+    scroll-snap-type: none;
+  }
+
+  body:has([data-mobile-discovery-feed]) [data-back-to-top] {
+    display: none;
+  }
+
+  body:has([data-mobile-discovery-feed]) [data-site-footer] {
+    scroll-margin-top: 5rem;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
   body {
     padding-bottom: calc(4rem + env(safe-area-inset-bottom));
   }
