@@ -99,9 +99,7 @@ export default async function Home({ searchParams }: HomeProps) {
       id="inicio"
       className="min-h-screen bg-[#071018] text-[#f6f3ea]"
     >
-      <section
-        className={`relative overflow-hidden ${isAllView ? "" : "max-md:snap-start max-md:snap-always"}`}
-      >
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[#071018]" />
         <div className="relative mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <HomeSearchPanel
@@ -201,10 +199,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <section
         id="eventos"
-        data-mobile-discovery-feed={!isAllView ? true : undefined}
-        className={`mx-auto w-full max-w-7xl scroll-mt-24 px-4 pb-12 pt-4 sm:px-6 lg:px-8 ${
-          isAllView ? "" : "max-md:snap-y max-md:snap-mandatory"
-        }`}
+        className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 pb-12 pt-4 sm:px-6 lg:px-8"
       >
         {isAllView ? (
           <AllEventsSection
@@ -229,7 +224,7 @@ export default async function Home({ searchParams }: HomeProps) {
         )}
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-4 pb-10 pt-2 sm:px-6 lg:px-8 max-md:snap-start max-md:snap-always">
+      <section className="mx-auto w-full max-w-7xl px-4 pb-10 pt-2 sm:px-6 lg:px-8">
         <div className="space-y-5">
           <div className="-mx-4 overflow-hidden sm:mx-0">
             <div className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 pb-1 text-xs font-bold text-slate-400 sm:flex-wrap sm:overflow-visible sm:px-0">
@@ -294,9 +289,9 @@ export default async function Home({ searchParams }: HomeProps) {
 
 function EventRail({
   title,
-  description,
   href,
   events,
+  compactOnMobile = false,
   itemLimit = 8,
 }: {
   title: string;
@@ -311,17 +306,12 @@ function EventRail({
   }
 
   return (
-    <section className="py-5 max-md:flex max-md:min-h-[calc(100dvh-6.75rem)] max-md:snap-start max-md:snap-always max-md:scroll-mt-20 max-md:flex-col max-md:justify-start max-md:pt-2">
+    <section className="py-5">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
             {title}
           </h2>
-          {description ? (
-            <p className="mt-1 hidden max-w-2xl text-xs font-semibold leading-5 text-slate-400 sm:block sm:text-sm">
-              {description}
-            </p>
-          ) : null}
         </div>
         <Link
           href={href}
@@ -332,19 +322,14 @@ function EventRail({
       </div>
 
       <>
-        <div className="md:hidden">
-          <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-4">
+        {compactOnMobile ? (
+          <div className="grid gap-2 md:hidden">
             {events.slice(0, itemLimit).map((event) => (
-              <div
-                key={event.id}
-                className="mobile-discovery-card w-[90vw] max-w-[390px] shrink-0 snap-center"
-              >
-                <HomeEventCard event={event} />
-              </div>
+              <HomeEventCard key={event.id} event={event} compact />
             ))}
           </div>
-        </div>
-        <div className="max-md:hidden">
+        ) : null}
+        <div className={compactOnMobile ? "max-md:hidden" : ""}>
           <HorizontalScroller
             label={title}
             className="-mx-4 sm:-mx-6 lg:mx-0"
