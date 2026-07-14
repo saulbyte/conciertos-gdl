@@ -40,7 +40,7 @@ export function HorizontalScroller({
       </button>
       <div
         ref={scrollerRef}
-        className={`no-scrollbar overflow-x-auto scroll-smooth ${contentClassName}`}
+        className={`no-scrollbar overflow-x-auto overscroll-x-contain scroll-smooth scroll-px-4 sm:scroll-px-6 lg:scroll-px-10 ${contentClassName}`}
       >
         {children}
       </div>

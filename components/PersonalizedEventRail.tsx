@@ -103,10 +103,10 @@ function PersonalizedRailSection({
       <HorizontalScroller
         label={rail.title}
         className="-mx-4 sm:-mx-6 lg:mx-0"
-        contentClassName="flex snap-x gap-3 px-4 pb-2 sm:px-6 lg:px-10"
+        contentClassName="flex snap-x snap-mandatory gap-3 px-4 pb-2 sm:px-6 lg:snap-proximity lg:px-10"
       >
         {events.map((event) => (
-          <div key={event.id} className="w-64 shrink-0 snap-start lg:w-72">
+          <div key={event.id} className="w-64 shrink-0 snap-start snap-always lg:w-72">
             <PersonalizedEventCard event={event} />
           </div>
         ))}
