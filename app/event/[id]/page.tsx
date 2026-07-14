@@ -11,13 +11,17 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { EventArtwork } from "@/components/EventArtwork";
+import { EventInteractionTracker } from "@/components/EventInteractionTracker";
 import { EventLikeButton } from "@/components/EventLikeButton";
 import { EventShareButton } from "@/components/EventShareButton";
+import { TrackableSourceLink } from "@/components/TrackableSourceLink";
 import { HomeEventCard } from "@/components/HomeEventCard";
 import { MobileMenu } from "@/components/MobileMenu";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SmartBackButton } from "@/components/SmartBackButton";
 import { getEventById, getRelatedEvents } from "@/lib/events";
+import type { EventDetail } from "@/lib/events";
+import type { PersonalizationEvent } from "@/lib/personalization-client";
 import {
   formatDateBadge,
   formatEventDate,
@@ -46,9 +50,11 @@ export default async function EventPage({ params }: EventPageProps) {
   const date = formatDateBadge(event.eventDate);
   const eventTime = formatEventTime(event.eventDate, event.source);
   const sourceName = formatEventSourceName(event);
+  const trackingEvent = toPersonalizationEvent(event);
 
   return (
     <main data-event-detail-page className="bg-[#071018] text-[#f6f3ea]">
+      <EventInteractionTracker event={trackingEvent} />
       <section className="mx-auto w-full max-w-7xl px-4 pb-5 pt-0 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-5 flex h-16 items-center justify-between gap-3 md:hidden">
           <BrandLogo compact />
@@ -102,11 +108,13 @@ export default async function EventPage({ params }: EventPageProps) {
                 eventId={event.id}
                 initialCount={event.likeCount}
                 variant="darkCard"
+                trackingEvent={trackingEvent}
               />
               <EventShareButton
                 title={event.title}
                 path={`/event/${event.id}`}
                 variant="compact"
+                trackingEvent={trackingEvent}
               />
             </div>
           </div>
@@ -186,25 +194,26 @@ export default async function EventPage({ params }: EventPageProps) {
 
             <div className="mt-5 flex flex-wrap items-center gap-3">
               {event.sourceUrl ? (
-                <a
+                <TrackableSourceLink
                   href={event.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                  event={trackingEvent}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#00c2d1] px-5 text-sm font-black text-[#071018] shadow-lg shadow-black/30 transition hover:bg-[#33d4de] sm:w-auto"
                 >
                   Ver fuente oficial
                   <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                </a>
+                </TrackableSourceLink>
               ) : null}
               <EventLikeButton
                 eventId={event.id}
                 initialCount={event.likeCount}
                 variant="detail"
+                trackingEvent={trackingEvent}
               />
               <EventShareButton
                 title={event.title}
                 path={`/event/${event.id}`}
                 variant="compact"
+                trackingEvent={trackingEvent}
               />
             </div>
             <p className="mt-3 text-xs leading-5 text-slate-500">
@@ -267,6 +276,38 @@ export default async function EventPage({ params }: EventPageProps) {
       ) : null}
     </main>
   );
+}
+
+function toPersonalizationEvent(event: EventDetail): PersonalizationEvent {
+  return {
+    id: event.id,
+    title: event.title,
+    venueId: event.venue.id,
+    venueName: event.venue.name,
+    source: event.source,
+    admissionType: event.admissionType,
+    priceMin: decimalToNumber(event.priceMin),
+    priceMax: decimalToNumber(event.priceMax),
+    artists: event.artists.map(({ artist }) => ({
+      id: artist.id,
+      name: artist.name,
+    })),
+    tags: event.tags.map(({ confidence, tag }) => ({
+      slug: tag.slug,
+      name: tag.name,
+      kind: tag.kind,
+      confidence,
+    })),
+  };
+}
+
+function decimalToNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "object" && value && "toNumber" in value) {
+    const amount = (value as { toNumber: () => number }).toNumber();
+    return Number.isFinite(amount) ? amount : null;
+  }
+  return null;
 }
 
 function DateBadge({ day, month }: { day: string; month: string }) {

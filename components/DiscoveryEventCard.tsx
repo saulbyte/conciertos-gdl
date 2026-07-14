@@ -5,6 +5,7 @@ import { EventLikeButton } from "@/components/EventLikeButton";
 import { EventShareButton } from "@/components/EventShareButton";
 import type { DiscoveryEvent } from "@/lib/events";
 import { formatEventSourceName, formatEventTime } from "@/lib/format";
+import type { PersonalizationEvent } from "@/lib/personalization-client";
 
 type DiscoveryEventCardProps = {
   event: DiscoveryEvent;
@@ -26,6 +27,7 @@ export function DiscoveryEventCard({
   }).format(event.eventDate);
   const recentlyAdded = isRecentlyAdded(event.createdAt);
   const sourceName = formatEventSourceName(event);
+  const trackingEvent = toPersonalizationEvent(event);
 
   return (
     <article
@@ -79,8 +81,13 @@ export function DiscoveryEventCard({
           eventId={event.id}
           initialCount={event.likeCount}
           variant="discovery"
+          trackingEvent={trackingEvent}
         />
-        <EventShareButton title={event.title} path={`/event/${event.id}`} />
+        <EventShareButton
+          title={event.title}
+          path={`/event/${event.id}`}
+          trackingEvent={trackingEvent}
+        />
       </div>
 
       <div className="absolute inset-x-0 bottom-0 px-5 pb-6 pr-20">
@@ -117,6 +124,38 @@ export function DiscoveryEventCard({
       </div>
     </article>
   );
+}
+
+function toPersonalizationEvent(event: DiscoveryEvent): PersonalizationEvent {
+  return {
+    id: event.id,
+    title: event.title,
+    venueId: event.venue.id,
+    venueName: event.venue.name,
+    source: event.source,
+    admissionType: event.admissionType,
+    priceMin: decimalToNumber(event.priceMin),
+    priceMax: decimalToNumber(event.priceMax),
+    artists: event.artists.map(({ artist }) => ({
+      id: artist.id,
+      name: artist.name,
+    })),
+    tags: event.tags.map(({ confidence, tag }) => ({
+      slug: tag.slug,
+      name: tag.name,
+      kind: tag.kind,
+      confidence,
+    })),
+  };
+}
+
+function decimalToNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "object" && value && "toNumber" in value) {
+    const amount = (value as { toNumber: () => number }).toNumber();
+    return Number.isFinite(amount) ? amount : null;
+  }
+  return null;
 }
 
 function isRecentlyAdded(createdAt: Date) {

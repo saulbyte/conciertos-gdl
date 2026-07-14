@@ -181,6 +181,11 @@ export async function getArtistById(id: string) {
                     artist: true,
                   },
                 },
+                tags: {
+                  include: {
+                    tag: true,
+                  },
+                },
                 _count: {
                   select: { likes: true },
                 },

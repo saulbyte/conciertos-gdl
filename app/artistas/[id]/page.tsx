@@ -7,6 +7,7 @@ import {
   Search,
 } from "lucide-react";
 import { ArtistInterestForm } from "@/components/ArtistInterestForm";
+import { ArtistInteractionTracker } from "@/components/ArtistInteractionTracker";
 import { ArtistNoticeButton } from "@/components/ArtistNoticeButton";
 import { BrandLogo } from "@/components/BrandLogo";
 import { EventArtwork } from "@/components/EventArtwork";
@@ -48,6 +49,7 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
 
   return (
     <main data-artists-page className="bg-[#071018] text-[#f6f3ea]">
+      <ArtistInteractionTracker artistId={artist.id} />
       <section className="bg-[#071018] text-[#f6f3ea]">
         <div className="mx-auto w-full max-w-7xl px-4 pb-5 pt-0 sm:px-6 sm:py-7 lg:px-8">
           <div className="mb-5 flex h-16 items-center justify-between gap-3 md:hidden">

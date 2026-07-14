@@ -9,6 +9,7 @@ import { HorizontalScroller } from "@/components/HorizontalScroller";
 import { EventArtwork } from "@/components/EventArtwork";
 import { HomeEventCard } from "@/components/HomeEventCard";
 import { HomeSearchPanel } from "@/components/HomeSearchPanel";
+import { PersonalizedEventRail } from "@/components/PersonalizedEventRail";
 import { getArtists } from "@/lib/artists";
 import {
   getEvents,
@@ -19,6 +20,7 @@ import {
 } from "@/lib/events";
 import {
   formatDateBadge,
+  formatEventSourceName,
   formatEventTime,
 } from "@/lib/format";
 
@@ -88,6 +90,9 @@ export default async function Home({ searchParams }: HomeProps) {
     venueSections,
     weekendEvents,
   });
+  const personalizationEvents = allEvents
+    .filter((event) => event.eventDate >= startOfToday())
+    .map(toPersonalizationRailEvent);
 
   return (
     <main
@@ -203,6 +208,7 @@ export default async function Home({ searchParams }: HomeProps) {
           />
         ) : (
           <>
+            <PersonalizedEventRail events={personalizationEvents} />
             {discoveryRails.map((section) => (
               <EventRail
                 key={section.id}
@@ -951,5 +957,38 @@ function toSearchEvent(event: Awaited<ReturnType<typeof getEvents>>[number]) {
     venueName: event.venue.name,
     timeLabel: formatEventTime(event.eventDate, event.source),
     admissionType: event.admissionType,
+  };
+}
+
+function toPersonalizationRailEvent(
+  event: Awaited<ReturnType<typeof getEvents>>[number],
+) {
+  const dateBadge = formatDateBadge(event.eventDate);
+
+  return {
+    id: event.id,
+    title: event.title,
+    eventDate: event.eventDate.toISOString(),
+    imageUrl: event.imageUrl,
+    source: event.source,
+    sourceName: formatEventSourceName(event),
+    admissionType: event.admissionType,
+    priceMin: priceToNumber(event.priceMin),
+    priceMax: priceToNumber(event.priceMax),
+    venueId: event.venue.id,
+    venueName: event.venue.name,
+    timeLabel: formatEventTime(event.eventDate, event.source),
+    dateBadge,
+    likeCount: event.likeCount,
+    artists: event.artists.map(({ artist }) => ({
+      id: artist.id,
+      name: artist.name,
+    })),
+    tags: event.tags.map(({ confidence, tag }) => ({
+      slug: tag.slug,
+      name: tag.name,
+      kind: tag.kind,
+      confidence,
+    })),
   };
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Bell, CheckCircle2, Mail } from "lucide-react";
+import { trackArtistInteraction } from "@/lib/personalization-client";
 
 type ArtistInterestFormProps = {
   artistId: string;
@@ -45,6 +46,7 @@ export function ArtistInterestForm({
       setStatus("success");
       setMessage(result.message || "Listo, te avisaremos cuando haya fecha nueva.");
       setEmail("");
+      trackArtistInteraction("ARTIST_SUBSCRIBE", artistId);
     } catch (error) {
       setStatus("error");
       setMessage(

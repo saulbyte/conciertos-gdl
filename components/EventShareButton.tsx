@@ -2,17 +2,23 @@
 
 import { Check, Share2 } from "lucide-react";
 import { useState } from "react";
+import {
+  trackEventInteraction,
+  type PersonalizationEvent,
+} from "@/lib/personalization-client";
 
 type EventShareButtonProps = {
   title: string;
   path: string;
   variant?: "floating" | "detail" | "compact";
+  trackingEvent?: PersonalizationEvent;
 };
 
 export function EventShareButton({
   title,
   path,
   variant = "floating",
+  trackingEvent,
 }: EventShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
@@ -22,11 +28,17 @@ export function EventShareButton({
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
+        if (trackingEvent) {
+          trackEventInteraction("EVENT_SHARE", trackingEvent);
+        }
         return;
       }
 
       await navigator.clipboard.writeText(url);
       setCopied(true);
+      if (trackingEvent) {
+        trackEventInteraction("EVENT_SHARE", trackingEvent);
+      }
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
       // Closing the native share dialog is an expected no-op.

@@ -49,6 +49,15 @@ enum TagKind {
   SIGNAL
 }
 
+enum InteractionAction {
+  EVENT_VIEW
+  EVENT_LIKE
+  EVENT_SHARE
+  SOURCE_OPEN
+  ARTIST_VIEW
+  ARTIST_SUBSCRIBE
+}
+
 model Venue {
   id        String   @id @default(cuid())
   name      String
@@ -68,6 +77,7 @@ model Artist {
   events        EventArtist[]
   subscriptions ArtistSubscription[]
   tags          ArtistTag[]
+  interactions  EventInteraction[]
 }
 
 model Event {
@@ -93,6 +103,7 @@ model Event {
   likes              EventLike[]
   observations       EventObservation[]
   tags               EventTag[]
+  interactions       EventInteraction[]
 
   @@unique([source, externalId])
   @@index([eventDate])
@@ -212,6 +223,24 @@ model EventLike {
 
   @@unique([eventId, visitorHash])
   @@index([eventId])
+  @@index([createdAt])
+}
+
+model EventInteraction {
+  id          String            @id @default(cuid())
+  visitorHash String
+  action      InteractionAction
+  eventId     String?
+  artistId    String?
+  metadata    Json?
+  createdAt   DateTime          @default(now())
+  event       Event?            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  artist      Artist?           @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@index([visitorHash])
+  @@index([action])
+  @@index([eventId])
+  @@index([artistId])
   @@index([createdAt])
 }
 

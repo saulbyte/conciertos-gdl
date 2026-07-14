@@ -3,6 +3,7 @@ import { CalendarDays, Clock3, MapPin, Sparkles, TicketCheck } from "lucide-reac
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
 import type { EventListItem } from "@/lib/events";
+import type { PersonalizationEvent } from "@/lib/personalization-client";
 import {
   formatDateBadge,
   formatEventSourceName,
@@ -19,6 +20,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
   const artists = event.artists.map(({ artist }) => artist.name).join(", ");
   const recentlyAdded = isRecentlyAdded(event.createdAt);
   const sourceName = formatEventSourceName(event);
+  const trackingEvent = toPersonalizationEvent(event);
 
   if (compact) {
     return (
@@ -61,6 +63,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
             eventId={event.id}
             initialCount={event.likeCount}
             variant="darkCard"
+            trackingEvent={trackingEvent}
           />
         </div>
         <div className="absolute bottom-2 right-2 flex max-w-[calc(100%-7rem)] items-center gap-1">
@@ -97,6 +100,7 @@ export function HomeEventCard({ event, compact = false }: HomeEventCardProps) {
           eventId={event.id}
           initialCount={event.likeCount}
           variant="darkCard"
+          trackingEvent={trackingEvent}
         />
       </div>
 
@@ -164,6 +168,38 @@ function FreePill() {
       Gratis
     </span>
   );
+}
+
+function toPersonalizationEvent(event: EventListItem): PersonalizationEvent {
+  return {
+    id: event.id,
+    title: event.title,
+    venueId: event.venue.id,
+    venueName: event.venue.name,
+    source: event.source,
+    admissionType: event.admissionType,
+    priceMin: decimalToNumber(event.priceMin),
+    priceMax: decimalToNumber(event.priceMax),
+    artists: event.artists.map(({ artist }) => ({
+      id: artist.id,
+      name: artist.name,
+    })),
+    tags: event.tags.map(({ confidence, tag }) => ({
+      slug: tag.slug,
+      name: tag.name,
+      kind: tag.kind,
+      confidence,
+    })),
+  };
+}
+
+function decimalToNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "object" && value && "toNumber" in value) {
+    const amount = (value as { toNumber: () => number }).toNumber();
+    return Number.isFinite(amount) ? amount : null;
+  }
+  return null;
 }
 
 function PopularPill() {

@@ -2,11 +2,16 @@
 
 import { type MouseEvent, useEffect, useState, useSyncExternalStore } from "react";
 import { Heart } from "lucide-react";
+import {
+  trackEventInteraction,
+  type PersonalizationEvent,
+} from "@/lib/personalization-client";
 
 type EventLikeButtonProps = {
   eventId: string;
   initialCount: number;
   variant?: "card" | "detail" | "discovery" | "darkCard";
+  trackingEvent?: PersonalizationEvent;
 };
 
 const LIKE_SYNC_EVENT = "revera:event-liked";
@@ -15,6 +20,7 @@ export function EventLikeButton({
   eventId,
   initialCount,
   variant = "card",
+  trackingEvent,
 }: EventLikeButtonProps) {
   const storageKey = `revera:event-like:${eventId}`;
   const previousBrandStorageKey = `la-cartelera:event-like:${eventId}`;
@@ -122,6 +128,9 @@ export function EventLikeButton({
       const result = (await response.json()) as { count: number };
       setCount(result.count);
       setJustLiked(true);
+      if (trackingEvent) {
+        trackEventInteraction("EVENT_LIKE", trackingEvent);
+      }
       window.localStorage.setItem(storageKey, "1");
       window.localStorage.removeItem(previousBrandStorageKey);
       window.localStorage.removeItem(legacyStorageKey);

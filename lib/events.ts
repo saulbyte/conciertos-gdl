@@ -46,6 +46,11 @@ export async function getEvents(filters: EventFilters = {}) {
           artist: true,
         },
       },
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
       _count: {
         select: { likes: true },
       },
@@ -93,6 +98,11 @@ export async function getRecentlyAddedEvents(limit = 10) {
           artist: true,
         },
       },
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
       _count: {
         select: { likes: true },
       },
@@ -123,6 +133,11 @@ export async function getEventById(id: string) {
       artists: {
         include: {
           artist: true,
+        },
+      },
+      tags: {
+        include: {
+          tag: true,
         },
       },
       _count: {
@@ -194,6 +209,11 @@ export async function getRelatedEvents(eventId: string, limit = 8) {
           artist: true,
         },
       },
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
       _count: {
         select: { likes: true },
       },
@@ -217,6 +237,11 @@ export async function getRelatedEvents(eventId: string, limit = 8) {
         artists: {
           include: {
             artist: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: true,
           },
         },
         _count: {
