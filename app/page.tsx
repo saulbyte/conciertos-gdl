@@ -311,7 +311,7 @@ function EventRail({
   }
 
   return (
-    <section className="py-5 max-md:flex max-md:min-h-[calc(100svh-8rem)] max-md:snap-start max-md:snap-always max-md:scroll-mt-20 max-md:flex-col max-md:justify-start max-md:pt-3">
+    <section className="py-5 max-md:flex max-md:min-h-[calc(100dvh-6.75rem)] max-md:snap-start max-md:snap-always max-md:scroll-mt-20 max-md:flex-col max-md:justify-start max-md:pt-2">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
@@ -337,7 +337,7 @@ function EventRail({
             {events.slice(0, itemLimit).map((event) => (
               <div
                 key={event.id}
-                className="w-[82vw] max-w-[340px] shrink-0 snap-center"
+                className="mobile-discovery-card w-[90vw] max-w-[390px] shrink-0 snap-center"
               >
                 <HomeEventCard event={event} />
               </div>

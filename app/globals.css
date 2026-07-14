@@ -38,6 +38,19 @@ body {
     scroll-snap-stop: always;
   }
 
+  .mobile-discovery-card > article {
+    min-height: min(74dvh, 620px);
+  }
+
+  .mobile-discovery-card > article > a:first-child {
+    aspect-ratio: auto;
+    min-height: min(47dvh, 390px);
+  }
+
+  .mobile-discovery-card > article > div:last-child {
+    min-height: 10rem;
+  }
+
   body {
     padding-bottom: calc(4rem + env(safe-area-inset-bottom));
   }
