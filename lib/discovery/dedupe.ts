@@ -66,21 +66,37 @@ export async function findExistingEventDuplicate(
       const eventVenue = normalizeName(event.venue.name);
       const eventCity = normalizeName(event.venue.city);
       const sameDate = getMexicoCityDateKey(event.eventDate) === dateKey;
+      const nearDate =
+        Math.abs(event.eventDate.getTime() - candidate.eventDate!.getTime()) <=
+        30 * 60 * 60 * 1000;
       const sameVenue =
         venue.length > 0 &&
         (eventVenue === venue ||
           eventVenue.includes(venue) ||
           venue.includes(eventVenue));
+      const unknownVenue =
+        venue.length === 0 ||
+        isUnknownVenue(venue) ||
+        isUnknownVenue(eventVenue);
       const sameCity =
         city.length === 0 ||
         eventCity === city ||
         eventCity.includes(city) ||
-        city.includes(eventCity);
+        city.includes(eventCity) ||
+        isSameMetroArea(city, eventCity);
       const sameTitle = eventNames.some((name) =>
         namesLookLikeSameEvent(title, normalizeTitle(name)),
       );
+      const strongTitle = eventNames.some((name) =>
+        namesLookLikeStrongSameArtist(title, normalizeTitle(name)),
+      );
 
-      return sameDate && sameVenue && sameCity && sameTitle;
+      return (
+        sameCity &&
+        sameTitle &&
+        (sameDate || nearDate) &&
+        (sameVenue || unknownVenue || strongTitle)
+      );
     }) ?? null
   );
 }
@@ -106,6 +122,27 @@ export function namesLookLikeSameEvent(left: string, right: string) {
   const containment = overlap.length / smaller;
 
   return overlap.length >= 2 && containment >= 0.75;
+}
+
+function namesLookLikeStrongSameArtist(left: string, right: string) {
+  if (!left || !right) {
+    return false;
+  }
+
+  if (left === right || left.includes(right) || right.includes(left)) {
+    return true;
+  }
+
+  const leftTokens = significantTokens(left);
+  const rightTokens = significantTokens(right);
+
+  if (leftTokens.length < 2 || rightTokens.length < 2) {
+    return false;
+  }
+
+  const overlap = leftTokens.filter((token) => rightTokens.includes(token));
+
+  return overlap.length >= Math.min(leftTokens.length, rightTokens.length);
 }
 
 export function normalizeTitle(value: string) {
@@ -152,4 +189,30 @@ function significantTokens(value: string) {
   return normalizeName(value)
     .split(" ")
     .filter((token) => token.length > 1 && !stopwords.has(token));
+}
+
+function isUnknownVenue(value: string) {
+  return (
+    value.length === 0 ||
+    value === "sin recinto" ||
+    value === "por confirmar" ||
+    value === "tba" ||
+    value === "pendiente"
+  );
+}
+
+function isSameMetroArea(left: string, right: string) {
+  const metroCities = new Set([
+    "guadalajara",
+    "zapopan",
+    "tlaquepaque",
+    "san pedro tlaquepaque",
+    "tonala",
+    "tlajomulco",
+    "tlajomulco de zuniga",
+    "el salto",
+    "jalisco",
+  ]);
+
+  return metroCities.has(left) && metroCities.has(right);
 }

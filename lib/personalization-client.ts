@@ -25,6 +25,23 @@ export type PersonalizationEvent = {
   tags: PersonalizationTag[];
 };
 
+export type PersonalizationRailArtist = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  fallbackImageUrl: string | null;
+  eventCount: number;
+  subscriberCount: number;
+  nextEvent: {
+    id: string;
+    eventDate: string;
+    venueId: string;
+    venueName: string;
+    likeCount: number;
+    tags: PersonalizationTag[];
+  } | null;
+};
+
 export type InteractionAction =
   | "EVENT_VIEW"
   | "EVENT_LIKE"
@@ -248,6 +265,57 @@ export function hasPersonalizationSignals() {
   return readProfile().actionCount >= 3;
 }
 
+export function getPersonalizedArtistRail(artists: PersonalizationRailArtist[]) {
+  const profile = readProfile();
+  const hasSignals = profile.actionCount >= 3;
+
+  const rankedArtists = [...artists]
+    .map((artist) => ({
+      artist,
+      score: scoreArtist(profile, artist, hasSignals),
+    }))
+    .sort((left, right) => {
+      const leftDate = left.artist.nextEvent
+        ? new Date(left.artist.nextEvent.eventDate).getTime()
+        : Number.MAX_VALUE;
+      const rightDate = right.artist.nextEvent
+        ? new Date(right.artist.nextEvent.eventDate).getTime()
+        : Number.MAX_VALUE;
+
+      return (
+        right.score -
+          left.score ||
+        leftDate -
+          rightDate ||
+        left.artist.name.localeCompare(right.artist.name)
+      );
+    });
+  const personalized = hasSignals
+    ? rankedArtists
+        .filter((item) => (profile.interests.artists[item.artist.id] ?? 0) > 0)
+        .slice(0, 5)
+    : [];
+  const withDates = rankedArtists
+    .filter((item) => item.artist.nextEvent)
+    .slice(0, 12);
+  const withoutDates = rankedArtists
+    .filter((item) => !item.artist.nextEvent)
+    .slice(0, 18);
+  const candidateArtists = uniqueArtists([
+    ...personalized,
+    ...interleaveArtistScores(withDates, withoutDates),
+    ...rankedArtists,
+  ])
+    .slice(0, 40)
+    .map((item) => item.artist);
+  const mixedArtists = balancedArtistMix(candidateArtists, 14);
+
+  return {
+    title: hasSignals ? "Artistas para ti" : "Artistas para descubrir",
+    artists: mixedArtists,
+  };
+}
+
 function scoreEvent(profile: LocalProfile, event: PersonalizationEvent) {
   let score = 0;
 
@@ -264,6 +332,139 @@ function scoreEvent(profile: LocalProfile, event: PersonalizationEvent) {
   score += (profile.interests.venues[event.venueId] ?? 0) * 0.45;
 
   return score;
+}
+
+function scoreArtist(
+  profile: LocalProfile,
+  artist: PersonalizationRailArtist,
+  hasSignals: boolean,
+) {
+  const nextEvent = artist.nextEvent;
+  let score = 0;
+
+  if (artist.imageUrl || artist.fallbackImageUrl) score += 8;
+  if (artist.eventCount > 1) score += Math.min(artist.eventCount * 3, 12);
+  score += Math.min(artist.subscriberCount * 2, 14);
+
+  if (nextEvent) {
+    score += 8;
+    score += Math.min(nextEvent.likeCount * 2, 14);
+    score += Math.max(0, 12 - daysUntil(nextEvent.eventDate) * 0.25);
+  } else {
+    score += 6;
+  }
+
+  if (!hasSignals) {
+    return score;
+  }
+
+  score += (profile.interests.artists[artist.id] ?? 0) * 2.2;
+
+  if (!nextEvent) {
+    return score;
+  }
+
+  score += (profile.interests.venues[nextEvent.venueId] ?? 0) * 0.65;
+
+  for (const tag of nextEvent.tags) {
+    if (tag.kind === "GENRE") score += (profile.interests.genres[tag.slug] ?? 0) * 1.2;
+    if (tag.kind === "FORMAT") score += (profile.interests.formats[tag.slug] ?? 0) * 0.75;
+    if (tag.kind === "SIGNAL") score += (profile.interests.signals[tag.slug] ?? 0) * 0.5;
+  }
+
+  return score;
+}
+
+function interleaveArtistScores<T>(left: T[], right: T[]) {
+  const output: T[] = [];
+  const length = Math.max(left.length, right.length);
+
+  for (let index = 0; index < length; index += 1) {
+    if (left[index]) output.push(left[index]);
+    if (right[index]) output.push(right[index]);
+  }
+
+  return output;
+}
+
+function uniqueArtists(
+  items: { artist: PersonalizationRailArtist; score: number }[],
+) {
+  const seen = new Set<string>();
+
+  return items.filter((item) => {
+    if (seen.has(item.artist.id)) {
+      return false;
+    }
+
+    seen.add(item.artist.id);
+    return true;
+  });
+}
+
+function dailyMixArtists(artists: PersonalizationRailArtist[]) {
+  const dateKey = new Date().toISOString().slice(0, 10);
+
+  return [...artists].sort(
+    (left, right) =>
+      stableMixScore(`${dateKey}:${left.id}`) -
+      stableMixScore(`${dateKey}:${right.id}`),
+  );
+}
+
+function stableMixScore(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
+}
+
+function balancedArtistMix(artists: PersonalizationRailArtist[], limit: number) {
+  const dateKey = new Date().toISOString().slice(0, 10);
+  const withDates = dailyMixArtists(artists.filter((artist) => artist.nextEvent));
+  const withoutDates = dailyMixArtists(artists.filter((artist) => !artist.nextEvent));
+  const output: PersonalizationRailArtist[] = [];
+  const seen = new Set<string>();
+  let withIndex = 0;
+  let withoutIndex = 0;
+  let useDated = stableMixScore(`start:${dateKey}`) % 2 === 0;
+
+  while (output.length < limit && (withIndex < withDates.length || withoutIndex < withoutDates.length)) {
+    const source = useDated ? withDates : withoutDates;
+    const fallback = useDated ? withoutDates : withDates;
+    let picked = source[useDated ? withIndex : withoutIndex];
+
+    if (picked) {
+      if (useDated) withIndex += 1;
+      else withoutIndex += 1;
+    } else {
+      picked = fallback[useDated ? withoutIndex : withIndex];
+      if (picked) {
+        if (useDated) withoutIndex += 1;
+        else withIndex += 1;
+      }
+    }
+
+    if (picked && !seen.has(picked.id)) {
+      output.push(picked);
+      seen.add(picked.id);
+    }
+
+    useDated = !useDated;
+  }
+
+  return output;
+}
+
+function daysUntil(date: string) {
+  const today = new Date();
+  const target = new Date(date);
+  const diff = target.getTime() - today.getTime();
+
+  return Math.max(0, diff / (1000 * 60 * 60 * 24));
 }
 
 function rankedEvents(profile: LocalProfile, events: PersonalizationEvent[]) {

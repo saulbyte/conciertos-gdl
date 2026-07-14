@@ -11,8 +11,8 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { EventArtwork } from "@/components/EventArtwork";
-import { HorizontalScroller } from "@/components/HorizontalScroller";
 import { MobileMenu } from "@/components/MobileMenu";
+import { SmartArtistRail } from "@/components/SmartArtistRail";
 import { getArtists, type ArtistSortMode } from "@/lib/artists";
 import { formatDateBadge } from "@/lib/format";
 
@@ -31,9 +31,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
   const mode = parseArtistMode(filters.mode);
   const artists = await getArtists(query, mode);
   const hasSearch = query.length > 0;
-  const featuredArtists = artists
-    .filter((artist) => artist.nextEvent && isWithinNextMonths(artist.nextEvent.eventDate, 2))
-    .slice(0, 12);
+  const featuredArtists = artists.slice(0, 120);
 
   return (
     <main data-artists-page className="min-h-dvh bg-[#071018] text-[#f6f3ea]">
@@ -54,9 +52,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
             </div>
           </div>
 
-          {featuredArtists.length > 0 ? (
-            <FeaturedArtists artists={featuredArtists} />
-          ) : null}
+          <SmartArtistRail artists={featuredArtists.map(toPersonalizationRailArtist)} />
 
           <ArtistFilters query={query} mode={mode} />
         </div>
@@ -97,88 +93,12 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
   );
 }
 
-function FeaturedArtists({
-  artists,
-}: {
-  artists: Awaited<ReturnType<typeof getArtists>>;
-}) {
-  return (
-    <section className="mt-5 md:mt-0">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-sm font-black text-[#f6f3ea]">Artistas que tocan</h2>
-        <Link
-          href="/artistas?mode=upcoming"
-          className="text-xs font-bold text-[#00c2d1] transition hover:text-white"
-        >
-          Ver con fechas
-        </Link>
-      </div>
-
-      <HorizontalScroller
-        label="artistas"
-        className="-mx-4 sm:-mx-6 lg:mx-0"
-        contentClassName="flex gap-4 px-4 pb-2 sm:px-6 lg:px-10"
-      >
-        {artists.map((artist) => (
-          <FeaturedArtist key={artist.id} artist={artist} />
-        ))}
-      </HorizontalScroller>
-    </section>
-  );
-}
-
-function FeaturedArtist({
-  artist,
-}: {
-  artist: Awaited<ReturnType<typeof getArtists>>[number];
-}) {
-  const avatarUrl =
-    artist.imageUrl ?? artist.nextEvent?.imageUrl ?? artist.fallbackImageUrl ?? null;
-  return (
-    <Link
-      href={`/artistas/${artist.id}`}
-      className="group grid w-20 shrink-0 justify-items-center gap-2 text-center"
-    >
-      <span className="relative h-16 w-16 overflow-hidden rounded-full border border-white/20 bg-[#0b1d26] transition group-hover:border-[#00c2d1]">
-        <EventArtwork
-          src={avatarUrl}
-          alt=""
-          className="h-full w-full object-cover"
-          iconClassName="h-7 w-7"
-        />
-      </span>
-      <span className="line-clamp-1 w-full text-xs font-bold text-slate-300 transition group-hover:text-white">
-        {artist.name}
-      </span>
-    </Link>
-  );
-}
-
 function parseArtistMode(mode?: string): ArtistSortMode {
   if (mode === "upcoming" || mode === "all" || mode === "az") {
     return mode;
   }
 
   return "popular";
-}
-
-function isWithinNextMonths(date: Date, months: number) {
-  const now = new Date();
-  const start = getMexicoCityDateKey(now);
-  const end = new Date(now);
-  end.setMonth(end.getMonth() + months);
-
-  const eventDay = getMexicoCityDateKey(date);
-  return eventDay >= start && eventDay < getMexicoCityDateKey(end);
-}
-
-function getMexicoCityDateKey(date: Date) {
-  return new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "America/Mexico_City",
-  }).format(date);
 }
 
 function ArtistFilters({
@@ -253,6 +173,34 @@ function ArtistFilters({
       </div>
     </div>
   );
+}
+
+function toPersonalizationRailArtist(
+  artist: Awaited<ReturnType<typeof getArtists>>[number],
+) {
+  return {
+    id: artist.id,
+    name: artist.name,
+    imageUrl: artist.imageUrl ?? artist.nextEvent?.imageUrl ?? null,
+    fallbackImageUrl: artist.fallbackImageUrl,
+    eventCount: artist.eventCount,
+    subscriberCount: artist.subscriberCount,
+    nextEvent: artist.nextEvent
+      ? {
+          id: artist.nextEvent.id,
+          eventDate: artist.nextEvent.eventDate.toISOString(),
+          venueId: artist.nextEvent.venue.id,
+          venueName: artist.nextEvent.venue.name,
+          likeCount: artist.nextEvent.likeCount,
+          tags: artist.nextEvent.tags.map(({ confidence, tag }) => ({
+            slug: tag.slug,
+            name: tag.name,
+            kind: tag.kind,
+            confidence,
+          })),
+        }
+      : null,
+  };
 }
 
 function ArtistCard({ artist }: { artist: Awaited<ReturnType<typeof getArtists>>[number] }) {

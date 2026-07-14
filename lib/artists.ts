@@ -29,6 +29,14 @@ export type ArtistListItem = {
       createdAt: Date;
     };
     likeCount: number;
+    tags: {
+      confidence: number;
+      tag: {
+        slug: string;
+        name: string;
+        kind: "GENRE" | "FORMAT" | "SIGNAL";
+      };
+    }[];
   } | null;
 };
 export type ArtistDetail = NonNullable<Awaited<ReturnType<typeof getArtistById>>>;
@@ -62,6 +70,11 @@ export async function getArtists(
               venue: true,
               _count: {
                 select: { likes: true },
+              },
+              tags: {
+                include: {
+                  tag: true,
+                },
               },
             },
           },

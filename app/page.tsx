@@ -6,10 +6,10 @@ import {
   TicketCheck,
 } from "lucide-react";
 import { HorizontalScroller } from "@/components/HorizontalScroller";
-import { EventArtwork } from "@/components/EventArtwork";
 import { HomeEventCard } from "@/components/HomeEventCard";
 import { HomeSearchPanel } from "@/components/HomeSearchPanel";
 import { PersonalizedEventRail } from "@/components/PersonalizedEventRail";
+import { SmartArtistRail } from "@/components/SmartArtistRail";
 import { getArtists } from "@/lib/artists";
 import {
   getEvents,
@@ -79,9 +79,7 @@ export default async function Home({ searchParams }: HomeProps) {
   );
   const isAllView = filters.view === "all" || hasFilters;
   const activeEvents = applyEventSort(hasFilters ? events : allEvents, filters.sort);
-  const artistsPlayingThisMonth = artists
-    .filter((artist) => artist.nextEvent && isWithinNextMonths(artist.nextEvent.eventDate, 2))
-    .slice(0, 12);
+  const artistRailArtists = artists.slice(0, 120);
   const venueSections = getTopVenueSections(allEvents);
   const discoveryRails = getDiscoveryRails({
     allEvents,
@@ -112,44 +110,7 @@ export default async function Home({ searchParams }: HomeProps) {
             }))}
           />
 
-          <section>
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-sm font-black text-[#f6f3ea]">
-                Artistas que tocan
-              </h2>
-              <Link
-                href="/artistas"
-                className="text-xs font-bold text-[#00c2d1] transition hover:text-white"
-              >
-                Ver todos
-              </Link>
-            </div>
-            <HorizontalScroller
-              label="artistas"
-              className="-mx-4 mt-3 sm:-mx-6 lg:mx-0"
-              contentClassName="flex gap-4 px-4 pb-2 sm:px-6 lg:px-10"
-            >
-              {artistsPlayingThisMonth.map((artist) => (
-                  <Link
-                    key={artist.id}
-                    href={`/artistas/${artist.id}`}
-                    className="group grid w-20 shrink-0 justify-items-center gap-2 text-center"
-                  >
-                    <span className="relative h-16 w-16 overflow-hidden rounded-full border border-white/20 bg-[#0b1d26] transition group-hover:border-[#00c2d1]">
-                      <EventArtwork
-                        src={artist.imageUrl ?? artist.fallbackImageUrl}
-                        alt=""
-                        className="h-full w-full object-cover"
-                        iconClassName="h-7 w-7"
-                      />
-                    </span>
-                    <span className="line-clamp-1 w-full text-xs font-bold text-slate-300 transition group-hover:text-white">
-                      {artist.name}
-                    </span>
-                  </Link>
-                ))}
-            </HorizontalScroller>
-          </section>
+          <SmartArtistRail artists={artistRailArtists.map(toPersonalizationRailArtist)} />
 
           <section id="filtros" className="mt-2 scroll-mt-24">
             <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 py-2 sm:mx-0 sm:px-0">
@@ -899,16 +860,6 @@ function isThisMonth(date: Date) {
   return formatter.format(date) === formatter.format(now);
 }
 
-function isWithinNextMonths(date: Date, months: number) {
-  const now = new Date();
-  const start = getMexicoCityDateKey(now);
-  const end = new Date(now);
-  end.setMonth(end.getMonth() + months);
-
-  const eventDay = getMexicoCityDateKey(date);
-  return eventDay >= start && eventDay < getMexicoCityDateKey(end);
-}
-
 function getMexicoCityDateKey(date: Date) {
   return new Intl.DateTimeFormat("en-CA", {
     year: "numeric",
@@ -938,6 +889,34 @@ function toSearchEvent(event: Awaited<ReturnType<typeof getEvents>>[number]) {
     venueName: event.venue.name,
     timeLabel: formatEventTime(event.eventDate, event.source),
     admissionType: event.admissionType,
+  };
+}
+
+function toPersonalizationRailArtist(
+  artist: Awaited<ReturnType<typeof getArtists>>[number],
+) {
+  return {
+    id: artist.id,
+    name: artist.name,
+    imageUrl: artist.imageUrl,
+    fallbackImageUrl: artist.fallbackImageUrl,
+    eventCount: artist.eventCount,
+    subscriberCount: artist.subscriberCount,
+    nextEvent: artist.nextEvent
+      ? {
+          id: artist.nextEvent.id,
+          eventDate: artist.nextEvent.eventDate.toISOString(),
+          venueId: artist.nextEvent.venue.id,
+          venueName: artist.nextEvent.venue.name,
+          likeCount: artist.nextEvent.likeCount,
+          tags: artist.nextEvent.tags.map(({ confidence, tag }) => ({
+            slug: tag.slug,
+            name: tag.name,
+            kind: tag.kind,
+            confidence,
+          })),
+        }
+      : null,
   };
 }
 
