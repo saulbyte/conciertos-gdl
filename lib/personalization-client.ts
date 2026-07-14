@@ -140,6 +140,110 @@ export function getRecommendedEventIds(events: PersonalizationEvent[]) {
     .map((item) => item.id);
 }
 
+export type PersonalizedRailSuggestion = {
+  id: string;
+  title: string;
+  description: string;
+  eventIds: string[];
+};
+
+export function getPersonalizedRailSuggestions(
+  events: PersonalizationEvent[],
+): PersonalizedRailSuggestion[] {
+  const profile = readProfile();
+
+  if (profile.actionCount < 3) {
+    return [];
+  }
+
+  const usedEventIds = new Set<string>();
+  const rails: PersonalizedRailSuggestion[] = [];
+
+  pushRail(rails, usedEventIds, {
+    id: "for-you",
+    title: "Para ti",
+    description: "Una mezcla que empieza a tomar forma con lo que miras, guardas y compartes.",
+    eventIds: rankedEvents(profile, events)
+      .filter((item) => item.score >= 3)
+      .slice(0, 12)
+      .map((item) => item.event.id),
+  });
+
+  const topGenre = topEntry(profile.interests.genres);
+  if (topGenre) {
+    pushRail(rails, usedEventIds, {
+      id: `genre-${topGenre}`,
+      title: "Tu sonido",
+      description: "Eventos cercanos a los generos que mas se repiten en tus senales.",
+      eventIds: rankedEvents(profile, events)
+        .filter((item) => item.event.tags.some((tag) => tag.kind === "GENRE" && tag.slug === topGenre))
+        .slice(0, 12)
+        .map((item) => item.event.id),
+    });
+  }
+
+  const topArtist = topEntry(profile.interests.artists);
+  if (topArtist) {
+    pushRail(rails, usedEventIds, {
+      id: `artist-${topArtist}`,
+      title: "Mas como esto",
+      description: "Fechas que conectan con artistas que ya llamaron tu atencion.",
+      eventIds: rankedEvents(profile, events)
+        .filter((item) => item.event.artists.some((artist) => artist.id === topArtist))
+        .slice(0, 12)
+        .map((item) => item.event.id),
+    });
+  }
+
+  const topVenue = topEntry(profile.interests.venues);
+  if (topVenue) {
+    pushRail(rails, usedEventIds, {
+      id: `venue-${topVenue}`,
+      title: "Donde vuelves a mirar",
+      description: "Recintos que empiezan a aparecer en tu forma de descubrir.",
+      eventIds: rankedEvents(profile, events)
+        .filter((item) => item.event.venueId === topVenue)
+        .slice(0, 12)
+        .map((item) => item.event.id),
+    });
+  }
+
+  const likesFree = (profile.interests.signals["gratis"] ?? 0) > 0;
+  if (likesFree) {
+    pushRail(rails, usedEventIds, {
+      id: "free-for-you",
+      title: "Sin pagar boleto",
+      description: "Planes sin costo que encajan mejor con lo que has explorado.",
+      eventIds: rankedEvents(profile, events)
+        .filter((item) => item.event.admissionType === "FREE")
+        .slice(0, 12)
+        .map((item) => item.event.id),
+    });
+  }
+
+  const likesAccessible = (profile.interests.signals["plan-accesible"] ?? 0) > 0;
+  if (likesAccessible) {
+    pushRail(rails, usedEventIds, {
+      id: "accessible-for-you",
+      title: "Facil decir que si",
+      description: "Opciones que parecen ligeras para armar plan sin pensarlo tanto.",
+      eventIds: rankedEvents(profile, events)
+        .filter((item) => {
+          const price = Math.min(
+            item.event.priceMin ?? Number.POSITIVE_INFINITY,
+            item.event.priceMax ?? Number.POSITIVE_INFINITY,
+          );
+
+          return price <= 500;
+        })
+        .slice(0, 12)
+        .map((item) => item.event.id),
+    });
+  }
+
+  return rails.slice(0, 4);
+}
+
 export function hasPersonalizationSignals() {
   return readProfile().actionCount >= 3;
 }
@@ -160,6 +264,49 @@ function scoreEvent(profile: LocalProfile, event: PersonalizationEvent) {
   score += (profile.interests.venues[event.venueId] ?? 0) * 0.45;
 
   return score;
+}
+
+function rankedEvents(profile: LocalProfile, events: PersonalizationEvent[]) {
+  const seen = new Set([
+    ...profile.history.viewedEvents,
+    ...profile.history.likedEvents,
+    ...profile.history.openedSources,
+  ]);
+
+  return events
+    .filter((event) => !seen.has(event.id))
+    .map((event) => ({
+      event,
+      score: scoreEvent(profile, event),
+    }))
+    .sort((left, right) => right.score - left.score);
+}
+
+function topEntry(record: Record<string, number>) {
+  return Object.entries(record)
+    .filter(([, value]) => value > 0)
+    .sort((left, right) => right[1] - left[1])[0]?.[0] ?? null;
+}
+
+function pushRail(
+  rails: PersonalizedRailSuggestion[],
+  usedEventIds: Set<string>,
+  rail: PersonalizedRailSuggestion,
+) {
+  const uniqueEventIds = rail.eventIds.filter((eventId) => !usedEventIds.has(eventId));
+
+  if (uniqueEventIds.length < 3) {
+    return;
+  }
+
+  for (const eventId of uniqueEventIds) {
+    usedEventIds.add(eventId);
+  }
+
+  rails.push({
+    ...rail,
+    eventIds: uniqueEventIds,
+  });
 }
 
 function readProfile(): LocalProfile {

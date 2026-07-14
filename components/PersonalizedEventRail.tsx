@@ -5,8 +5,10 @@ import { Clock3, MapPin, Sparkles, TicketCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { EventArtwork } from "@/components/EventArtwork";
 import { EventLikeButton } from "@/components/EventLikeButton";
+import { HorizontalScroller } from "@/components/HorizontalScroller";
 import {
-  getRecommendedEventIds,
+  getPersonalizedRailSuggestions,
+  type PersonalizedRailSuggestion,
   type PersonalizationEvent,
 } from "@/lib/personalization-client";
 
@@ -27,18 +29,15 @@ type PersonalizedEventRailProps = {
 };
 
 export function PersonalizedEventRail({ events }: PersonalizedEventRailProps) {
-  const [recommendedIds, setRecommendedIds] = useState<string[]>([]);
+  const [rails, setRails] = useState<PersonalizedRailSuggestion[]>([]);
   const eventsById = useMemo(
     () => new Map(events.map((event) => [event.id, event])),
     [events],
   );
-  const recommendedEvents = recommendedIds
-    .map((id) => eventsById.get(id))
-    .filter((event): event is PersonalizedRailEvent => Boolean(event));
 
   useEffect(() => {
     function refresh() {
-      setRecommendedIds(getRecommendedEventIds(events));
+      setRails(getPersonalizedRailSuggestions(events));
     }
 
     refresh();
@@ -51,19 +50,49 @@ export function PersonalizedEventRail({ events }: PersonalizedEventRailProps) {
     };
   }, [events]);
 
-  if (recommendedEvents.length < 3) {
+  if (rails.length === 0) {
     return null;
   }
 
+  return (
+    <>
+      {rails.map((rail) => {
+        const railEvents = rail.eventIds
+          .map((id) => eventsById.get(id))
+          .filter((event): event is PersonalizedRailEvent => Boolean(event));
+
+        if (railEvents.length < 3) {
+          return null;
+        }
+
+        return (
+          <PersonalizedRailSection
+            key={rail.id}
+            rail={rail}
+            events={railEvents}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+function PersonalizedRailSection({
+  rail,
+  events,
+}: {
+  rail: PersonalizedRailSuggestion;
+  events: PersonalizedRailEvent[];
+}) {
   return (
     <section className="py-5">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-lg font-black tracking-tight text-[#f6f3ea]">
-            Para ti
+            {rail.title}
           </h2>
           <p className="mt-1 max-w-2xl text-xs font-semibold leading-5 text-slate-400 sm:text-sm">
-            Una mezcla que empieza a tomar forma con lo que miras, guardas y compartes.
+            {rail.description}
           </p>
         </div>
         <Link
@@ -74,20 +103,24 @@ export function PersonalizedEventRail({ events }: PersonalizedEventRailProps) {
         </Link>
       </div>
 
-      <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-10">
-        <div className="flex snap-x gap-3">
-          {recommendedEvents.map((event) => (
-            <PersonalizedEventCard key={event.id} event={event} />
-          ))}
-        </div>
-      </div>
+      <HorizontalScroller
+        label={rail.title}
+        className="-mx-4 sm:-mx-6 lg:mx-0"
+        contentClassName="flex snap-x gap-3 px-4 pb-2 sm:px-6 lg:px-10"
+      >
+        {events.map((event) => (
+          <div key={event.id} className="w-64 shrink-0 snap-start lg:w-72">
+            <PersonalizedEventCard event={event} />
+          </div>
+        ))}
+      </HorizontalScroller>
     </section>
   );
 }
 
 function PersonalizedEventCard({ event }: { event: PersonalizedRailEvent }) {
   return (
-    <article className="group relative flex w-64 shrink-0 snap-start flex-col overflow-hidden rounded-lg bg-[#0b1d26]/70 transition duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-[#00c2d1]/10 lg:w-72">
+    <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-lg bg-[#0b1d26]/70 transition duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-[#00c2d1]/10">
       <Link href={`/event/${event.id}`} className="relative block aspect-[4/3] overflow-hidden bg-[#071018]">
         <EventArtwork
           src={event.imageUrl}
