@@ -216,7 +216,6 @@ export default async function Home({ searchParams }: HomeProps) {
                 description={section.description}
                 href={section.href}
                 events={section.events}
-                compactOnMobile={section.compactOnMobile}
                 itemLimit={section.itemLimit}
               />
             ))}
@@ -291,14 +290,12 @@ function EventRail({
   title,
   href,
   events,
-  compactOnMobile = false,
   itemLimit = 8,
 }: {
   title: string;
   description?: string;
   href: string;
   events: Awaited<ReturnType<typeof getEvents>>;
-  compactOnMobile?: boolean;
   itemLimit?: number;
 }) {
   if (events.length === 0) {
@@ -322,14 +319,7 @@ function EventRail({
       </div>
 
       <>
-        {compactOnMobile ? (
-          <div className="grid gap-2 md:hidden">
-            {events.slice(0, itemLimit).map((event) => (
-              <HomeEventCard key={event.id} event={event} compact />
-            ))}
-          </div>
-        ) : null}
-        <div className={compactOnMobile ? "max-md:hidden" : ""}>
+        <div>
           <HorizontalScroller
             label={title}
             className="-mx-4 sm:-mx-6 lg:mx-0"
@@ -599,7 +589,6 @@ type DiscoveryRail = {
   description: string;
   href: string;
   events: HomeEventList;
-  compactOnMobile?: boolean;
   itemLimit?: number;
 };
 
@@ -660,7 +649,6 @@ function getDiscoveryRails({
       description: "Ideas cercanas para convertir el fin de semana en algo que sí recuerdes.",
       href: "/?view=all&when=weekend#eventos",
       events: weekendEvents,
-      compactOnMobile: true,
     },
     {
       id: "free",
@@ -710,7 +698,6 @@ function getDiscoveryRails({
       description: "Lo que sigue dentro del mes para no enterarte cuando ya pasó.",
       href: "/?view=all#eventos",
       events: thisMonthEvents,
-      compactOnMobile: true,
     },
     {
       id: "surprise",
