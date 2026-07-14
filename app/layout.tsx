@@ -7,6 +7,7 @@ import { AdSenseScript } from "@/components/AdSenseScript";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { NavigationProgress } from "@/components/NavigationProgress";
 import { RouteHistoryTracker } from "@/components/RouteHistoryTracker";
 import "./globals.css";
 
@@ -66,6 +67,9 @@ export default function RootLayout({
         <SiteFooter />
         <BackToTopButton />
         <MobileBottomNav />
+        <Suspense fallback={null}>
+          <NavigationProgress />
+        </Suspense>
         <Suspense fallback={null}>
           <RouteHistoryTracker />
         </Suspense>
